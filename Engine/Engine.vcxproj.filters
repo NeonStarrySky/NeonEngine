@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="assets">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="assets\shaders">
+      <UniqueIdentifier>{c48d1b47-00eb-4ece-b4cc-11b1ec7a98ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets\images">
+      <UniqueIdentifier>{08d71a84-0a89-4a80-9da9-cc60dcaa848a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="third_party\glm">
+      <UniqueIdentifier>{a4bf212a-cd9f-43dc-8332-93f450a07bd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party\GLFW">
+      <UniqueIdentifier>{b42ca352-f26c-4cb5-aeff-28c42280a730}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party\stb">
+      <UniqueIdentifier>{7be8ea8f-37b7-4662-bf26-d258a4ca3e44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{b74a99be-6df0-449c-9664-6a8872c3b93a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\core">
+      <UniqueIdentifier>{3a4f3bad-9d6b-4e8e-ba2b-924ee2727c6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\游戏内容">
+      <UniqueIdentifier>{83f608e4-1ae7-484f-9d4e-28d0e7f6e681}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\graphics">
+      <UniqueIdentifier>{8bcfbc0f-56eb-48f5-b91a-22cc1056bdc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\tool">
+      <UniqueIdentifier>{46dc0e91-94b9-48fa-92fd-2ecc9cdc609a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\graphics\gl">
+      <UniqueIdentifier>{b96463f8-5a75-4e9f-aee1-5b565383c6a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\core\ecs">
+      <UniqueIdentifier>{dfb5cfe9-0c14-4ebe-ace9-27d201683f4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party\glad">
+      <UniqueIdentifier>{05eef321-f304-4d12-93ea-ba4abe34340c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="conhost.cpp">
+      <Filter>src\tool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\glm\glm.cppm">
+      <Filter>third_party\glm</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\gl\mesh.cpp">
+      <Filter>src\graphics\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\gl\renderer.cpp">
+      <Filter>src\graphics\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\gl\shader_manager.cpp">
+      <Filter>src\graphics\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\frameRateController.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="engine.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="input_system.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>third_party</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\gl\window.cpp">
+      <Filter>src\graphics\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\glad\src\glad.c">
+      <Filter>third_party\glad</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="world.h">
+      <Filter>src\游戏内容</Filter>
+    </ClInclude>
+    <ClInclude Include="conhost.h">
+      <Filter>src\tool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\common.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\exponential.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\ext.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\fwd.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\geometric.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\glm.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\integer.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\mat2x2.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\mat2x3.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\mat2x4.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\mat3x2.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\mat3x3.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\mat3x4.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\mat4x2.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\mat4x3.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\mat4x4.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\matrix.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\packing.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\trigonometric.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\vec2.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\vec3.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\vec4.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glm\vector_relational.hpp">
+      <Filter>third_party\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\gl\GLResource.h">
+      <Filter>src\graphics\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\gl\mesh.h">
+      <Filter>src\graphics\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\gl\renderer.h">
+      <Filter>src\graphics\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\gl\shader.h">
+      <Filter>src\graphics\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\gl\shader_manager.h">
+      <Filter>src\graphics\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\frameRateController.h">
+      <Filter>src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="input_system.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\gl\window.h">
+      <Filter>src\graphics\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\window_info.h">
+      <Filter>src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="ecs_components.h">
+      <Filter>src\core\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="ecs_system.h">
+      <Filter>src\core\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="entity.h">
+      <Filter>src\core\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="movement_system.h">
+      <Filter>src\core\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>src\graphics\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glad\include\glad.h">
+      <Filter>third_party\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\glad\include\khrplatform.h">
+      <Filter>third_party\glad</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\shaders\fragment_shader.glsl">
+      <Filter>assets\shaders</Filter>
+    </None>
+    <None Include="assets\shaders\vertex_shader.glsl">
+      <Filter>assets\shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\images\pic.png">
+      <Filter>assets\images</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
