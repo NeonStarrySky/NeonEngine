@@ -2,10 +2,10 @@
 
 
 #ifdef _DEBUG
-#include "conhost.h"
+#include "tool/conhost.h"
 #endif // _DEBUG
 
-#include "graphics/gl/window.h"
+#include "window.h"
 #include "GLResource.h"
 
 #include <algorithm>
@@ -23,9 +23,9 @@ namespace neon::graphics::gl
 
 #ifdef _DEBUG
 			if (id) {
-				//setColor(FOREGROUND_RED | FOREGROUND_INTENSITY);
+				//tool::setColor(FOREGROUND_RED | FOREGROUND_INTENSITY);
 				std::cout << "Shader with ID " << id << " deleted.\n\n";
-				//setColor();
+				//tool::setColor();
 			}
 #endif // _DEBUG
 
@@ -38,9 +38,9 @@ namespace neon::graphics::gl
 		{
 			glDeleteProgram(id);
 #ifdef _DEBUG
-			//setColor(FOREGROUND_RED | FOREGROUND_INTENSITY);
+			//tool::setColor(FOREGROUND_RED | FOREGROUND_INTENSITY);
 			std::cout << "Program with ID " << id << " deleted.\n";
-			//setColor();
+			//tool::setColor();
 #endif // _DEBUG
 		}
 	};
@@ -58,33 +58,10 @@ namespace neon::graphics::gl
 	public:
 		using HandleType = typename GLResource<Deleter>::HandleType;
 
-#ifdef _DEBUG
-		void msg(const std::string& extra = "...")
-		{
-			setColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-			std::cout
-				<< "\nClass Shader created!"
-				<< "\ntype <" << GLenumToString(type) << "> "
-				<< "\nid <" << shaderResource.getID() << "> "
-				<< "\n" << extra << "\n\n";
-			setColor();
-		}
-#endif
 		Shader_() : shaderResource(0), type(0)
-		{
-			/*#ifdef _DEBUG
-						setColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-						std::cout << "A empty shader created, ID is 0, type is 0. This is likely a placeholder or an uninitialized shader.\n";
-						setColor();
-			#endif // DEBUG*/
-		}
+		{}
 		Shader_(GLint id, GLenum type) : shaderResource(id), type(type)
-		{
-#ifdef _DEBUG
-			//std::cout << GLenumToString(type) << " shader created by Shader_(GLint id, GLenum type) with ID: " << id << ".\n";
-			msg();
-#endif // DEBUG
-		}
+		{}
 
 		bool isValid() const { return shaderResource.isValid(); }
 
@@ -107,9 +84,6 @@ namespace neon::graphics::gl
 		//移动语义
 		Shader_(Shader_&& other) noexcept
 		{
-#ifdef _DEBUG
-			msg();
-#endif // DEBUG
 			shaderResource = std::move(other.shaderResource);
 			type = other.type;
 		}

@@ -4,7 +4,8 @@
 #define NOMINMAX
 #include <windows.h>
 
-namespace neon {
+namespace neon::tool
+{
 	void setColor(WORD color = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 }
 

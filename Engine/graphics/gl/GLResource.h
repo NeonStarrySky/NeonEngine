@@ -9,12 +9,15 @@ namespace neon::graphics::gl
 {
 	namespace GLResource_ {
 		template<typename D>
-		concept GLDeleter =
+		concept GLResourceDeleter =
 			std::is_nothrow_invocable_v<D, GLuint>;
+		template<typename D>
+		concept GLResourcesDeleter =
+			std::is_nothrow_invocable_v<D, GLsizei, const GLuint*>;
 	}
 
 
-	template<GLResource_::GLDeleter Deleter>
+	template<GLResource_::GLResourceDeleter Deleter>
 	class GLResource
 	{
 		GLuint id = 0;

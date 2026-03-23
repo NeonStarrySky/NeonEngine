@@ -1,9 +1,10 @@
 #include "conhost.h"
+
 #include <Windows.h>
 
-namespace neon
+namespace neon::tool
 {
-	void setColor(WORD color)
+	void tool::setColor(WORD color)
 	{
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 	}

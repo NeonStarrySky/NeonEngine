@@ -4,7 +4,7 @@
 
 #include <glm/detail/type_vec3.hpp>
 
-namespace neon {
+namespace neon::core::ecs {
 	void MovementUpdater::operator()(ComponentManager& componentManager, Entity entity, double dt) noexcept
 	{
 		componentManager.get<PositionComponents>()[entity] += componentManager.get<VelocityComponents>()[entity];

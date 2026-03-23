@@ -4,7 +4,7 @@
 // the system OpenGL headers). Use the correct include path for glad.
 
 #ifdef _DEBUG
-#include "conhost.h"
+#include "tool/conhost.h"
 #include "window.h"
 #endif // _DEBUG
 
@@ -29,9 +29,9 @@ namespace neon::graphics::gl
 		if (Window::GladInitialized) // GLAD 已经初始化，直接返回
 		{
 #ifdef _DEBUG
-			setColor(FOREGROUND_RED | FOREGROUND_GREEN);
+			tool::setColor(FOREGROUND_RED | FOREGROUND_GREEN);
 			std::cout << "GLAD is already initialized, skipping initialization.\n\n";
-			setColor();
+			tool::setColor();
 #endif
 			return std::nullopt;
 		}
@@ -43,9 +43,9 @@ namespace neon::graphics::gl
 		}
 
 #ifdef _DEBUG
-		setColor(BACKGROUND_GREEN | BACKGROUND_INTENSITY);
+		tool::setColor(BACKGROUND_GREEN | BACKGROUND_INTENSITY);
 		std::cout << "GLFW initialization successfully！\n\n";
-		setColor();
+		tool::setColor();
 #endif
 
 		// 2. 配置 OpenGL 4.6 Core Profile
@@ -96,9 +96,9 @@ namespace neon::graphics::gl
 		std::cout << "Vendor: " << glGetString(GL_VENDOR) << "\n";
 		std::cout << "Renderer: " << glGetString(GL_RENDERER) << "\n\n";
 
-		setColor(BACKGROUND_GREEN | BACKGROUND_INTENSITY);
+		tool::setColor(BACKGROUND_GREEN | BACKGROUND_INTENSITY);
 		std::cout << "GLAD initialized successfully.\n\n";
-		setColor();
+		tool::setColor();
 #endif
 		Window::GladInitialized = true;
 		return tempWindowPtr; // 返回临时窗口对象，调用者可以选择销毁它
@@ -129,11 +129,11 @@ namespace neon::graphics::gl
 		}
 
 #ifdef _DEBUG
-		setColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+		tool::setColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 		std::cout
 			<< "Creating GLWindow Class with\n>>> pointer <" << std::to_address(windowPtr) << "> !\n"
 			<< ">>> title <" << info.title << ">\n\n";
-		setColor();
+		tool::setColor();
 #endif // DEBUG
 
 	}
@@ -142,11 +142,11 @@ namespace neon::graphics::gl
 	{
 #ifdef _DEBUG
 		if (std::to_address(windowPtr)) {
-			setColor(FOREGROUND_RED | FOREGROUND_INTENSITY);
+			tool::setColor(FOREGROUND_RED | FOREGROUND_INTENSITY);
 			std::cout
 				<< "Destroying GLWindow Class with\n>>> pointer <" << std::to_address(windowPtr) << "> !\n"
 				<< ">>> title <" << info.title << ">\n\n";
-			setColor();
+			tool::setColor();
 		}
 
 #endif // DEBUG

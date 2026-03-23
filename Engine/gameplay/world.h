@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ecs_components.h"
-#include "entity.h"
-#include "movement_system.h"
+#include "core/ecs/ecs_components.h"
+#include "core/ecs/entity.h"
+#include "core/ecs/movement_system.h"
 
 #include <cstdint>
 #include <iostream>

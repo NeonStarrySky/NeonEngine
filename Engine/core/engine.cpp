@@ -1,5 +1,5 @@
-#include "conhost.h"
 #include "engine.h"
+#include "gameplay/world.h"
 #include "graphics/frameRateController.h"
 #include "graphics/gl/mesh.h"
 #include "graphics/gl/shader.h"
@@ -7,7 +7,7 @@
 #include "graphics/window_info.h"
 #include "input_system.h"
 #include "timer.h"
-#include "world.h"
+#include "tool/conhost.h"
 
 #include <GLFW/glfw3.h>
 #include <glm/fwd.hpp>
@@ -27,9 +27,9 @@ namespace neon::core
 	void Engine::init() {
 
 #ifdef _DEBUG
-		setColor(BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_INTENSITY);
+		tool::setColor(BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_INTENSITY);
 		std::cout << "Initializing Engine...";
-		setColor();
+		tool::setColor();
 		std::cout << "\n\n";
 #endif // _DEBUG
 
@@ -55,9 +55,9 @@ namespace neon::core
 			});
 
 #ifdef _DEBUG
-		setColor(BACKGROUND_GREEN | BACKGROUND_INTENSITY);
+		tool::setColor(BACKGROUND_GREEN | BACKGROUND_INTENSITY);
 		std::cout << "Engine initialized successfully.";
-		setColor();
+		tool::setColor();
 		std::cout << std::endl;
 #endif // _DEBUG
 
@@ -72,9 +72,9 @@ namespace neon::core
 	{
 
 #ifdef _DEBUG
-		setColor(BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_INTENSITY);
+		tool::setColor(BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_INTENSITY);
 		std::cout << "Engine destructor called. Cleaning up resources...";
-		setColor();
+		tool::setColor();
 		std::cout << std::endl << std::endl;
 #endif // _DEBUG
 
@@ -98,9 +98,9 @@ namespace neon::core
 		}
 		catch (const std::runtime_error& e)
 		{
-			setColor(BACKGROUND_RED | BACKGROUND_INTENSITY);
+			tool::setColor(BACKGROUND_RED | BACKGROUND_INTENSITY);
 			std::cerr << "Error building shader program: " << e.what() << std::endl;
-			setColor();
+			tool::setColor();
 			return;
 		}
 		program.Use();
@@ -147,9 +147,9 @@ namespace neon::core
 		Mesh mesh(vertices, indices);
 
 #ifdef _DEBUG
-		setColor(BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_INTENSITY);
+		tool::setColor(BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_INTENSITY);
 		std::cout << "Game loop started.\n";
-		setColor();
+		tool::setColor();
 #endif // DEBUG
 
 		int frameCount = 0;
