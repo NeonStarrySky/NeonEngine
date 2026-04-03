@@ -1,6 +1,6 @@
 #pragma once
 
-#include "graphics/gl/shader.h"
+#include "graphics/gl/GLResource.hpp"
 #include "mesh.h"
 
 #include <glad.h>
@@ -12,7 +12,7 @@ namespace neon::graphics::gl
 	{
 	public:
 
-		static void Draw(const Mesh& mesh, const Shader& shader, const glm::vec4& color, GLfloat t, const glm::vec3& cameraFront, const glm::vec3& cameraPosition, const glm::vec3& worldUp);
+		static void Draw(const Mesh& mesh, const Program& shader, const glm::vec4& color, GLfloat t, const glm::vec3& cameraFront, const glm::vec3& cameraPosition, const glm::vec3& worldUp);
 
 	};
 

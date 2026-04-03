@@ -1,6 +1,6 @@
 #pragma once
 
-#include "graphics/gl/shader.h"
+#include "graphics/gl/GLResource.hpp"
 
 #include <source_location>
 #include <source_location>
@@ -27,9 +27,9 @@ namespace neon::graphics::gl
 		static const Shader& getShader(const std::string& name, const std::source_location& loc = std::source_location::current());
 		void linkProgram(const std::string& shaderName);
 		bool linkPrograms(const std::vector<std::string>& names);
-		Shader buildShader();
+		gl::Program buildShader();
 	private:
-		std::vector<Shader::HandleType> shadersToLink;
+		std::vector<GLuint> shadersToLink;
 		static std::unordered_map<std::string, Shader> shaderPrograms;
 	};
 }

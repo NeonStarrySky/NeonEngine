@@ -9,9 +9,9 @@
 #include <utility>
 #include <vector>
 
-#include "tool/conhost.h"
-#include "graphics/gl/shader.h"
+#include "graphics/gl/GLResource.hpp"
 #include "graphics/gl/shader_manager.h"
+#include "tool/conhost.h"
 
 
 namespace neon::graphics::gl
@@ -133,28 +133,28 @@ namespace neon::graphics::gl
 		return true;
 	}
 
-	Shader ShaderManager::buildShader()
+	gl::Program ShaderManager::buildShader()
 	{
-		Shader shader(glCreateProgram(), GL_PROGRAM);
+		gl::Program program(glCreateProgram());
 		for (auto& i : shadersToLink)
 		{
-			glAttachShader(shader.getID(), i);
+			glAttachShader(program.getID(), i);
 		}
-		glLinkProgram(shader.getID());
+		glLinkProgram(program.getID());
 
 		// ¼ì²éÁ´½Ó×´Ì¬
 		GLint success = 0;
-		glGetProgramiv(shader.getID(), GL_LINK_STATUS, &success);
+		glGetProgramiv(program.getID(), GL_LINK_STATUS, &success);
 		if (!success)
 		{
 			GLint logLength = 0;
-			glGetProgramiv(shader.getID(), GL_INFO_LOG_LENGTH, &logLength);
+			glGetProgramiv(program.getID(), GL_INFO_LOG_LENGTH, &logLength);
 			std::string infoLog(logLength > 0 ? logLength : 1, ' ');
-			glGetProgramInfoLog(shader.getID(), logLength, nullptr, infoLog.data());
+			glGetProgramInfoLog(program.getID(), logLength, nullptr, infoLog.data());
 
 			throw std::runtime_error("Program link failed: " + infoLog);
 		}
 
-		return shader;
+		return program;
 	}
 }

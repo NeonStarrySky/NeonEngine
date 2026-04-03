@@ -1,8 +1,8 @@
 #include "engine.h"
 #include "gameplay/world.h"
 #include "graphics/frameRateController.h"
+#include "graphics/gl/GLResource.hpp"
 #include "graphics/gl/mesh.h"
-#include "graphics/gl/shader.h"
 #include "graphics/gl/window.h"
 #include "graphics/window_info.h"
 #include "input_system.h"
@@ -92,7 +92,7 @@ namespace neon::core
 
 		//Á´½Ó×ÅÉ«Æ÷
 		shader_manager.linkPrograms({ "assets/shaders/aivs.glsl", "assets/shaders/fragment_shader.glsl" });
-		Shader program;
+		graphics::gl::Program program;
 		try {
 			program = shader_manager.buildShader();
 		}
@@ -103,7 +103,7 @@ namespace neon::core
 			tool::setColor();
 			return;
 		}
-		program.Use();
+		program.use();
 		glEnable(GL_DEPTH_TEST);
 
 		using neon::graphics::gl::Vertex;

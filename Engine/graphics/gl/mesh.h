@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GLResource.h"
+#include "GLResource.hpp"
 
 #include <glad.h>
 #include <glm/fwd.hpp>

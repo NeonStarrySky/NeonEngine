@@ -2,7 +2,7 @@
 
 #include "graphics/gl/mesh.h"
 #include "graphics/gl/renderer.h"
-#include "graphics/gl/shader.h"
+#include "graphics/gl/GLResource.hpp"
 #include "graphics/gl/shader_manager.h"
 #include "graphics/gl/window.h"
 #include "graphics/window_info.h"

@@ -6,35 +6,35 @@
 #include <glm/gtc/type_ptr.hpp>
 namespace neon::graphics::gl
 {
-	void Renderer::Draw(const Mesh& mesh, const Shader& shader, const glm::vec4& color, GLfloat t, const glm::vec3& cameraFront, const glm::vec3& cameraPosition, const glm::vec3& worldUp)
+	void Renderer::Draw(const Mesh& mesh, const Program& program, const glm::vec4& color, GLfloat t, const glm::vec3& cameraFront, const glm::vec3& cameraPosition, const glm::vec3& worldUp)
 	{
-		shader.Use();
+		program.use();
 
 		// ªÊ÷∆√Ê
 		glBindVertexArray(mesh.VAO_s.getID());
 
 
 
-		glUniform4fv(glGetUniformLocation(shader.getID(), "ourColor"),
+		glUniform4fv(glGetUniformLocation(program.getID(), "ourColor"),
 			1, glm::value_ptr(color));//color
 
 		glUniform3fv
 		(
-			glGetUniformLocation(shader.getID(), "cameraFront"),
+			glGetUniformLocation(program.getID(), "cameraFront"),
 			1,
 			glm::value_ptr(cameraFront)
 		);//
 
 		glUniform3fv
 		(
-			glGetUniformLocation(shader.getID(), "cameraPosition"),
+			glGetUniformLocation(program.getID(), "cameraPosition"),
 			1,
 			glm::value_ptr(cameraPosition)
 		);//
 
 		/*glUniform3fv
 		(
-			glGetUniformLocation(shader.getID(), "worldUp"),
+			glGetUniformLocation(program.getID(), "worldUp"),
 			1,
 			glm::value_ptr(worldUp)
 		);*/
@@ -42,7 +42,7 @@ namespace neon::graphics::gl
 		glBindVertexArray(0);
 
 
-		glUniform4fv(glGetUniformLocation(shader.getID(), "ourColor"),
+		glUniform4fv(glGetUniformLocation(program.getID(), "ourColor"),
 			1, glm::value_ptr(
 				glm::vec4(1.0f - color.r, 1.0f - color.g, 1.0f - color.b, color.a)
 			));
