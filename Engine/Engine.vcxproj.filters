@@ -30,9 +30,6 @@
     <Filter Include="src\core">
       <UniqueIdentifier>{3a4f3bad-9d6b-4e8e-ba2b-924ee2727c6c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\游戏内容">
-      <UniqueIdentifier>{83f608e4-1ae7-484f-9d4e-28d0e7f6e681}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\graphics">
       <UniqueIdentifier>{8bcfbc0f-56eb-48f5-b91a-22cc1056bdc2}</UniqueIdentifier>
     </Filter>
@@ -47,6 +44,9 @@
     </Filter>
     <Filter Include="third_party\glad">
       <UniqueIdentifier>{05eef321-f304-4d12-93ea-ba4abe34340c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\gameplay">
+      <UniqueIdentifier>{83f608e4-1ae7-484f-9d4e-28d0e7f6e681}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -65,19 +65,27 @@
     <ClCompile Include="graphics\frameRateController.cpp">
       <Filter>src\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>third_party</Filter>
-    </ClCompile>
     <ClCompile Include="graphics\gl\window.cpp">
       <Filter>src\graphics\gl</Filter>
     </ClCompile>
     <ClCompile Include="..\third_party\glad\src\glad.c">
       <Filter>third_party\glad</Filter>
     </ClCompile>
-    <ClCompile Include="core\ecs\movement_system.cpp" />
-    <ClCompile Include="core\engine.cpp" />
-    <ClCompile Include="core\input_system.cpp" />
-    <ClCompile Include="tool\conhost.cpp" />
+    <ClCompile Include="tool\conhost.cpp">
+      <Filter>src\tool</Filter>
+    </ClCompile>
+    <ClCompile Include="core\engine.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\input_system.cpp">
+      <Filter>src\core\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="core\ecs\movement_system.cpp">
+      <Filter>src\core\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\third_party\glm\common.hpp">
@@ -179,32 +187,32 @@
     <ClInclude Include="..\third_party\glad\include\khrplatform.h">
       <Filter>third_party\glad</Filter>
     </ClInclude>
-    <ClInclude Include="core\ecs\ecs_components.h">
-      <Filter>third_party</Filter>
-    </ClInclude>
-    <ClInclude Include="core\ecs\ecs_system.h">
-      <Filter>third_party</Filter>
-    </ClInclude>
-    <ClInclude Include="core\ecs\entity.h">
-      <Filter>third_party</Filter>
-    </ClInclude>
-    <ClInclude Include="core\ecs\movement_system.h">
-      <Filter>third_party</Filter>
-    </ClInclude>
-    <ClInclude Include="core\engine.h">
-      <Filter>third_party</Filter>
-    </ClInclude>
-    <ClInclude Include="core\input_system.h">
-      <Filter>third_party</Filter>
-    </ClInclude>
-    <ClInclude Include="gameplay\world.h">
-      <Filter>third_party</Filter>
-    </ClInclude>
-    <ClInclude Include="tool\conhost.h">
-      <Filter>third_party</Filter>
-    </ClInclude>
     <ClInclude Include="graphics\gl\GLResource.hpp">
       <Filter>src\graphics\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="tool\conhost.h">
+      <Filter>src\tool</Filter>
+    </ClInclude>
+    <ClInclude Include="core\ecs\ecs_components.h">
+      <Filter>src\core\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="core\ecs\ecs_system.h">
+      <Filter>src\core\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="core\input_system.h">
+      <Filter>src\core\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="core\ecs\movement_system.h">
+      <Filter>src\core\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="core\ecs\entity.h">
+      <Filter>src\core\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="core\engine.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="gameplay\world.h">
+      <Filter>src\gameplay</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
