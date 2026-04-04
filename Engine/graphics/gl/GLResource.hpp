@@ -6,228 +6,234 @@
 
 namespace neon::graphics::gl
 {
-	// 纹理资源
-	struct TextureDeleter
+
+	namespace detail
 	{
-		void operator()(GLuint id) const noexcept
+		// 纹理资源
+		struct TexturesDeleter
 		{
-			glDeleteTextures(1, &id);
-		}
-	};
-
-	struct TexturesDeleter
-	{
-		void operator()(GLsizei n, const GLuint* ids) const noexcept
-		{
-			glDeleteTextures(n, ids);
-		}
-	};
-
-	using Texture = GLResource<TextureDeleter>;
-	using Textures = GLResources<TexturesDeleter>;
-
-	// 缓冲区资源
-	struct BufferDeleter
-	{
-		void operator()(GLuint id) const noexcept
-		{
-			glDeleteBuffers(1, &id);
-		}
-	};
-
-	struct BuffersDeleter
-	{
-		void operator()(GLsizei n, const GLuint* ids) const noexcept
-		{
-			glDeleteBuffers(n, ids);
-		}
-	};
-
-	using Buffer = GLResource<BufferDeleter>;
-	using Buffers = GLResources<BuffersDeleter>;
-
-	// 顶点数组对象
-	struct VertexArrayDeleter
-	{
-		void operator()(GLuint id) const noexcept
-		{
-			glDeleteVertexArrays(1, &id);
-		}
-	};
-
-	struct VertexArraysDeleter
-	{
-		void operator()(GLsizei n, const GLuint* ids) const noexcept
-		{
-			glDeleteVertexArrays(n, ids);
-		}
-	};
-
-	using VertexArray = GLResource<VertexArrayDeleter>;
-	using VertexArrays = GLResources<VertexArraysDeleter>;
-
-	// 着色器程序
-	struct ProgramDeleter
-	{
-		void operator()(GLuint id) const noexcept
-		{
-			glDeleteProgram(id);
-		}
-	};
-
-	struct ProgramsDeleter
-	{
-		void operator()(GLsizei n, const GLuint* ids) const noexcept
-		{
-			for (GLsizei i = 0; i < n; ++i)
+			void operator()(GLsizei n, const GLuint* ids) const noexcept
 			{
-				glDeleteProgram(ids[i]);
+				glDeleteTextures(n, ids);
 			}
-		}
-	};
+		};
+
+		// 缓冲区资源
+		struct BufferDeleter
+		{
+			void operator()(GLuint id) const noexcept
+			{
+				glDeleteBuffers(1, &id);
+			}
+		};
+
+		struct BuffersDeleter
+		{
+			void operator()(GLsizei n, const GLuint* ids) const noexcept
+			{
+				glDeleteBuffers(n, ids);
+			}
+		};
+
+		// 顶点数组对象
+		struct VertexArrayDeleter
+		{
+			void operator()(GLuint id) const noexcept
+			{
+				glDeleteVertexArrays(1, &id);
+			}
+		};
+
+		struct VertexArraysDeleter
+		{
+			void operator()(GLsizei n, const GLuint* ids) const noexcept
+			{
+				glDeleteVertexArrays(n, ids);
+			}
+		};
+
+		// 着色器程序
+		struct ProgramDeleter
+		{
+			void operator()(GLuint id) const noexcept
+			{
+				glDeleteProgram(id);
+			}
+		};
+
+		struct ProgramsDeleter
+		{
+			void operator()(GLsizei n, const GLuint* ids) const noexcept
+			{
+				for (GLsizei i = 0; i < n; ++i)
+				{
+					glDeleteProgram(ids[i]);
+				}
+			}
+		};
+
+		// 着色器
+		struct ShaderDeleter
+		{
+			void operator()(GLuint id) const noexcept
+			{
+				glDeleteShader(id);
+			}
+		};
+
+		struct ShadersDeleter
+		{
+			void operator()(GLsizei n, const GLuint* ids) const noexcept
+			{
+				for (GLsizei i = 0; i < n; ++i)
+				{
+					glDeleteShader(ids[i]);
+				}
+			}
+		};
+
+		// 帧缓冲区
+		struct FramebufferDeleter
+		{
+			void operator()(GLuint id) const noexcept
+			{
+				glDeleteFramebuffers(1, &id);
+			}
+		};
+
+		struct FramebuffersDeleter
+		{
+			void operator()(GLsizei n, const GLuint* ids) const noexcept
+			{
+				glDeleteFramebuffers(n, ids);
+			}
+		};
+
+		// 渲染缓冲区
+		struct RenderbufferDeleter
+		{
+			void operator()(GLuint id) const noexcept
+			{
+				glDeleteRenderbuffers(1, &id);
+			}
+		};
+
+		struct RenderbuffersDeleter
+		{
+			void operator()(GLsizei n, const GLuint* ids) const noexcept
+			{
+				glDeleteRenderbuffers(n, ids);
+			}
+		};
+
+		// 采样器
+		struct SamplerDeleter
+		{
+			void operator()(GLuint id) const noexcept
+			{
+				glDeleteSamplers(1, &id);
+			}
+		};
+
+		struct SamplersDeleter
+		{
+			void operator()(GLsizei n, const GLuint* ids) const noexcept
+			{
+				glDeleteSamplers(n, ids);
+			}
+		};
+
+		// 查询对象
+		struct QueryDeleter
+		{
+			void operator()(GLuint id) const noexcept
+			{
+				glDeleteQueries(1, &id);
+			}
+		};
+
+		struct QueriesDeleter
+		{
+			void operator()(GLsizei n, const GLuint* ids) const noexcept
+			{
+				glDeleteQueries(n, ids);
+			}
+		};
+
+		// 变换反馈
+		struct TransformFeedbackDeleter
+		{
+			void operator()(GLuint id) const noexcept
+			{
+				glDeleteTransformFeedbacks(1, &id);
+			}
+		};
+
+		struct TransformFeedbacksDeleter
+		{
+			void operator()(GLsizei n, const GLuint* ids) const noexcept
+			{
+				glDeleteTransformFeedbacks(n, ids);
+			}
+		};
+	}
+
+	using Textures = GLResources<detail::TexturesDeleter>;
+
+
+
+	using Buffer = GLResource<detail::BufferDeleter>;
+	using Buffers = GLResources<detail::BuffersDeleter>;
+
+
+
+	using VertexArray = GLResource<detail::VertexArrayDeleter>;
+	using VertexArrays = GLResources<detail::VertexArraysDeleter>;
+
+
 
 	class Program {
-		GLResource<ProgramDeleter> handle;
+		GLResource<detail::ProgramDeleter> handle;
 	public:
-		explicit Program() {};
+		Program() = default;
 		explicit Program(GLuint id) : handle(id) {};
 		void use() const noexcept { glUseProgram(handle.getID()); }
 		auto getID() const noexcept { return handle.getID(); }
 	};
 	//using Programs = GLResources<ProgramsDeleter>;
 
-	// 着色器
-	struct ShaderDeleter
-	{
-		void operator()(GLuint id) const noexcept
-		{
-			glDeleteShader(id);
-		}
-	};
 
-	struct ShadersDeleter
-	{
-		void operator()(GLsizei n, const GLuint* ids) const noexcept
-		{
-			for (GLsizei i = 0; i < n; ++i)
-			{
-				glDeleteShader(ids[i]);
-			}
-		}
-	};
 
 	class Shader {
-		GLResource<ShaderDeleter> handle;
+		GLResource<detail::ShaderDeleter> handle;
 		GLenum type;
+
 	public:
-		Shader() {};
+		Shader() : handle(), type(0) {};
 		Shader(GLuint id, GLenum type) : handle(id), type(type) {};
 		auto getType() const noexcept { return type; }
 		auto getID() const noexcept { return handle.getID(); }
 	};
-	using Shaders = GLResources<ShadersDeleter>;
+	using Shaders = GLResources<detail::ShadersDeleter>;
 
-	// 帧缓冲区
-	struct FramebufferDeleter
-	{
-		void operator()(GLuint id) const noexcept
-		{
-			glDeleteFramebuffers(1, &id);
-		}
-	};
 
-	struct FramebuffersDeleter
-	{
-		void operator()(GLsizei n, const GLuint* ids) const noexcept
-		{
-			glDeleteFramebuffers(n, ids);
-		}
-	};
+	using Framebuffer = GLResource<detail::FramebufferDeleter>;
+	using Framebuffers = GLResources<detail::FramebuffersDeleter>;
 
-	using Framebuffer = GLResource<FramebufferDeleter>;
-	using Framebuffers = GLResources<FramebuffersDeleter>;
 
-	// 渲染缓冲区
-	struct RenderbufferDeleter
-	{
-		void operator()(GLuint id) const noexcept
-		{
-			glDeleteRenderbuffers(1, &id);
-		}
-	};
+	using Renderbuffer = GLResource<detail::RenderbufferDeleter>;
+	using Renderbuffers = GLResources<detail::RenderbuffersDeleter>;
 
-	struct RenderbuffersDeleter
-	{
-		void operator()(GLsizei n, const GLuint* ids) const noexcept
-		{
-			glDeleteRenderbuffers(n, ids);
-		}
-	};
 
-	using Renderbuffer = GLResource<RenderbufferDeleter>;
-	using Renderbuffers = GLResources<RenderbuffersDeleter>;
-
-	// 采样器
-	struct SamplerDeleter
-	{
-		void operator()(GLuint id) const noexcept
-		{
-			glDeleteSamplers(1, &id);
-		}
-	};
-
-	struct SamplersDeleter
-	{
-		void operator()(GLsizei n, const GLuint* ids) const noexcept
-		{
-			glDeleteSamplers(n, ids);
-		}
-	};
-
-	using Sampler = GLResource<SamplerDeleter>;
-	using Samplers = GLResources<SamplersDeleter>;
+	using Sampler = GLResource<detail::SamplerDeleter>;
+	using Samplers = GLResources<detail::SamplersDeleter>;
 
 	// 查询对象
-	struct QueryDeleter
-	{
-		void operator()(GLuint id) const noexcept
-		{
-			glDeleteQueries(1, &id);
-		}
-	};
+	using Query = GLResource<detail::QueryDeleter>;
+	using Queries = GLResources<detail::QueriesDeleter>;
 
-	struct QueriesDeleter
-	{
-		void operator()(GLsizei n, const GLuint* ids) const noexcept
-		{
-			glDeleteQueries(n, ids);
-		}
-	};
 
-	using Query = GLResource<QueryDeleter>;
-	using Queries = GLResources<QueriesDeleter>;
-
-	// 变换反馈
-	struct TransformFeedbackDeleter
-	{
-		void operator()(GLuint id) const noexcept
-		{
-			glDeleteTransformFeedbacks(1, &id);
-		}
-	};
-
-	struct TransformFeedbacksDeleter
-	{
-		void operator()(GLsizei n, const GLuint* ids) const noexcept
-		{
-			glDeleteTransformFeedbacks(n, ids);
-		}
-	};
-
-	using TransformFeedback = GLResource<TransformFeedbackDeleter>;
-	using TransformFeedbacks = GLResources<TransformFeedbacksDeleter>;
-
-	// 同步对象 (GLsync 不是 GLuint，需要特殊处理)
-	// 注意：Sync 对象不是 GLuint 类型，不能使用上面的模板
+	using TransformFeedback = GLResource<detail::TransformFeedbackDeleter>;
+	using TransformFeedbacks = GLResources<detail::TransformFeedbacksDeleter>;
 
 } // namespace neon::graphics::gl

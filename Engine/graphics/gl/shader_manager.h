@@ -3,7 +3,6 @@
 #include "graphics/gl/GLResource.hpp"
 
 #include <source_location>
-#include <source_location>
 #include <string>
 #include <unordered_map>
 #include <utility>

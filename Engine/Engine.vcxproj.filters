@@ -86,6 +86,9 @@
     <ClCompile Include="main.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="graphics\image.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\third_party\glm\common.hpp">
@@ -178,9 +181,6 @@
     <ClInclude Include="graphics\window_info.h">
       <Filter>src\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="texture.h">
-      <Filter>src\graphics\gl</Filter>
-    </ClInclude>
     <ClInclude Include="..\third_party\glad\include\glad.h">
       <Filter>third_party\glad</Filter>
     </ClInclude>
@@ -213,6 +213,18 @@
     </ClInclude>
     <ClInclude Include="gameplay\world.h">
       <Filter>src\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\stb\stb_image.h">
+      <Filter>third_party\stb</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\image.h">
+      <Filter>src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\TextureManager.h">
+      <Filter>src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\gl\texture.h">
+      <Filter>src\graphics\gl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
