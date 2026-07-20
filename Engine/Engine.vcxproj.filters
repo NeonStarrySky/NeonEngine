@@ -48,6 +48,12 @@
     <Filter Include="src\gameplay">
       <UniqueIdentifier>{83f608e4-1ae7-484f-9d4e-28d0e7f6e681}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\graphics2D">
+      <UniqueIdentifier>{6799731d-090e-44cb-ad52-2f84aeb8a790}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\core\type_system">
+      <UniqueIdentifier>{80566eb7-a21c-4fe7-a8b4-4f59e0fade3a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\third_party\glm\glm.cppm">
@@ -85,6 +91,18 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\image.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="test1.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="core\type_system\type_id.cpp">
+      <Filter>src\core\type_system</Filter>
+    </ClCompile>
+    <ClCompile Include="core\ecs\entity_manager.cpp">
+      <Filter>src\core\ecs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -178,9 +196,6 @@
     <ClInclude Include="graphics\window_info.h">
       <Filter>src\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="texture.h">
-      <Filter>src\graphics\gl</Filter>
-    </ClInclude>
     <ClInclude Include="..\third_party\glad\include\glad.h">
       <Filter>third_party\glad</Filter>
     </ClInclude>
@@ -193,7 +208,7 @@
     <ClInclude Include="tool\conhost.h">
       <Filter>src\tool</Filter>
     </ClInclude>
-    <ClInclude Include="core\ecs\ecs_components.h">
+    <ClInclude Include="core\ecs\component_storage.h">
       <Filter>src\core\ecs</Filter>
     </ClInclude>
     <ClInclude Include="core\ecs\ecs_system.h">
@@ -214,6 +229,30 @@
     <ClInclude Include="gameplay\world.h">
       <Filter>src\gameplay</Filter>
     </ClInclude>
+    <ClInclude Include="..\third_party\stb\stb_image.h">
+      <Filter>third_party\stb</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\image.h">
+      <Filter>src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\TextureManager.h">
+      <Filter>src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\gl\texture.h">
+      <Filter>src\graphics\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics2D\sprite.h">
+      <Filter>src\graphics2D</Filter>
+    </ClInclude>
+    <ClInclude Include="core\type_system\type_id.h">
+      <Filter>src\core\type_system</Filter>
+    </ClInclude>
+    <ClInclude Include="test1.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="core\ecs\entity_manager.h">
+      <Filter>src\core\ecs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\fragment_shader.glsl">
@@ -221,6 +260,9 @@
     </None>
     <None Include="assets\shaders\vertex_shader.glsl">
       <Filter>assets\shaders</Filter>
+    </None>
+    <None Include="core\ecs\component_manager.h">
+      <Filter>src\core\ecs</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

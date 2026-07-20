@@ -151,15 +151,19 @@
   <ItemGroup>
     <ClCompile Include="..\third_party\glad\src\glad.c" />
     <ClCompile Include="..\third_party\glm\glm.cppm" />
+    <ClCompile Include="core\ecs\entity_manager.cpp" />
     <ClCompile Include="core\ecs\movement_system.cpp" />
     <ClCompile Include="core\engine.cpp" />
     <ClCompile Include="core\input_system.cpp" />
+    <ClCompile Include="core\type_system\type_id.cpp" />
     <ClCompile Include="graphics\frameRateController.cpp" />
     <ClCompile Include="graphics\gl\mesh.cpp" />
     <ClCompile Include="graphics\gl\renderer.cpp" />
     <ClCompile Include="graphics\gl\shader_manager.cpp" />
     <ClCompile Include="graphics\gl\window.cpp" />
+    <ClCompile Include="graphics\image.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="test1.cpp" />
     <ClCompile Include="tool\conhost.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -188,27 +192,35 @@
     <ClInclude Include="..\third_party\glm\vec3.hpp" />
     <ClInclude Include="..\third_party\glm\vec4.hpp" />
     <ClInclude Include="..\third_party\glm\vector_relational.hpp" />
-    <ClInclude Include="core\ecs\ecs_components.h" />
+    <ClInclude Include="..\third_party\stb\stb_image.h" />
+    <ClInclude Include="core\ecs\component_storage.h" />
     <ClInclude Include="core\ecs\ecs_system.h" />
     <ClInclude Include="core\ecs\entity.h" />
+    <ClInclude Include="core\ecs\entity_manager.h" />
     <ClInclude Include="core\ecs\movement_system.h" />
     <ClInclude Include="core\engine.h" />
     <ClInclude Include="core\input_system.h" />
+    <ClInclude Include="core\type_system\type_id.h" />
     <ClInclude Include="gameplay\world.h" />
+    <ClInclude Include="graphics2D\sprite.h" />
     <ClInclude Include="graphics\frameRateController.h" />
     <ClInclude Include="graphics\gl\GLResource.hpp" />
     <ClInclude Include="graphics\gl\GLResource_base.hpp" />
     <ClInclude Include="graphics\gl\mesh.h" />
     <ClInclude Include="graphics\gl\renderer.h" />
     <ClInclude Include="graphics\gl\shader_manager.h" />
+    <ClInclude Include="graphics\gl\texture.h" />
     <ClInclude Include="graphics\gl\window.h" />
+    <ClInclude Include="graphics\image.h" />
+    <ClInclude Include="graphics\TextureManager.h" />
     <ClInclude Include="graphics\window_info.h" />
-    <ClInclude Include="texture.h" />
+    <ClInclude Include="test1.h" />
     <ClInclude Include="tool\conhost.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\fragment_shader.glsl" />
     <None Include="assets\shaders\vertex_shader.glsl" />
+    <None Include="core\ecs\component_manager.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\images\pic.png" />

@@ -33,17 +33,17 @@ namespace neon::core
 		std::cout << "\n\n";
 #endif // _DEBUG
 
-		int num;
-		//局部作用域，确保临时窗口在创建正式窗口之前被销毁
+
+		//局部作用域，确保临时窗口在创建正式窗口之后被销毁
 		{
 			auto temp = Window::initGlad(); // Initialize GLAD to load OpenGL function pointers
-			num = creatWindow(WindowInfo{}); // Create a default window using the predefined WindowInfo
-			windows[num].makeContextCurrent(); // Make the newly created window's OpenGL context current
+			creatWindow(WindowInfo{});
+			getCurrentWindow().makeContextCurrent();
 		}
 
-		auto* windowPtr = windows[num].getGLFWwindow();// Get the GLFW window pointer from the first window in the list
+		auto* windowPtr = getCurrentWindow().getGLFWwindow();
 
-		glfwSetWindowUserPointer(windowPtr, this);// Set the pointer to the Engine instance for later retrieval in callbacks
+		glfwSetWindowUserPointer(windowPtr, this);
 
 		input_system.init(windowPtr); // Initialize the input system with the GLFW window
 
@@ -85,7 +85,7 @@ namespace neon::core
 	int Engine::creatWindow(WindowInfo info)
 	{
 		windows.emplace_back(Window(info)); // Create a new window and add it to the list of windows
-		return 0;
+		return windows.size();
 	}
 	void Engine::run()
 	{
@@ -175,7 +175,7 @@ namespace neon::core
 		while (!glfwWindowShouldClose(windows[0].getGLFWwindow()))
 		{
 			//事件处理流程
-			getGLFWWindow(0).pollEvents();
+			getWindow(0).pollEvents();
 
 			if (input_system.keyPressed(Key::Escape))//如果按下了ESC键，关闭窗口
 			{
@@ -282,7 +282,7 @@ namespace neon::core
 
 			renderer.Draw(mesh, program, glm::vec4(0, 1, 0.8, 0.5), deltaTime, front, cameraPos, worldUp);
 
-			getGLFWWindow(0).swapBuffers();
+			getWindow(0).swapBuffers();
 
 
 			frameRateController.checkAndWait();

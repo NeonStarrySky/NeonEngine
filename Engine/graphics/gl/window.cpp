@@ -184,6 +184,7 @@ namespace neon::graphics::gl
 			glfwSetWindowShouldClose(windowPtr.get(), true);
 	}
 
+	//绑定上下文
 	void Window::makeContextCurrent()
 	{
 		glfwMakeContextCurrent(windowPtr.get());
