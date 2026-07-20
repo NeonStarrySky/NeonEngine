@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/ecs/ecs_components.h"
+#include "core/ecs/component_storage.h"
 #include "core/ecs/entity.h"
 #include "core/ecs/movement_system.h"
 
@@ -17,7 +17,7 @@ namespace neon::gameplay
 	{
 		using Entity = neon::core::ecs::Entity;
 		using ComponentManager = neon::core::ecs::ComponentManager;
-		using MovementSystem = neon::core::ecs::MovementSystem;
+		//using MovementSystem = neon::core::ecs::MovementSystem;
 	public:
 		// ===== Types =====
 		// ===== Constructors =====
@@ -94,7 +94,7 @@ namespace neon::gameplay
 		ComponentManager componentManager;
 		//系统会调用默认初始化函数
 		std::tuple<
-			MovementSystem
+			//MovementSystem
 
 		>systems;
 		// ===== Entity =====

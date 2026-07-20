@@ -154,7 +154,7 @@ namespace neon::graphics::gl
 		void processInput(); // 输入处理
 		bool shouldClose() const;   // 状态查询
 		void swapBuffers();         // 渲染操作
-		void makeContextCurrent();  // 上下文管理
+		void makeContextCurrent();  // 绑定上下文
 
 		static void setGLversion(int major, int minor)
 		{
