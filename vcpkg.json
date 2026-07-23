@@ -1,0 +1,16 @@
+{
+  "name": "example",
+  "version": "1.0",
+  "dependencies": [
+    {
+      "name": "glad",
+      "features": [
+        "gl-api-latest"
+      ]
+    },
+    "glfw3",
+    "glm",
+    "stb",
+    "spdlog"
+  ]
+}

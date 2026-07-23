@@ -9,7 +9,7 @@
 #include "input_system.h"//glfw
 #include "timer.h"
 
-#include <glad.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 #include <vector>
