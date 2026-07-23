@@ -1,6 +1,6 @@
 #include "renderer.h"
 
-#include <glad.h>
+#include <glad/glad.h>
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
