@@ -1,0 +1,16 @@
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/blds/glm/x64-windows-dbg/CMakeFiles/uninstall.dir
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/blds/glm/x64-windows-dbg/CMakeFiles/package.dir
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/blds/glm/x64-windows-dbg/CMakeFiles/package_source.dir
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/blds/glm/x64-windows-dbg/CMakeFiles/edit_cache.dir
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/blds/glm/x64-windows-dbg/CMakeFiles/rebuild_cache.dir
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/blds/glm/x64-windows-dbg/CMakeFiles/list_install_components.dir
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/blds/glm/x64-windows-dbg/CMakeFiles/install.dir
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/blds/glm/x64-windows-dbg/CMakeFiles/install/local.dir
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/blds/glm/x64-windows-dbg/glm/CMakeFiles/glm.dir
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/blds/glm/x64-windows-dbg/glm/CMakeFiles/package.dir
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/blds/glm/x64-windows-dbg/glm/CMakeFiles/package_source.dir
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/blds/glm/x64-windows-dbg/glm/CMakeFiles/edit_cache.dir
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/blds/glm/x64-windows-dbg/glm/CMakeFiles/rebuild_cache.dir
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/blds/glm/x64-windows-dbg/glm/CMakeFiles/list_install_components.dir
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/blds/glm/x64-windows-dbg/glm/CMakeFiles/install.dir
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/blds/glm/x64-windows-dbg/glm/CMakeFiles/install/local.dir

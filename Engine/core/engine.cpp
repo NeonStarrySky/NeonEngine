@@ -12,7 +12,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/fwd.hpp>
 
-#include <glad.h>
+#include <glad/glad.h>
 #include <iostream>
 #include <stdexcept>
 #include<vector>

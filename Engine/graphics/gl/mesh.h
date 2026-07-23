@@ -2,7 +2,7 @@
 
 #include "GLResource.hpp"
 
-#include <glad.h>
+#include <glad/glad.h>
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>
 #include <set>

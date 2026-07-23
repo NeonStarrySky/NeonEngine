@@ -1,0 +1,9 @@
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/pkgs/glfw3_x64-windows/lib/glfw3dll.lib
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/pkgs/glfw3_x64-windows/bin/glfw3.dll
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/pkgs/glfw3_x64-windows/include/GLFW/glfw3.h
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/pkgs/glfw3_x64-windows/include/GLFW/glfw3native.h
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/pkgs/glfw3_x64-windows/lib/cmake/glfw3/glfw3Config.cmake
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/pkgs/glfw3_x64-windows/lib/cmake/glfw3/glfw3ConfigVersion.cmake
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/pkgs/glfw3_x64-windows/lib/cmake/glfw3/glfw3Targets.cmake
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/pkgs/glfw3_x64-windows/lib/cmake/glfw3/glfw3Targets-release.cmake
+D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/pkgs/glfw3_x64-windows/lib/pkgconfig/glfw3.pc

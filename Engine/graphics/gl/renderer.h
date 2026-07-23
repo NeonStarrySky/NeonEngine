@@ -3,7 +3,7 @@
 #include "graphics/gl/GLResource.hpp"
 #include "mesh.h"
 
-#include <glad.h>
+#include <glad/glad.h>
 #include <glm/fwd.hpp>
 
 namespace neon::graphics::gl

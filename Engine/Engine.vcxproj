@@ -71,13 +71,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ExternalIncludePath>$(SolutionDir)glad4.6\include;$(SolutionDir)glfw-3.4-vc2022\x64\include;$(SolutionDir)glew-2.1.0\include;$(SolutionDir)third_party;$(ExternalIncludePath)</ExternalIncludePath>
-    <LibraryPath>$(SolutionDir)third_party\glew\lib;$(SolutionDir)third_party\GLFW\lib;$(LibraryPath)</LibraryPath>
+    <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
     <IncludePath>$(SolutionDir)Engine;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ExternalIncludePath>$(SolutionDir)glad4.6\include;$(SolutionDir)glfw-3.4-vc2022\x64\include;$(SolutionDir)glew-2.1.0\include;$(SolutionDir)third_party;$(ExternalIncludePath)</ExternalIncludePath>
-    <LibraryPath>$(SolutionDir)third_party\glew\lib;$(SolutionDir)third_party\GLFW\lib;$(LibraryPath)</LibraryPath>
+    <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
     <IncludePath>$(SolutionDir)Engine;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -89,6 +89,15 @@
     <ExternalIncludePath>$(SolutionDir)glfw-3.4\glfw-3.4-vc2022\$(PlatformShortName)\include;$(SolutionDir)glew-2.1.0\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</ExternalIncludePath>
     <LibraryPath>$(SolutionDir)glfw-3.4-vc2022\$(PlatformShortName)\lib;$(SolutionDir)glew-2.1.0\bin\Release\$(Platform);$(LibraryPath)</LibraryPath>
     <IncludePath>$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <VcpkgInstalledDir>..\vcpkg_installed</VcpkgInstalledDir>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <VcpkgInstalledDir>..\vcpkg_installed</VcpkgInstalledDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -125,11 +134,12 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp23</LanguageStandard>
+      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -141,16 +151,15 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp23</LanguageStandard>
+      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\third_party\glad\src\glad.c" />
-    <ClCompile Include="..\third_party\glm\glm.cppm" />
     <ClCompile Include="core\ecs\entity_manager.cpp" />
     <ClCompile Include="core\ecs\movement_system.cpp" />
     <ClCompile Include="core\engine.cpp" />
@@ -167,32 +176,6 @@
     <ClCompile Include="tool\conhost.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\third_party\glad\include\glad.h" />
-    <ClInclude Include="..\third_party\glad\include\khrplatform.h" />
-    <ClInclude Include="..\third_party\glm\common.hpp" />
-    <ClInclude Include="..\third_party\glm\exponential.hpp" />
-    <ClInclude Include="..\third_party\glm\ext.hpp" />
-    <ClInclude Include="..\third_party\glm\fwd.hpp" />
-    <ClInclude Include="..\third_party\glm\geometric.hpp" />
-    <ClInclude Include="..\third_party\glm\glm.hpp" />
-    <ClInclude Include="..\third_party\glm\integer.hpp" />
-    <ClInclude Include="..\third_party\glm\mat2x2.hpp" />
-    <ClInclude Include="..\third_party\glm\mat2x3.hpp" />
-    <ClInclude Include="..\third_party\glm\mat2x4.hpp" />
-    <ClInclude Include="..\third_party\glm\mat3x2.hpp" />
-    <ClInclude Include="..\third_party\glm\mat3x3.hpp" />
-    <ClInclude Include="..\third_party\glm\mat3x4.hpp" />
-    <ClInclude Include="..\third_party\glm\mat4x2.hpp" />
-    <ClInclude Include="..\third_party\glm\mat4x3.hpp" />
-    <ClInclude Include="..\third_party\glm\mat4x4.hpp" />
-    <ClInclude Include="..\third_party\glm\matrix.hpp" />
-    <ClInclude Include="..\third_party\glm\packing.hpp" />
-    <ClInclude Include="..\third_party\glm\trigonometric.hpp" />
-    <ClInclude Include="..\third_party\glm\vec2.hpp" />
-    <ClInclude Include="..\third_party\glm\vec3.hpp" />
-    <ClInclude Include="..\third_party\glm\vec4.hpp" />
-    <ClInclude Include="..\third_party\glm\vector_relational.hpp" />
-    <ClInclude Include="..\third_party\stb\stb_image.h" />
     <ClInclude Include="core\ecs\component_storage.h" />
     <ClInclude Include="core\ecs\ecs_system.h" />
     <ClInclude Include="core\ecs\entity.h" />
@@ -218,6 +201,7 @@
     <ClInclude Include="tool\conhost.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\vcpkg.json" />
     <None Include="assets\shaders\fragment_shader.glsl" />
     <None Include="assets\shaders\vertex_shader.glsl" />
     <None Include="core\ecs\component_manager.h" />

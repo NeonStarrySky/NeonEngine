@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include <glad.h>
+#include <glad/glad.h>
 
 namespace neon::graphics::gl
 {

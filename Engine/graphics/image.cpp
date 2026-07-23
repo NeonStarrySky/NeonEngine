@@ -9,10 +9,10 @@
 
 //-----------------第三方库-----------------
 
-#include <glad.h>
+#include <glad/glad.h>
 //展开定义
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
+#include <stb_image.h>
 
 //-----------------neon-----------------
 

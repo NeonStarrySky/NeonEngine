@@ -1,0 +1,8 @@
+# ninja log v7
+6	581	8065017818272016	include/glad/glad.h	7d7fbe4f06c88818
+6	581	8065017818272016	src/glad.c	7d7fbe4f06c88818
+6	581	8065017818272016	D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/blds/glad/x64-windows-rel/include/glad/glad.h	7d7fbe4f06c88818
+6	581	8065017818272016	D:/neon/program/project/cpp/NeonEngine/vcpkg_installed/vcpkg/blds/glad/x64-windows-rel/src/glad.c	7d7fbe4f06c88818
+582	862	8065017819132455	CMakeFiles/glad.dir/src/glad.c.obj	926f6843936f53d4
+864	925	8065017821958775	glad.lib	77e33fb2f7c988d1
+925	1019	8065017822567607	CMakeFiles/install.util	43416d959612ddf3
