@@ -10,7 +10,7 @@ namespace neon::graphics::gl
 	{
 		program.use();
 
-		// »æÖÆÃæ
+		// Â»Ã¦Ã–Ã†ÃƒÃ¦
 		glBindVertexArray(mesh.VAO_s.getID());
 
 

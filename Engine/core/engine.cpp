@@ -32,7 +32,7 @@ namespace neon::core
 #endif // _DEBUG
 
 
-		//¾Ö²¿×÷ÓÃÓò£¬È·±£ÁÙÊ±´°¿ÚÔÚ´´½¨ÕıÊ½´°¿ÚÖ®ºó±»Ïú»Ù
+		//å±€éƒ¨ä½œç”¨åŸŸï¼Œç¡®ä¿ä¸´æ—¶çª—å£åœ¨åˆ›å»ºæ­£å¼çª—å£ä¹‹åè¢«é”€æ¯
 		{
 			auto temp = Window::initGlad(); // Initialize GLAD to load OpenGL function pointers
 			creatWindow(WindowInfo{});
@@ -66,7 +66,7 @@ namespace neon::core
 		init();
 	}
 
-	Engine::~Engine()//raiiÒÑ¾­±£Ö¤×ÊÔ´µÄÕıÈ·ÊÍ·Å£¬ÕâÀï²»ĞèÒªÊÖ¶¯ÇåÀí´°¿Ú×ÊÔ´
+	Engine::~Engine()//raiiå·²ç»ä¿è¯èµ„æºçš„æ­£ç¡®é‡Šæ”¾ï¼Œè¿™é‡Œä¸éœ€è¦æ‰‹åŠ¨æ¸…ç†çª—å£èµ„æº
 	{
 
 #ifdef _DEBUG
@@ -88,7 +88,7 @@ namespace neon::core
 	void Engine::run()
 	{
 
-		//Á´½Ó×ÅÉ«Æ÷
+		//é“¾æ¥ç€è‰²å™¨
 		shader_manager.linkPrograms({ "assets/shaders/aivs.glsl", "assets/shaders/fragment_shader.glsl" });
 		graphics::gl::Program program;
 		try {
@@ -106,38 +106,38 @@ namespace neon::core
 
 		using neon::graphics::gl::Vertex;
 
-		// ¶¥µãÊı¾İ²¼¾Ö£ºPosition (x,y,z), Normal (x,y,z), TexCoords (u,v)
+		// é¡¶ç‚¹æ•°æ®å¸ƒå±€ï¼šPosition (x,y,z), Normal (x,y,z), TexCoords (u,v)
 		std::vector<Vertex> vertices = {
-			// Î»ÖÃ                  // ·¨Ïß (Õ¼Î»·û)      // ÎÆÀí×ø±ê (Õ¼Î»·û)
-			{{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f} }, // 0: ×óºóÏÂ
-			{{ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}, // 1: ÓÒºóÏÂ
-			{{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}, // 2: ÓÒºóÉÏ
-			{{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}, // 3: ×óºóÉÏ
-			{{-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}, // 4: ×óÇ°ÏÂ
-			{{ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}, // 5: ÓÒÇ°ÏÂ
-			{{ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}, // 6: ÓÒÇ°ÉÏ
-			{{-0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}  // 7: ×óÇ°ÉÏ
+			// ä½ç½®                  // æ³•çº¿ (å ä½ç¬¦)      // çº¹ç†åæ ‡ (å ä½ç¬¦)
+			{{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f} }, // 0: å·¦åä¸‹
+			{{ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}, // 1: å³åä¸‹
+			{{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}, // 2: å³åä¸Š
+			{{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}, // 3: å·¦åä¸Š
+			{{-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}, // 4: å·¦å‰ä¸‹
+			{{ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}, // 5: å³å‰ä¸‹
+			{{ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}, // 6: å³å‰ä¸Š
+			{{-0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}  // 7: å·¦å‰ä¸Š
 
 		};
 
-		// Ë÷ÒıÊı¾İ (°´Èı½ÇĞÎ²ğ·Ö)
+		// ç´¢å¼•æ•°æ® (æŒ‰ä¸‰è§’å½¢æ‹†åˆ†)
 		std::vector<unsigned int> indices = {
-			// ±³Ãæ (z = -0.5)
+			// èƒŒé¢ (z = -0.5)
 			0, 1, 2,
 			2, 3, 0,
-			// ÕıÃæ (z = 0.5)
+			// æ­£é¢ (z = 0.5)
 			4, 5, 6,
 			6, 7, 4,
-			// ×óÃæ (x = -0.5)
+			// å·¦é¢ (x = -0.5)
 			0, 3, 7,
 			7, 4, 0,
-			// ÓÒÃæ (x = 0.5)
+			// å³é¢ (x = 0.5)
 			1, 5, 6,
 			6, 2, 1,
-			// µ×Ãæ (y = -0.5)
+			// åº•é¢ (y = -0.5)
 			0, 4, 5,
 			5, 1, 0,
-			// ¶¥Ãæ (y = 0.5)
+			// é¡¶é¢ (y = 0.5)
 			3, 2, 6,
 			6, 7, 3
 		};
@@ -154,16 +154,16 @@ namespace neon::core
 		Timer timer;
 
 		glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 2.0f);
-		glm::vec3 forward(0.0f, 0.0f, -1.0f); // Ç°½ø·½Ïò
-		glm::vec3 right(1.0f, 0.0f, 0.0f); // ÓÒ·½Ïò
-		glm::vec3 up(0.0f, 1.0f, 0.0f); // ÉÏ·½Ïò
+		glm::vec3 forward(0.0f, 0.0f, -1.0f); // å‰è¿›æ–¹å‘
+		glm::vec3 right(1.0f, 0.0f, 0.0f); // å³æ–¹å‘
+		glm::vec3 up(0.0f, 1.0f, 0.0f); // ä¸Šæ–¹å‘
 		glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 1.0f);
 		glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 		glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-		float yaw = -90.0f; // Ë®Æ½½Ç£¬³õÊ¼¿´Ïò-z
-		float pitch = 0.0f;   // ´¹Ö±½Ç
-		float sensitivity = 90.0f; // Ã¿ÃëĞı×ª½Ç¶È
+		float yaw = -90.0f; // æ°´å¹³è§’ï¼Œåˆå§‹çœ‹å‘-z
+		float pitch = 0.0f;   // å‚ç›´è§’
+		float sensitivity = 90.0f; // æ¯ç§’æ—‹è½¬è§’åº¦
 
 		graphics::FrameRateController frameRateController;
 		frameRateController.setFrameRate(30);
@@ -172,13 +172,13 @@ namespace neon::core
 
 		while (!glfwWindowShouldClose(windows[0].getGLFWwindow()))
 		{
-			//ÊÂ¼ş´¦ÀíÁ÷³Ì
+			//äº‹ä»¶å¤„ç†æµç¨‹
 			getWindow(0).pollEvents();
 
-			if (input_system.keyPressed(Key::Escape))//Èç¹û°´ÏÂÁËESC¼ü£¬¹Ø±Õ´°¿Ú
+			if (input_system.keyPressed(Key::Escape))//å¦‚æœæŒ‰ä¸‹äº†ESCé”®ï¼Œå…³é—­çª—å£
 			{
 				glfwSetWindowShouldClose(glfwGetCurrentContext(), true);
-				break; // ÍË³öÑ­»·£¬½áÊø³ÌĞò
+				break; // é€€å‡ºå¾ªç¯ï¼Œç»“æŸç¨‹åº
 			}
 			/*if (input_system.keyPressed(Key::Space)) {
 				std::cout << "input_system.keyPressed(Key::Space)\n";
@@ -188,43 +188,43 @@ namespace neon::core
 			}*/
 
 			timer.tick();
-			float deltaTime = static_cast<float> (timer.deltaTime()); // »ñÈ¡µ±Ç°Ö¡µÄÊ±¼äÔöÁ¿
+			float deltaTime = static_cast<float> (timer.deltaTime()); // è·å–å½“å‰å¸§çš„æ—¶é—´å¢é‡
 			float k = 1.0f;
 			if (input_system.keyPressed(Key::W))
 			{
-				cameraPos += forward * deltaTime * k; // °´W¼üÇ°½ø
+				cameraPos += forward * deltaTime * k; // æŒ‰Wé”®å‰è¿›
 				std::cout << "Positon <" << cameraPos.x << " , " << cameraPos.y << " , " << cameraPos.z << ">\n";
 			}
 			else if (input_system.keyPressed(Key::S))
 			{
-				cameraPos -= forward * deltaTime * k; // °´S¼üºóÍË
+				cameraPos -= forward * deltaTime * k; // æŒ‰Sé”®åé€€
 				std::cout << "Positon <" << cameraPos.x << " , " << cameraPos.y << " , " << cameraPos.z << ">\n";
 			}
 			else if (input_system.keyPressed(Key::A))
 			{
-				cameraPos -= right * deltaTime * k; // °´A¼ü×óÒÆ
+				cameraPos -= right * deltaTime * k; // æŒ‰Aé”®å·¦ç§»
 				std::cout << "Positon <" << cameraPos.x << " , " << cameraPos.y << " , " << cameraPos.z << ">\n";
 			}
 			else if (input_system.keyPressed(Key::D))
 			{
-				cameraPos += right * deltaTime * k; // °´D¼üÓÒÒÆ
+				cameraPos += right * deltaTime * k; // æŒ‰Dé”®å³ç§»
 				std::cout << "Positon <" << cameraPos.x << " , " << cameraPos.y << " , " << cameraPos.z << ">\n";
 			}
 			else if (input_system.keyPressed(Key::LeftShift))
 			{
-				cameraPos += up * deltaTime * k; // °´×óShift¼üÉÏÒÆ
+				cameraPos += up * deltaTime * k; // æŒ‰å·¦Shifté”®ä¸Šç§»
 				std::cout << "Positon <" << cameraPos.x << " , " << cameraPos.y << " , " << cameraPos.z << ">\n";
 			}
 			else if (input_system.keyPressed(Key::LeftCtrl))
 			{
-				cameraPos -= up * deltaTime * k; // °´×óCtrl¼üÏÂÒÆ
+				cameraPos -= up * deltaTime * k; // æŒ‰å·¦Ctrlé”®ä¸‹ç§»
 				std::cout << "Positon <" << cameraPos.x << " , " << cameraPos.y << " , " << cameraPos.z << ">\n";
 			}
 
 
 			k = 1.0f;
 			bool f = false;
-			// ´¦Àí·½Ïò¼ü
+			// å¤„ç†æ–¹å‘é”®
 			if (input_system.keyPressed(Key::Up))
 			{
 				pitch += sensitivity * deltaTime;
@@ -246,18 +246,18 @@ namespace neon::core
 				f = true;
 			}
 
-			// ÏŞÖÆ¸©Ñö½Ç£¬·ÀÖ¹·­×ª
+			// é™åˆ¶ä¿¯ä»°è§’ï¼Œé˜²æ­¢ç¿»è½¬
 			if (pitch > 89.0f) pitch = 89.0f;
 			if (pitch < -89.0f) pitch = -89.0f;
 
-			// ¸ù¾İyaw/pitch¼ÆËãĞÂµÄÉãÏñ»úÇ°ÏòÁ¿
+			// æ ¹æ®yaw/pitchè®¡ç®—æ–°çš„æ‘„åƒæœºå‰å‘é‡
 			glm::vec3 front;
 			front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 			front.y = sin(glm::radians(pitch));
 			front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 			cameraFront = glm::normalize(front);
 
-			// Êä³ö¸ñÊ½: <x, y, z> length
+			// è¾“å‡ºæ ¼å¼: <x, y, z> length
 			auto printFront = [&front]() {
 				float length = std::sqrt(front.x * front.x +
 					front.y * front.y +
@@ -273,8 +273,8 @@ namespace neon::core
 			//world.update(deltaTime);
 			//input_system.swap(); // Update the input system state
 
-			//»æÖÆÁ÷³Ì
-			// ÇåÆÁ
+			//ç»˜åˆ¶æµç¨‹
+			// æ¸…å±
 			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -285,7 +285,7 @@ namespace neon::core
 
 			frameRateController.checkAndWait();
 			frameCount++;
-			if (frameCount % 60 == 0) // Ã¿60Ö¡Êä³öÒ»´ÎFPS
+			if (frameCount % 60 == 0) // æ¯60å¸§è¾“å‡ºä¸€æ¬¡FPS
 			{
 				frameCount = 0;
 				std::cout << "Frame rate <" << frameRateController.getActualFrameRate() << "> \n";

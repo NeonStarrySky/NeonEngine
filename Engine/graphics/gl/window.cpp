@@ -21,12 +21,12 @@
 
 namespace neon::graphics::gl
 {
-	//³õÊ¼»¯²¢ÇÒ·µ»ØÁÙÊ±´°¿Ú£¬Ê¹µÃÖ®ºó¿ÉÒÔÉ¾µôËü
+	//åˆå§‹åŒ–å¹¶ä¸”è¿”å›ä¸´æ—¶çª—å£ï¼Œä½¿å¾—ä¹‹åå¯ä»¥åˆ æ‰å®ƒ
 	std::optional<Window> Window::initGlad()
 	{
 
-		//0. Èç¹û GLAD ÒÑ¾­³õÊ¼»¯£¬Ö±½Ó·µ»Ø
-		if (Window::GladInitialized) // GLAD ÒÑ¾­³õÊ¼»¯£¬Ö±½Ó·µ»Ø
+		//0. å¦‚æœ GLAD å·²ç»åˆå§‹åŒ–ï¼Œç›´æ¥è¿”å›
+		if (Window::GladInitialized) // GLAD å·²ç»åˆå§‹åŒ–ï¼Œç›´æ¥è¿”å›
 		{
 #ifdef _DEBUG
 			tool::setColor(FOREGROUND_RED | FOREGROUND_GREEN);
@@ -36,7 +36,7 @@ namespace neon::graphics::gl
 			return std::nullopt;
 		}
 
-		// 1. ³õÊ¼»¯ GLFW
+		// 1. åˆå§‹åŒ– GLFW
 		if (!glfwInit())
 		{
 			throw std::runtime_error("Failed to initialize GLFW");
@@ -44,20 +44,20 @@ namespace neon::graphics::gl
 
 #ifdef _DEBUG
 		tool::setColor(BACKGROUND_GREEN | BACKGROUND_INTENSITY);
-		std::cout << "GLFW initialization successfully£¡\n\n";
+		std::cout << "GLFW initialization successfullyï¼\n\n";
 		tool::setColor();
 #endif
 
-		// 2. ÅäÖÃ OpenGL 4.6 Core Profile
+		// 2. é…ç½® OpenGL 4.6 Core Profile
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, _GLInfo.glMajorVersion);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, _GLInfo.glMinorVersion);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, _GLInfo.coreProfile);
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, _GLInfo.forwardCompatible);
 
-		// ¿ÉÑ¡£º´°¿ÚÊÇ·ñÏÔÊ¾£¨ÀëÆÁ¿ÉÉè false£©
-		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);//ÕâÊÇÁÙÊ±´°¿Ú£¬ËùÒÔ²»ÏÔÊ¾
+		// å¯é€‰ï¼šçª—å£æ˜¯å¦æ˜¾ç¤ºï¼ˆç¦»å±å¯è®¾ falseï¼‰
+		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);//è¿™æ˜¯ä¸´æ—¶çª—å£ï¼Œæ‰€ä»¥ä¸æ˜¾ç¤º
 
-		// 3. ´´½¨´°¿Ú
+		// 3. åˆ›å»ºçª—å£
 		WindowInfo info{
 			.width = 1,
 			.height = 1,
@@ -68,20 +68,20 @@ namespace neon::graphics::gl
 		Window tempWindowPtr(info);
 		//GLWindow::GladInitialized = false;
 
-		// ¼ì²é´°¿Ú´´½¨ÊÇ·ñ³É¹¦
+		// æ£€æŸ¥çª—å£åˆ›å»ºæ˜¯å¦æˆåŠŸ
 		if (!tempWindowPtr.is_good())
 		{
 			glfwTerminate();
 			throw std::runtime_error("Failed to create GLFW window");
 		}
 
-		// 4. °ó¶¨ÉÏÏÂÎÄ
+		// 4. ç»‘å®šä¸Šä¸‹æ–‡
 		glfwMakeContextCurrent(
 			tempWindowPtr.
 			windowPtr.get()
 		);
 
-		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))// ³õÊ¼»¯ GLAD
+		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))// åˆå§‹åŒ– GLAD
 		{
 			throw std::runtime_error("Failed to initialize GLAD");
 		}
@@ -90,7 +90,7 @@ namespace neon::graphics::gl
 		//glGetIntegerv(GL_MINOR_VERSION, 6);
 
 #ifdef _DEBUG
-		// ´òÓ¡ OpenGL ĞÅÏ¢
+		// æ‰“å° OpenGL ä¿¡æ¯
 		std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << "\n";
 		std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << "\n";
 		std::cout << "Vendor: " << glGetString(GL_VENDOR) << "\n";
@@ -101,24 +101,24 @@ namespace neon::graphics::gl
 		tool::setColor();
 #endif
 		Window::GladInitialized = true;
-		return tempWindowPtr; // ·µ»ØÁÙÊ±´°¿Ú¶ÔÏó£¬µ÷ÓÃÕß¿ÉÒÔÑ¡ÔñÏú»ÙËü
+		return tempWindowPtr; // è¿”å›ä¸´æ—¶çª—å£å¯¹è±¡ï¼Œè°ƒç”¨è€…å¯ä»¥é€‰æ‹©é”€æ¯å®ƒ
 	}
 
-	//Õâ¸öº¯Êı½ÓÊÕ´°¿Ú¹¹½¨ĞÅÏ¢£¬´´½¨ÉÏÏÂÎÄ²¢ÇÒ°ó¶¨ÔÚ´°¿ÚÉÏ
+	//è¿™ä¸ªå‡½æ•°æ¥æ”¶çª—å£æ„å»ºä¿¡æ¯ï¼Œåˆ›å»ºä¸Šä¸‹æ–‡å¹¶ä¸”ç»‘å®šåœ¨çª—å£ä¸Š
 	Window::Window(const WindowInfo& info, const std::source_location& loc) : info(info)
 	{
-		// 2. ÅäÖÃ OpenGL 4.6 Core Profile
+		// 2. é…ç½® OpenGL 4.6 Core Profile
 		glfwDefaultWindowHints();
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, _GLInfo.glMajorVersion);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, _GLInfo.glMinorVersion);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, _GLInfo.coreProfile);
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, _GLInfo.forwardCompatible);
-		glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);//ÕâÊÇÁÙÊ±´°¿Ú£¬ËùÒÔ²»ÏÔÊ¾
+		glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);//è¿™æ˜¯ä¸´æ—¶çª—å£ï¼Œæ‰€ä»¥ä¸æ˜¾ç¤º
 
 		windowPtr.reset(glfwCreateWindow(info.width, info.height, info.title.c_str(), nullptr, nullptr));
 
-		// ¼ì²é´°¿Ú´´½¨ÊÇ·ñ³É¹¦
-		if (!windowPtr)//ÖÇÄÜÖ¸Õë²»ĞèÒª´¦Àí
+		// æ£€æŸ¥çª—å£åˆ›å»ºæ˜¯å¦æˆåŠŸ
+		if (!windowPtr)//æ™ºèƒ½æŒ‡é’ˆä¸éœ€è¦å¤„ç†
 		{
 			std::string msg = "Failed to create GLFW window with title: " + info.title;
 			throw std::runtime_error(
@@ -138,7 +138,7 @@ namespace neon::graphics::gl
 
 	}
 
-	Window::~Window()//È«²¿×ÊÔ´¶¼ÓÉÖÇÄÜÖ¸Õë¹ÜÀí£¬GLFW´°¿Ú»áÔÚÖÇÄÜÖ¸ÕëÎö¹¹Ê±×Ô¶¯Ïú»Ù£¬Òò´ËÕâÀï²»ĞèÒªÊÖ¶¯µ÷ÓÃ glfwDestroyWindow »ò glfwTerminate
+	Window::~Window()//å…¨éƒ¨èµ„æºéƒ½ç”±æ™ºèƒ½æŒ‡é’ˆç®¡ç†ï¼ŒGLFWçª—å£ä¼šåœ¨æ™ºèƒ½æŒ‡é’ˆææ„æ—¶è‡ªåŠ¨é”€æ¯ï¼Œå› æ­¤è¿™é‡Œä¸éœ€è¦æ‰‹åŠ¨è°ƒç”¨ glfwDestroyWindow æˆ– glfwTerminate
 	{
 #ifdef _DEBUG
 		if (std::to_address(windowPtr)) {
@@ -154,15 +154,15 @@ namespace neon::graphics::gl
 	}
 
 	Window::Window(Window&& other) noexcept :
-		windowPtr(std::move(other.windowPtr)),	// ÒÆ¶¯´°¿Ú×ÊÔ´(windowPtrÊÇÖÇÄÜÖ¸Õë)
-		info(other.info)						// Ö±½Ó¸´ÖÆ´°¿ÚĞÅÏ¢£¨WindowInfoÊÇÒ»¸ö¼òµ¥µÄ½á¹¹Ìå£¬Ö§³ÖÄ¬ÈÏµÄÒÆ¶¯ÓïÒå£©
+		windowPtr(std::move(other.windowPtr)),	// ç§»åŠ¨çª—å£èµ„æº(windowPtræ˜¯æ™ºèƒ½æŒ‡é’ˆ)
+		info(other.info)						// ç›´æ¥å¤åˆ¶çª—å£ä¿¡æ¯ï¼ˆWindowInfoæ˜¯ä¸€ä¸ªç®€å•çš„ç»“æ„ä½“ï¼Œæ”¯æŒé»˜è®¤çš„ç§»åŠ¨è¯­ä¹‰ï¼‰
 	{
 		if (this != &other) {
 			other.info = WindowInfo();			// Reset the moved-from object's info
 		}
 	}
 
-	// äÖÈ¾Ñ­»·ÓÉÍâ²¿¿ØÖÆ
+	// æ¸²æŸ“å¾ªç¯ç”±å¤–éƒ¨æ§åˆ¶
 	bool Window::shouldClose() const
 	{
 		return glfwWindowShouldClose(windowPtr.get());
@@ -184,7 +184,7 @@ namespace neon::graphics::gl
 			glfwSetWindowShouldClose(windowPtr.get(), true);
 	}
 
-	//°ó¶¨ÉÏÏÂÎÄ
+	//ç»‘å®šä¸Šä¸‹æ–‡
 	void Window::makeContextCurrent()
 	{
 		glfwMakeContextCurrent(windowPtr.get());

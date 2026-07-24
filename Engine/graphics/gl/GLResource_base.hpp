@@ -19,7 +19,7 @@ namespace neon::graphics::gl
 			std::is_nothrow_invocable_v<D, GLsizei, const GLuint*>;
 	}
 
-	/// @brief Ò»¸öÍ¨ÓÃµÄ OpenGL ×ÊÔ´¹ÜÀíÀà£¬Ê¹ÓÃ RAII Ô­ÔòÀ´¹ÜÀí OpenGL ×ÊÔ´µÄÉúÃüÖÜÆÚ
+	/// @brief ä¸€ä¸ªé€šç”¨çš„ OpenGL èµ„æºç®¡ç†ç±»ï¼Œä½¿ç”¨ RAII åŸåˆ™æ¥ç®¡ç† OpenGL èµ„æºçš„ç”Ÿå‘½å‘¨æœŸ
 	template<GLResource_::GLResourcesDeleter Deleter>
 	class GLResources
 	{
@@ -38,11 +38,11 @@ namespace neon::graphics::gl
 		bool isValid(size_t index) const { return 0 != ids.at(index); }
 
 		GLuint getID(size_t index) const noexcept { return ids.at(index); }
-		// Ìá¹©Ò»¸ö»ñÈ¡ ID µÄÖ¸ÕëµÄ·½·¨£¬·½±ãÓë OpenGL º¯Êı½»»¥£¬Çë²»ÒªÖ±½ÓĞŞ¸ÄÕâ¸öÖ¸ÕëÖ¸ÏòµÄÖµ£¬³ı·ÇÄãÖªµÀ×Ô¼ºÔÚ×öÊ²Ã´
+		// æä¾›ä¸€ä¸ªè·å– ID çš„æŒ‡é’ˆçš„æ–¹æ³•ï¼Œæ–¹ä¾¿ä¸ OpenGL å‡½æ•°äº¤äº’ï¼Œè¯·ä¸è¦ç›´æ¥ä¿®æ”¹è¿™ä¸ªæŒ‡é’ˆæŒ‡å‘çš„å€¼ï¼Œé™¤éä½ çŸ¥é“è‡ªå·±åœ¨åšä»€ä¹ˆ
 		GLuint* getIDPtr(size_t index) const noexcept { return &ids.at(index); }
 
 		size_t size() { return ids.size(); }
-		//ÒÆ¶¯ÓïÒå
+		//ç§»åŠ¨è¯­ä¹‰
 		void reset(std::vector<GLuint> ids = {}) { this->ids = std::move(ids); }
 
 		std::vector<GLuint> release() noexcept { return std::exchange(ids, {}); }
@@ -53,7 +53,7 @@ namespace neon::graphics::gl
 		}
 		GLResources& operator=(GLResources&& other) noexcept
 		{
-			//ÇåÀí×Ô¼ºµÄ×ÊÔ´²¢ÇÒÖÃÁãother
+			//æ¸…ç†è‡ªå·±çš„èµ„æºå¹¶ä¸”ç½®é›¶other
 			if (this != &other)
 			{
 				this->reset(other.ids);
@@ -61,7 +61,7 @@ namespace neon::graphics::gl
 			return *this;
 		}
 
-		//¿½±´ÓïÒåÃ»±ØÒª
+		//æ‹·è´è¯­ä¹‰æ²¡å¿…è¦
 		GLResources(const GLResources&) = delete;
 		GLResources& operator=(const GLResources&) = delete;
 
@@ -86,11 +86,11 @@ namespace neon::graphics::gl
 		bool isValid() const noexcept { return 0 != id; }
 
 		GLuint getID() const noexcept { return id; }
-		// Ìá¹©Ò»¸ö»ñÈ¡ ID µÄÖ¸ÕëµÄ·½·¨£¬·½±ãÓë OpenGL º¯Êı½»»¥£¬Çë²»ÒªÖ±½ÓĞŞ¸ÄÕâ¸öÖ¸ÕëÖ¸ÏòµÄÖµ£¬³ı·ÇÄãÖªµÀ×Ô¼ºÔÚ×öÊ²Ã´
+		// æä¾›ä¸€ä¸ªè·å– ID çš„æŒ‡é’ˆçš„æ–¹æ³•ï¼Œæ–¹ä¾¿ä¸ OpenGL å‡½æ•°äº¤äº’ï¼Œè¯·ä¸è¦ç›´æ¥ä¿®æ”¹è¿™ä¸ªæŒ‡é’ˆæŒ‡å‘çš„å€¼ï¼Œé™¤éä½ çŸ¥é“è‡ªå·±åœ¨åšä»€ä¹ˆ
 		GLuint* getIDPtr() noexcept { return &id; }
 		const GLuint* getIDPtr() const noexcept { return &id; }
 
-		// ÒÆ¶¯ÓïÒå
+		// ç§»åŠ¨è¯­ä¹‰
 		void reset(GLuint newId = 0) noexcept {
 			if (id != 0) {
 				Deleter{}(id);
@@ -109,7 +109,7 @@ namespace neon::graphics::gl
 			return *this;
 		}
 
-		// ¿½±´ÓïÒåÉ¾³ı
+		// æ‹·è´è¯­ä¹‰åˆ é™¤
 		GLResource(const GLResource&) = delete;
 		GLResource& operator=(const GLResource&) = delete;
 

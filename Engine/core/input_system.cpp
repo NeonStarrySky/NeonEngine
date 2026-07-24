@@ -22,7 +22,7 @@ namespace neon::core
 	void InputSystem::swap()
 	{
 
-		input.previous_keys = input.curent_keys;//±£´æÉÏÒ»Ö¡×´Ì¬
+		input.previous_keys = input.curent_keys;//Â±Â£Â¥ÃŠâ€¦Å“â€œÂªÃ·Â°â—ŠÂ¥ÃƒÂ¨
 
 	}
 
@@ -65,7 +65,7 @@ namespace neon::core
 	//Mapping functions
 	constexpr Key InputSystem::glfwKeyToKey(int glfwKey)// Map GLFW key codes to our Key enum
 	{
-		//glfwKey ÊÇ GLFW µÄ°´¼üÂë£¬·¶Î§´Ó 0 µ½ GLFW_KEY_LAST£¨GLFW_KEY_LAST ÊÇ GLFW ¶¨ÒåµÄ×î´ó°´¼üÂë£¬Í¨³£ÊÇ 348£©
+		//glfwKey Â Â« GLFW ÂµÆ’âˆžÂ¥ÂºÂ¸Â¬ÃŽÂ£Â¨âˆ‘âˆ‚Å’ÃŸÂ¥â€ 0 ÂµÎ© GLFW_KEY_LASTÂ£Â®GLFW_KEY_LAST Â Â« GLFW âˆ‚Â®â€œÃ‚ÂµÆ’â—ŠÃ“Â¥Ã›âˆžÂ¥ÂºÂ¸Â¬ÃŽÂ£Â¨Ã•Â®â‰¥Â£Â Â« 348Â£Â©
 		if (glfwKey >= GLFW_KEY_A && glfwKey <= GLFW_KEY_Z) {
 			return static_cast<Key>((glfwKey - GLFW_KEY_A) + static_cast<int>(Key::A));
 		}

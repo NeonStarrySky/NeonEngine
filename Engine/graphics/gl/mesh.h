@@ -46,13 +46,13 @@ namespace neon::graphics::gl
 		GLResource<VBO_Deleter> VBO;
 		EBO EBO_s, EBO_l;
 
-		// ¹¹Ôìº¯Êı£º½ö¸ºÔğÊı¾İÉÏ´«
+		// æ„é€ å‡½æ•°ï¼šä»…è´Ÿè´£æ•°æ®ä¸Šä¼ 
 		Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
 
-		// Îö¹¹º¯Êı£º½ö¸ºÔğ×ÊÔ´Ïú»Ù
+		// ææ„å‡½æ•°ï¼šä»…è´Ÿè´£èµ„æºé”€æ¯
 		~Mesh() {};
 
-		// ½ûÓÃ¿½±´¹¹Ôì£¬·ÀÖ¹ÖØ¸´É¾³ı GPU »º³å£¨»òÊ¹ÓÃÖÇÄÜÖ¸Õë¹ÜÀí£©
+		// ç¦ç”¨æ‹·è´æ„é€ ï¼Œé˜²æ­¢é‡å¤åˆ é™¤ GPU ç¼“å†²ï¼ˆæˆ–ä½¿ç”¨æ™ºèƒ½æŒ‡é’ˆç®¡ç†ï¼‰
 		Mesh(const Mesh&) = delete;
 		Mesh& operator=(const Mesh&) = delete;
 

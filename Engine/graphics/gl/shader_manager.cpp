@@ -20,7 +20,7 @@ namespace neon::graphics::gl
 
 	void ShaderManager::init()
 	{
-		// Ô¤¼ÓÔØ×ÅÉ«Æ÷³ÌĞò
+		// ÃˆÃ±â•Ã‹ÃˆÃÃâ”¼â•”Â½Ã£Â¸â”‚â• Ã°â€—
 	}
 
 	Shader ShaderManager::loadAndCompileShader(const std::string& filePath, GLenum shaderType)
@@ -32,7 +32,7 @@ namespace neon::graphics::gl
 			shaderType == GL_GEOMETRY_SHADER ? "Geometry Shader" : "Unknown") << std::endl;
 #endif // _DEBUG
 
-		// 1. ¶ÁÈ¡ÎÄ¼ş
+		// 1. Ã‚â”´â•šÃ­â•¬â”€â•â– 
 		std::ifstream file(filePath);
 		if (!file.is_open())
 		{
@@ -43,7 +43,7 @@ namespace neon::graphics::gl
 		buffer << file.rdbuf();
 		std::string source = buffer.str();
 
-		// 2. ´´½¨×ÅÉ«Æ÷¶ÔÏó£¨ÓÃ RAII ¹ÜÀí£©
+		// 2. â”¤â”¤Â¢Â¿Ãâ”¼â•”Â½Ã£Â¸Ã‚ÃˆÂ¤Â¾ÃºÂ¿Ã‹â”œ RAII â•£â–„â””ÃÃºÂ®
 
 		Shader shader(glCreateShader(shaderType), shaderType);
 
@@ -51,7 +51,7 @@ namespace neon::graphics::gl
 		glShaderSource(shader.getID(), 1, &src, nullptr);
 		glCompileShader(shader.getID());
 
-		// 3. ¼ì²é±àÒë×´Ì¬
+		// 3. â•Ã½â–“Ãšâ–’Ã“ÃŠÃ™Ãâ”¤â• Â¼
 		GLint success = 0;
 		glGetShaderiv(shader.getID(), GL_COMPILE_STATUS, &success);
 		if (!success)
@@ -64,10 +64,10 @@ namespace neon::graphics::gl
 				infoLog);
 		}
 
-		return shader; // ·µ»ØÖÇÄÜÖ¸Õë
+		return shader; // Ã€Ãâ•—ÃÃÃƒâ”€â–„ÃÂ©Ä±Ã™
 	}
 
-	bool ShaderManager::loadShaders(const std::vector<std::pair<std::string, GLenum>>& shaderInfos)//ÅúÁ¿¼ÓÔØ×ÅÉ«Æ÷(ÎÄ¼şÂ·¾¶ + ÀàĞÍ)
+	bool ShaderManager::loadShaders(const std::vector<std::pair<std::string, GLenum>>& shaderInfos)//â”¼Â·â”´â”â•Ã‹ÃˆÃÃâ”¼â•”Â½Ã£Â¸(â•¬â”€â•â– â”¬Ã€Â¥Ã‚ + â””Ã“Ã°â•)
 	{
 		for (const auto& [filePath, shaderType] : shaderInfos)
 		{
@@ -76,7 +76,7 @@ namespace neon::graphics::gl
 				if (shaderPrograms.contains(filePath))
 				{
 					std::cerr << "Warning: Shader already loaded: " << filePath << std::endl;
-					return false; // ÒÑ¾­¼ÓÔØ¹ıÁË£¬·µ»Ø false
+					return false; // ÃŠÃÂ¥Â¡â•Ã‹ÃˆÃâ•£Â²â”´â•¦ÃºÂ¼Ã€Ãâ•—Ã false
 				}
 				Shader shader = loadAndCompileShader(filePath, shaderType);
 				shaderPrograms[filePath] = std::move(shader);
@@ -85,7 +85,7 @@ namespace neon::graphics::gl
 			catch (const std::runtime_error& e)
 			{
 				std::cerr << e.what() << std::endl;
-				return false; // Ê§°ÜÊ±·µ»Ø false
+				return false; // â•©Âºâ–‘â–„â•©â–’Ã€Ãâ•—Ã false
 			}
 		}
 		return true;
@@ -125,7 +125,7 @@ namespace neon::graphics::gl
 				linkProgram(i);
 			}
 			catch (const std::runtime_error& e) {
-				shadersToLink.clear();//´Ë´ÎÁ´½ÓÊ§°Ü£¬Çå¿Õ´ıÁ´½ÓÁĞ±í
+				shadersToLink.clear();//â”¤â•¦â”¤â•¬â”´â”¤Â¢Ã‹â•©Âºâ–‘â–„ÃºÂ¼ÃƒÃ•â”Ä±â”¤Â²â”´â”¤Â¢Ã‹â”´Ã°â–’Ã
 				std::cerr << e.what() << std::endl;
 				return false;
 			}
@@ -142,7 +142,7 @@ namespace neon::graphics::gl
 		}
 		glLinkProgram(program.getID());
 
-		// ¼ì²éÁ´½Ó×´Ì¬
+		// â•Ã½â–“Ãšâ”´â”¤Â¢Ã‹Ãâ”¤â• Â¼
 		GLint success = 0;
 		glGetProgramiv(program.getID(), GL_LINK_STATUS, &success);
 		if (!success)

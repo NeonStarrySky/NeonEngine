@@ -7,9 +7,11 @@
 
 #include "core/type_system/type_id.h"
 
+#include <cstdlib>
 #include <iostream>
 
 int main(int argc, char* argv[]) {
+	std::system("chcp 65001 > nul");  // 65001 就是 UTF-8
 	auto componentManager = neon::core::ecs::ComponentManager();
 	auto entityManager = neon::core::ecs::EntityManager();
 	auto entity1 = entityManager.createEntity();

@@ -165,6 +165,7 @@
       <Filter>src\core\ecs</Filter>
     </None>
     <None Include="..\vcpkg.json" />
+    <None Include="..\.gitignore" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\images\pic.png">

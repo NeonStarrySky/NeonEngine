@@ -6,35 +6,35 @@ namespace neon::graphics
 {
 	struct WindowInfo
 	{
-		// 基本窗口信息
-		int width = 800;                // 窗口宽度
-		int height = 600;               // 窗口高度
-		std::string title = "T I T L E";   // 窗口标题
+		// 禄暖卤木麓掳偶脷膼墓膸藰
+		int width = 800;                // 麓掳偶脷偶铆露膶
+		int height = 600;               // 麓掳偶脷赂脽露膶
+		std::string title = "T I T L E";   // 麓掳偶脷卤臋臍芒
 
-		// 显示和风格
-		bool fullscreen = false;        // 是否全屏
-		int monitorIndex = 0;           // 多显示器索引，默认主显示器
-		bool resizable = true;          // 是否可调整大小
-		bool visible = true;            // 是否可见
-		bool focused = true;            // 是否获取焦点
-		bool decorated = true;          // 是否有边框/标题栏
+		// 膸脭臉木艧脥路莽赂艅
+		bool fullscreen = false;        // 臉脟路艅膶芦膯脕
+		int monitorIndex = 0;           // 露艜膸脭臉木膯梅脣梅艊媒艁卢脛卢膶膸脰梅膸脭臉木膯梅
+		bool resizable = true;          // 臉脟路艅偶脡碌梅艕疟麓贸膼藝
+		bool visible = true;            // 臉脟路艅偶脡慕疟
+		bool focused = true;            // 臉脟路艅禄艅膶藝藵膮碌膬
+		bool decorated = true;          // 臉脟路艅脫膼卤脽偶艌/卤臋臍芒艛赂
 
 
-		int refreshRate = 60;           // 显示器刷新率（主要用于全屏）
+		int refreshRate = 60;           // 膸脭臉木膯梅脣藰膼脗脗臉艁篓脰梅艊艦脫膫脫脷膶芦膯脕艁漏
 
-		// 缓冲区设置
-		int redBits = 8;                // 红色通道
-		int greenBits = 8;              // 绿色通道
-		int blueBits = 8;               // 蓝色通道
-		int alphaBits = 8;              // Alpha通道
-		int depthBits = 24;             // 深度缓冲
-		int stencilBits = 8;            // 模板缓冲
-		int samples = 0;                // MSAA采样数
+		// 禄艧艂暮脟艡脡膷脰膫
+		int redBits = 8;                // 艧臎脡芦脥篓碌艛
+		int greenBits = 8;              // 脗臍脡芦脥篓碌艛
+		int blueBits = 8;               // 艛露脡芦脥篓碌艛
+		int alphaBits = 8;              // Alpha脥篓碌艛
+		int depthBits = 24;             // 脡卯露膶禄艧艂暮
+		int stencilBits = 8;            // 脛艁掳暮禄艧艂暮
+		int samples = 0;                // MSAA藳脡艃暖臉媒
 
-		// 垂直同步
-		bool vsync = true;              // 是否开启VSync
+		// 麓膮脰卤脥卢藳藵
+		bool vsync = true;              // 臉脟路艅偶艦膯么VSync
 
-		// 构造函数
+		// 膮膮脭臎艧呕臉媒
 		//WindowInfo() = default;
 
 	};
