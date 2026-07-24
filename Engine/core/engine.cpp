@@ -14,6 +14,7 @@
 
 #include <glad/glad.h>
 #include <iostream>
+#include<spdlog/spdlog.h>
 #include <stdexcept>
 #include<vector>
 
@@ -27,10 +28,7 @@ namespace neon::core
 	void Engine::init() {
 
 #ifdef _DEBUG
-		tool::setColor(BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_INTENSITY);
-		std::cout << "Initializing Engine...";
-		tool::setColor();
-		std::cout << "\n\n";
+		spdlog::info("Engine initialization started.");
 #endif // _DEBUG
 
 
