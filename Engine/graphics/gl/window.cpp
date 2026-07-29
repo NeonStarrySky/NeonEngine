@@ -1,12 +1,10 @@
-#include "graphics/window_info.h"
+﻿#include "graphics/window_info.h"
 
 // glad must be included before GLFW (and before any header that might pull in
 // the system OpenGL headers). Use the correct include path for glad.
 
-#ifdef _DEBUG
-#include "tool/conhost.h"
-#include "window.h"
-#endif // _DEBUG
+#include"window.h"
+#include<spdlog/spdlog.h>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -28,11 +26,8 @@ namespace neon::graphics::gl
 		//0. 如果 GLAD 已经初始化，直接返回
 		if (Window::GladInitialized) // GLAD 已经初始化，直接返回
 		{
-#ifdef _DEBUG
-			tool::setColor(FOREGROUND_RED | FOREGROUND_GREEN);
-			std::cout << "GLAD is already initialized, skipping initialization.\n\n";
-			tool::setColor();
-#endif
+			spdlog::info("GLAD has already been initialized. Skipping re-initialization.");
+
 			return std::nullopt;
 		}
 
@@ -42,11 +37,7 @@ namespace neon::graphics::gl
 			throw std::runtime_error("Failed to initialize GLFW");
 		}
 
-#ifdef _DEBUG
-		tool::setColor(BACKGROUND_GREEN | BACKGROUND_INTENSITY);
-		std::cout << "GLFW initialization successfully！\n\n";
-		tool::setColor();
-#endif
+		spdlog::info("GLFW initialized successfully.");
 
 		// 2. 配置 OpenGL 4.6 Core Profile
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, _GLInfo.glMajorVersion);
@@ -89,17 +80,14 @@ namespace neon::graphics::gl
 		//glGetIntegerv(GL_MAJOR_VERSION, 4);
 		//glGetIntegerv(GL_MINOR_VERSION, 6);
 
-#ifdef _DEBUG
-		// 打印 OpenGL 信息
-		std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << "\n";
-		std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << "\n";
-		std::cout << "Vendor: " << glGetString(GL_VENDOR) << "\n";
-		std::cout << "Renderer: " << glGetString(GL_RENDERER) << "\n\n";
 
-		tool::setColor(BACKGROUND_GREEN | BACKGROUND_INTENSITY);
-		std::cout << "GLAD initialized successfully.\n\n";
-		tool::setColor();
-#endif
+		// 打印 OpenGL 信息
+		spdlog::info("OpenGL Version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+		spdlog::info("GLSL Version: {}", reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+		spdlog::info("Renderer: {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+		spdlog::info("Vendor: {}", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+		spdlog::info("GLAD initialized successfully.");
+
 		Window::GladInitialized = true;
 		return tempWindowPtr; // 返回临时窗口对象，调用者可以选择销毁它
 	}
@@ -128,29 +116,17 @@ namespace neon::graphics::gl
 			);
 		}
 
-#ifdef _DEBUG
-		tool::setColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-		std::cout
-			<< "Creating GLWindow Class with\n>>> pointer <" << std::to_address(windowPtr) << "> !\n"
-			<< ">>> title <" << info.title << ">\n\n";
-		tool::setColor();
-#endif // DEBUG
+
+		spdlog::info("GLFW window created successfully with title: {} | File: {} | Line: {}", info.title, loc.file_name(), loc.line());
 
 	}
 
 	Window::~Window()//全部资源都由智能指针管理，GLFW窗口会在智能指针析构时自动销毁，因此这里不需要手动调用 glfwDestroyWindow 或 glfwTerminate
 	{
-#ifdef _DEBUG
 		if (std::to_address(windowPtr)) {
-			tool::setColor(FOREGROUND_RED | FOREGROUND_INTENSITY);
-			std::cout
-				<< "Destroying GLWindow Class with\n>>> pointer <" << std::to_address(windowPtr) << "> !\n"
-				<< ">>> title <" << info.title << ">\n\n";
-			tool::setColor();
+			spdlog::info("Destroying GLFW window with title: {}", info.title);
+			spdlog::info("Destroying GLFW window with pointer: {}", static_cast<const void*>(std::to_address(windowPtr)));
 		}
-
-#endif // DEBUG
-
 	}
 
 	Window::Window(Window&& other) noexcept :

@@ -1,13 +1,7 @@
-#include "engine.h"
+﻿#include "engine.h"
+
 #include "gameplay/world.h"
 #include "graphics/frameRateController.h"
-#include "graphics/gl/GLResource.hpp"
-#include "graphics/gl/mesh.h"
-#include "graphics/gl/window.h"
-#include "graphics/window_info.h"
-#include "input_system.h"
-#include "timer.h"
-#include "tool/conhost.h"
 
 #include <GLFW/glfw3.h>
 #include <glm/fwd.hpp>
@@ -20,17 +14,22 @@
 
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
+#include "logger.h"
+#include <graphics/gl/GLResource.hpp>
+#include <memory>
+#include <timer.h>
 #include <Windows.h>
 
 namespace neon::core
 {
 
 	void Engine::init() {
+		logger = std::make_unique<Logger>("log.txt");
 
-#ifdef _DEBUG
-		spdlog::info("Engine initialization started.");
-#endif // _DEBUG
+		logger->setLogType(Logger::LogType::async);
+		logger->setLogLevel(Logger::LogLevel::debug);
 
+		logger->debug("Engine initialization started.");
 
 		//局部作用域，确保临时窗口在创建正式窗口之后被销毁
 		{
@@ -45,36 +44,29 @@ namespace neon::core
 
 		input_system.init(windowPtr); // Initialize the input system with the GLFW window
 
+		logger->info("GLFW and GLAD initialized successfully.");
+		logger->info("OpenGL version: {}.{}", glVersion.major, glVersion.minor);
+		logger->info("GLSL version: {}", *glGetString(GL_SHADING_LANGUAGE_VERSION));
+
+		logger->info("Initialize shader_manager and loading shaders...");
 		shader_manager.init(); // Initialize the shader manager
 		shader_manager.loadShaders({// Load and compile shaders from specified file paths and types
 			{"assets/shaders/vertex_shader.glsl", GL_VERTEX_SHADER},
 			{"assets/shaders/aivs.glsl", GL_VERTEX_SHADER},
 			{ "assets/shaders/fragment_shader.glsl", GL_FRAGMENT_SHADER }
 			});
+		logger->info("Initialize shader_manager and loading shaders successful.");
 
-#ifdef _DEBUG
-		tool::setColor(BACKGROUND_GREEN | BACKGROUND_INTENSITY);
-		std::cout << "Engine initialized successfully.";
-		tool::setColor();
-		std::cout << std::endl;
-#endif // _DEBUG
+		logger->info("Engine initialized successful.");
 
 	}
 
 	Engine::Engine()
-	{
-		init();
-	}
+	{}
 
 	Engine::~Engine()//raii已经保证资源的正确释放，这里不需要手动清理窗口资源
 	{
-
-#ifdef _DEBUG
-		tool::setColor(BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_INTENSITY);
-		std::cout << "Engine destructor called. Cleaning up resources...";
-		tool::setColor();
-		std::cout << std::endl << std::endl;
-#endif // _DEBUG
+		logger->debug("Engine destructor called. Cleaning up resources...");
 
 		glfwTerminate();
 
@@ -89,16 +81,15 @@ namespace neon::core
 	{
 
 		//链接着色器
-		shader_manager.linkPrograms({ "assets/shaders/aivs.glsl", "assets/shaders/fragment_shader.glsl" });
+		shader_manager.linkPrograms({ "assets/shaders/vertex_shader.glsl", "assets/shaders/fragment_shader.glsl" });
 		graphics::gl::Program program;
 		try {
 			program = shader_manager.buildShader();
 		}
 		catch (const std::runtime_error& e)
 		{
-			tool::setColor(BACKGROUND_RED | BACKGROUND_INTENSITY);
-			std::cerr << "Error building shader program: " << e.what() << std::endl;
-			tool::setColor();
+			logger->error("Shader build error: {}", e.what());
+
 			return;
 		}
 		program.use();
@@ -144,11 +135,7 @@ namespace neon::core
 
 		Mesh mesh(vertices, indices);
 
-#ifdef _DEBUG
-		tool::setColor(BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_INTENSITY);
-		std::cout << "Game loop started.\n";
-		tool::setColor();
-#endif // DEBUG
+		logger->info("Starting main loop. Press ESC to exit.");
 
 		int frameCount = 0;
 		Timer timer;

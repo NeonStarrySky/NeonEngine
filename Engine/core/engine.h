@@ -1,16 +1,24 @@
-#pragma once
+﻿#pragma once
 
+//resources
 #include "graphics/gl/GLResource.hpp"
 #include "graphics/gl/mesh.h"
-#include "graphics/gl/renderer.h"
-#include "graphics/gl/shader_manager.h"
 #include "graphics/gl/window.h"
 #include "graphics/window_info.h"
+
+//submodules
+#include "graphics/gl/renderer.h"
+#include "graphics/gl/shader_manager.h"
 #include "input_system.h"//glfw
+#include "logger.h"
 #include "timer.h"
 
+//glad and glfw
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+//standard library
+#include <memory>
 #include <stdexcept>
 #include <vector>
 
@@ -18,11 +26,15 @@ namespace neon::core
 {
 	class Engine
 	{
+		// 类型别名，简化代码书写
 		using Window = neon::graphics::gl::Window;
 		using ShaderManager = neon::graphics::gl::ShaderManager;
 		using Shader = neon::graphics::gl::Shader;
 		using Mesh = neon::graphics::gl::Mesh;
 		using WindowInfo = neon::graphics::WindowInfo;
+		using Renderer = neon::graphics::gl::Renderer;
+		using InputSystem = neon::core::InputSystem;
+		using Logger = neon::core::Logger;
 
 		Window::GLInfo _GLInfo;
 
@@ -30,12 +42,16 @@ namespace neon::core
 			size_t current_window = 0;
 		}context;
 
-		static gladGLversionStruct glVersion;
+		gladGLversionStruct glVersion;
 
+		//resources
 		std::vector<Window> windows;
+		//submodules
 		InputSystem input_system;
 		ShaderManager shader_manager;
-		neon::graphics::gl::Renderer renderer;
+		Renderer renderer;
+		std::unique_ptr<Logger> logger;
+
 	public:
 		Engine();
 		~Engine();
@@ -111,7 +127,7 @@ namespace neon::core
 		/// 获取当前OpenGL上下文版本的详细信息。
 		/// </summary>
 		/// <returns>包含OpenGL主版本号、次版本号等信息的gladGLversionStruct结构体。</returns>
-		static const gladGLversionStruct getGLVersion() { return glVersion; }
+		const gladGLversionStruct getGLVersion() { return glVersion; }
 	};
 	;
 }

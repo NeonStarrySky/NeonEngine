@@ -82,6 +82,7 @@
     <ClCompile Include="core\ecs\entity_manager.cpp">
       <Filter>src\core\ecs</Filter>
     </ClCompile>
+    <ClCompile Include="core\logger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="graphics\gl\GLResource_base.hpp">
@@ -153,6 +154,7 @@
     <ClInclude Include="core\ecs\entity_manager.h">
       <Filter>src\core\ecs</Filter>
     </ClInclude>
+    <ClInclude Include="core\logger.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\fragment_shader.glsl">

@@ -1,3 +1,4 @@
+﻿#include "core/logger.h"
 #include "frameRateController.h"
 
 #include <iostream>
@@ -26,13 +27,10 @@ namespace neon::graphics {
 	void FrameRateController::setFrameRate(double frame_rate)
 	{
 		if (frame_rate <= 0) {
-			char msg[] = "void neon::FrameRateController::setFrameRate(float frame_rate):\n>>>invalid_argument!\n\n";
 
-#ifdef _DEBUG
-			std::cerr << msg;
-#endif
+			//spdlog::info("Frame rate must be positive. Given: {}", frame_rate);
 
-			throw std::invalid_argument(msg);
+			return;
 		}
 
 		this->frame_rate = frame_rate;
