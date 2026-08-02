@@ -24,16 +24,15 @@ namespace neon::core
 {
 
 	void Engine::init() {
-		logger = std::make_unique<Logger>("log.txt");
 
-		logger->setLogType(Logger::LogType::async);
-		logger->setLogLevel(Logger::LogLevel::debug);
+		logger.setLogType(Logger::LogType::async);
+		logger.setLogLevel(Logger::LogLevel::debug);
 
-		logger->debug("Engine initialization started.");
+		logger.debug("Engine initialization started.");
 
 		//局部作用域，确保临时窗口在创建正式窗口之后被销毁
 		{
-			auto temp = Window::initGlad(); // Initialize GLAD to load OpenGL function pointers
+			auto temp = graphics::gl::initGlad(Window::GLInfo(), &logger); // Initialize GLAD to load OpenGL function pointers
 			creatWindow(WindowInfo{});
 			getCurrentWindow().makeContextCurrent();
 		}
@@ -44,29 +43,32 @@ namespace neon::core
 
 		input_system.init(windowPtr); // Initialize the input system with the GLFW window
 
-		logger->info("GLFW and GLAD initialized successfully.");
-		logger->info("OpenGL version: {}.{}", glVersion.major, glVersion.minor);
-		logger->info("GLSL version: {}", *glGetString(GL_SHADING_LANGUAGE_VERSION));
+		logger.info("GLFW and GLAD initialized successfully.");
+		logger.info("OpenGL version: {}.{}", glVersion.major, glVersion.minor);
+		logger.info("GLSL version: {}", *glGetString(GL_SHADING_LANGUAGE_VERSION));
 
-		logger->info("Initialize shader_manager and loading shaders...");
+		logger.info("Initialize shader_manager and loading shaders...");
 		shader_manager.init(); // Initialize the shader manager
 		shader_manager.loadShaders({// Load and compile shaders from specified file paths and types
 			{"assets/shaders/vertex_shader.glsl", GL_VERTEX_SHADER},
 			{"assets/shaders/aivs.glsl", GL_VERTEX_SHADER},
 			{ "assets/shaders/fragment_shader.glsl", GL_FRAGMENT_SHADER }
 			});
-		logger->info("Initialize shader_manager and loading shaders successful.");
+		logger.info("Initialize shader_manager and loading shaders successful.");
 
-		logger->info("Engine initialized successful.");
+		logger.info("Engine initialized successful.");
 
 	}
 
-	Engine::Engine()
+	Engine::Engine() :
+		logger("log.txt"),
+		input_system(),
+		shader_manager(&logger)
 	{}
 
 	Engine::~Engine()//raii已经保证资源的正确释放，这里不需要手动清理窗口资源
 	{
-		logger->debug("Engine destructor called. Cleaning up resources...");
+		logger.debug("Engine destructor called. Cleaning up resources...");
 
 		glfwTerminate();
 
@@ -74,7 +76,7 @@ namespace neon::core
 
 	int Engine::creatWindow(WindowInfo info)
 	{
-		windows.emplace_back(Window(info)); // Create a new window and add it to the list of windows
+		windows.emplace_back(Window(info, &logger)); // Create a new window and add it to the list of windows
 		return windows.size();
 	}
 	void Engine::run()
@@ -88,7 +90,7 @@ namespace neon::core
 		}
 		catch (const std::runtime_error& e)
 		{
-			logger->error("Shader build error: {}", e.what());
+			logger.error("Shader build error: {}", e.what());
 
 			return;
 		}
@@ -135,7 +137,7 @@ namespace neon::core
 
 		Mesh mesh(vertices, indices);
 
-		logger->info("Starting main loop. Press ESC to exit.");
+		logger.info("Starting main loop. Press ESC to exit.");
 
 		int frameCount = 0;
 		Timer timer;
@@ -180,32 +182,32 @@ namespace neon::core
 			if (input_system.keyPressed(Key::W))
 			{
 				cameraPos += forward * deltaTime * k; // 按W键前进
-				std::cout << "Positon <" << cameraPos.x << " , " << cameraPos.y << " , " << cameraPos.z << ">\n";
+
 			}
 			else if (input_system.keyPressed(Key::S))
 			{
 				cameraPos -= forward * deltaTime * k; // 按S键后退
-				std::cout << "Positon <" << cameraPos.x << " , " << cameraPos.y << " , " << cameraPos.z << ">\n";
+
 			}
 			else if (input_system.keyPressed(Key::A))
 			{
 				cameraPos -= right * deltaTime * k; // 按A键左移
-				std::cout << "Positon <" << cameraPos.x << " , " << cameraPos.y << " , " << cameraPos.z << ">\n";
+
 			}
 			else if (input_system.keyPressed(Key::D))
 			{
 				cameraPos += right * deltaTime * k; // 按D键右移
-				std::cout << "Positon <" << cameraPos.x << " , " << cameraPos.y << " , " << cameraPos.z << ">\n";
+
 			}
 			else if (input_system.keyPressed(Key::LeftShift))
 			{
 				cameraPos += up * deltaTime * k; // 按左Shift键上移
-				std::cout << "Positon <" << cameraPos.x << " , " << cameraPos.y << " , " << cameraPos.z << ">\n";
+
 			}
 			else if (input_system.keyPressed(Key::LeftCtrl))
 			{
 				cameraPos -= up * deltaTime * k; // 按左Ctrl键下移
-				std::cout << "Positon <" << cameraPos.x << " , " << cameraPos.y << " , " << cameraPos.z << ">\n";
+
 			}
 
 

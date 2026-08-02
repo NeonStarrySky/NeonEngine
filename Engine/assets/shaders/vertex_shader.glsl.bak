@@ -1,4 +1,4 @@
-// vertex_shader.glsl
+﻿???// vertex_shader.glsl
 #version 460 core
 
 layout(location = 0) in vec3 p;
@@ -10,5 +10,5 @@ void main() {
     float ph = dot(op, cameraFront);
     vec3 oh = op-ph*cameraFront;
 
-    gl_Position = vec4(oh.x/ph/10, oh.y/ph/10 , ph/10 , 1.0);
+    gl_Position = vec4(oh.x/ph, oh.y/ph , ph , 1.0);
 }
