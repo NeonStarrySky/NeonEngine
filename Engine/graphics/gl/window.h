@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/logger.h"
 #include "graphics/window_info.h"
 
 #include <glad/glad.h>
@@ -112,10 +113,16 @@ namespace neon::graphics::gl
 		}
 		}
 	}
+
+
+
 	//这个类需要windowInfo（窗口信息->类内独立的）
 	//还需要GLInfo（opengl）
 	class Window
 	{
+		friend class Engine; // 友元类，允许Engine访问Window的私有成员
+	private:
+		core::Logger* logger = nullptr; // 日志记录器指针
 	public:
 		struct GLInfo {
 			// 渲染配置
@@ -132,13 +139,18 @@ namespace neon::graphics::gl
 
 		inline static bool GladInitialized = false; // GLAD 初始化状态
 
-	public:
-		static std::optional<Window> initGlad(); // GLAD 初始化函数
+		void setLogger(core::Logger* log)
+		{
+			logger = log;
+		}
 
-		Window(const WindowInfo&, const std::source_location& loc = std::source_location::current());  // 构造函数
+	public:
+
+
+		Window(const WindowInfo&, core::Logger* logger, const std::source_location& loc = std::source_location::current());  // 构造函数
 		~Window();                  // 析构函数
 
-		Window(Window&&) noexcept;		   // 移动构造函数
+		Window(Window&&) = default;		   // 移动构造函数
 
 		// 禁止复制和赋值
 		Window& operator=(const Window&) = delete;
@@ -197,4 +209,6 @@ namespace neon::graphics::gl
 		};
 		std::unique_ptr<GLFWwindow, GLFWwindowDeleter> windowPtr;
 	};
+
+	std::optional<Window> initGlad(Window::GLInfo _GLInfo, core::Logger* logger);
 }

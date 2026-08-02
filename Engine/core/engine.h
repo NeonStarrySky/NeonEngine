@@ -36,6 +36,14 @@ namespace neon::core
 		using InputSystem = neon::core::InputSystem;
 		using Logger = neon::core::Logger;
 
+		//resources
+		std::vector<Window> windows;
+		//submodules
+		InputSystem input_system;
+		ShaderManager shader_manager;
+		Renderer renderer;
+		Logger logger;
+
 		Window::GLInfo _GLInfo;
 
 		struct Context {
@@ -44,13 +52,7 @@ namespace neon::core
 
 		gladGLversionStruct glVersion;
 
-		//resources
-		std::vector<Window> windows;
-		//submodules
-		InputSystem input_system;
-		ShaderManager shader_manager;
-		Renderer renderer;
-		std::unique_ptr<Logger> logger;
+
 
 	public:
 		Engine();
