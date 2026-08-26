@@ -39,7 +39,8 @@ namespace neon::graphics::gl
 			throw std::runtime_error("Failed to initialize GLFW");
 		}
 
-		logger->info("GLFW initialized successfully.");
+		logger->info("GLFW initialized successfully.");//something wrong
+		logger->debug("GLFW initialized successfully.");
 
 		// 2. 配置 OpenGL 4.6 Core Profile
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, _GLInfo.glMajorVersion);

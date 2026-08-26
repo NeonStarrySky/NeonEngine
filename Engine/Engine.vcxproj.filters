@@ -155,6 +155,8 @@
       <Filter>src\core\ecs</Filter>
     </ClInclude>
     <ClInclude Include="core\logger.h" />
+    <ClInclude Include="gameplay\components\position_component.h" />
+    <ClInclude Include="core\ecs\system\renderer_system.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\fragment_shader.glsl">

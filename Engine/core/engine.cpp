@@ -5,6 +5,7 @@
 
 #include <GLFW/glfw3.h>
 #include <glm/fwd.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <glad/glad.h>
 #include <iostream>
@@ -16,6 +17,7 @@
 #define NOMINMAX
 #include "logger.h"
 #include <graphics/gl/GLResource.hpp>
+#include <math.h>
 #include <memory>
 #include <timer.h>
 #include <Windows.h>
@@ -101,16 +103,14 @@ namespace neon::core
 
 		// 顶点数据布局：Position (x,y,z), Normal (x,y,z), TexCoords (u,v)
 		std::vector<Vertex> vertices = {
-			// 位置                  // 法线 (占位符)      // 纹理坐标 (占位符)
-			{{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f} }, // 0: 左后下
-			{{ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}, // 1: 右后下
-			{{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}, // 2: 右后上
-			{{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}, // 3: 左后上
-			{{-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}, // 4: 左前下
-			{{ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}, // 5: 右前下
-			{{ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}, // 6: 右前上
-			{{-0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}  // 7: 左前上
-
+			{{1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+			{{ 0.2f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+			{{ 0.2f,  0.2f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+			{{1.0f,  0.2f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+			{{1.0f, 1.0f,  0.2f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+			{{ 0.2f, 1.0f,  0.2f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+			{{ 0.2f,  0.2f,  0.2f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+			{{1.0f,  0.2f,  0.2f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}}
 		};
 
 		// 索引数据 (按三角形拆分)
@@ -142,22 +142,49 @@ namespace neon::core
 		int frameCount = 0;
 		Timer timer;
 
-		glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 2.0f);
-		glm::vec3 forward(0.0f, 0.0f, -1.0f); // 前进方向
-		glm::vec3 right(1.0f, 0.0f, 0.0f); // 右方向
-		glm::vec3 up(0.0f, 1.0f, 0.0f); // 上方向
-		glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 1.0f);
-		glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+		glm::vec3 cameraPos = glm::vec3(2.0f, 2.0f, 2.0f);
+		glm::vec3 cameraFront = glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f));
 		glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-		float yaw = -90.0f; // 水平角，初始看向-z
-		float pitch = 0.0f;   // 垂直角
-		float sensitivity = 90.0f; // 每秒旋转角度
+		glm::mat4 model = glm::mat4(1.0f);
+
+		float angle = -0.577f;
+
+		model = glm::translate(
+			model,
+			glm::vec3(0, 0, 0)
+		);
+
+		model = glm::rotate(
+			model,
+			angle,
+			glm::vec3(0, 1, 0)
+		);
+
+		glm::mat4 view = glm::lookAt(
+			cameraPos,
+			cameraPos + cameraFront,
+			worldUp
+		);
+
+		auto width = getCurrentWindow().getWindowInfo().width;
+		auto height = getCurrentWindow().getWindowInfo().height;
+
+		glm::mat4 projection = glm::perspective(
+			glm::radians(45.0f),
+			width / (float)height,
+			0.1f,
+			100.0f
+		);
 
 		graphics::FrameRateController frameRateController;
-		frameRateController.setFrameRate(30);
+		frameRateController.setFrameRate(120);
 
 		gameplay::World world;
+
+		auto forward = glm::normalize(cameraFront);
+		auto right = glm::normalize(glm::cross(forward, worldUp));
+		auto up = glm::normalize(glm::cross(right, forward));
 
 		while (!glfwWindowShouldClose(windows[0].getGLFWwindow()))
 		{
@@ -214,50 +241,45 @@ namespace neon::core
 			k = 1.0f;
 			bool f = false;
 			// 处理方向键
-			if (input_system.keyPressed(Key::Up))
-			{
-				pitch += sensitivity * deltaTime;
-				f = true;
-			}
-			if (input_system.keyPressed(Key::Down))
-			{
-				pitch -= sensitivity * deltaTime;
-				f = true;
-			}
-			if (input_system.keyPressed(Key::Left))
-			{
-				yaw -= sensitivity * deltaTime;
-				f = true;
-			}
-			if (input_system.keyPressed(Key::Right))
-			{
-				yaw += sensitivity * deltaTime;
-				f = true;
-			}
+			//if (input_system.keyPressed(Key::Up))
+			//{
+			//	pitch += sensitivity * deltaTime;
+			//	f = true;
+			//}
+			//if (input_system.keyPressed(Key::Down))
+			//{
+			//	pitch -= sensitivity * deltaTime;
+			//	f = true;
+			//}
+			//if (input_system.keyPressed(Key::Left))
+			//{
+			//	yaw -= sensitivity * deltaTime;
+			//	f = true;
+			//}
+			//if (input_system.keyPressed(Key::Right))
+			//{
+			//	yaw += sensitivity * deltaTime;
+			//	f = true;
+			//}
 
-			// 限制俯仰角，防止翻转
-			if (pitch > 89.0f) pitch = 89.0f;
-			if (pitch < -89.0f) pitch = -89.0f;
+			//// 限制俯仰角，防止翻转
+			//if (pitch > 89.0f) pitch = 89.0f;
+			//if (pitch < -89.0f) pitch = -89.0f;
 
-			// 根据yaw/pitch计算新的摄像机前向量
-			glm::vec3 front;
-			front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-			front.y = sin(glm::radians(pitch));
-			front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-			cameraFront = glm::normalize(front);
+
 
 			// 输出格式: <x, y, z> length
-			auto printFront = [&front]() {
-				float length = std::sqrt(front.x * front.x +
-					front.y * front.y +
-					front.z * front.z);
-				std::cout << "<" << front.x << ", " << front.y << ", " << front.z
-					<< "> length = " << length << std::endl;
-				};
+			//auto printFront = [&front]() {
+			//	float length = std::sqrt(front.x * front.x +
+			//		front.y * front.y +
+			//		front.z * front.z);
+			//	std::cout << "<" << front.x << ", " << front.y << ", " << front.z
+			//		<< "> length = " << length << std::endl;
+			//	};
 
-			if (f) {
-				printFront();
-			}
+			//if (f) {
+			//	printFront();
+			//}
 
 			//world.update(deltaTime);
 			//input_system.swap(); // Update the input system state
@@ -267,7 +289,7 @@ namespace neon::core
 			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			renderer.Draw(mesh, program, glm::vec4(0, 1, 0.8, 0.5), deltaTime, front, cameraPos, worldUp);
+			renderer.Draw(mesh, program, glm::vec4(1.0f, 0.5f, 0.2f, 1.0f), model, view, projection);
 
 			getWindow(0).swapBuffers();
 
@@ -276,9 +298,10 @@ namespace neon::core
 			frameCount++;
 			if (frameCount % 60 == 0) // 每60帧输出一次FPS
 			{
+				using std::round;
 				frameCount = 0;
 				std::cout << "Frame rate <" << frameRateController.getActualFrameRate() << "> \n";
-				//std::cout << 'x' << cameraPos.x << 'y' << cameraPos.y << 'z' << cameraPos.z << '\n';
+				std::cout << 'x' << cameraPos.x << 'y' << cameraPos.y << 'z' << cameraPos.z << '\n';
 				//std::cout << timer.deltaTime() << " seconds elapsed. ";
 				//std::cout << frameCount << std::endl;
 				//double fps = 1.0 / timer.deltaTime(); // Calculate FPS based on the delta time

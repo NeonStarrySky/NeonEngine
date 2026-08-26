@@ -32,7 +32,7 @@ namespace neon::core
 		using Shader = neon::graphics::gl::Shader;
 		using Mesh = neon::graphics::gl::Mesh;
 		using WindowInfo = neon::graphics::WindowInfo;
-		using Renderer = neon::graphics::gl::Renderer;
+		using Renderer = neon::graphics::Renderer;
 		using InputSystem = neon::core::InputSystem;
 		using Logger = neon::core::Logger;
 

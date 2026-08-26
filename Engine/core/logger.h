@@ -21,7 +21,9 @@ namespace neon::core
 	{
 	private:
 		std::shared_ptr<spdlog::logger> logger;
+		std::shared_ptr<spdlog::logger>	logger_debug;
 		std::shared_ptr<spdlog::async_logger> async_logger;
+		std::shared_ptr<spdlog::async_logger> async_logger_debug;
 		std::shared_ptr<spdlog::details::thread_pool> thread_pool;
 
 	public:
@@ -195,7 +197,7 @@ namespace neon::core
 			};
 
 			// 2. 将 loc 作为第一个参数传给 spdlog::debug
-			logger->log(loc, spdlog::level::debug, fmt::runtime(fmt.fmt), std::forward<Args>(args)...);
+			logger_debug->log(loc, spdlog::level::debug, fmt::runtime(fmt.fmt), std::forward<Args>(args)...);
 		}
 
 		template<typename ...Args>
@@ -209,7 +211,7 @@ namespace neon::core
 			};
 
 			// 2. 将 loc 作为第一个参数传给 spdlog::trace
-			logger->log(loc, spdlog::level::trace, fmt::runtime(fmt.fmt), std::forward<Args>(args)...);
+			logger_debug->log(loc, spdlog::level::trace, fmt::runtime(fmt.fmt), std::forward<Args>(args)...);
 		}
 
 
@@ -249,7 +251,7 @@ namespace neon::core
 			};
 
 			// 2. 将 loc 作为第一个参数传给 spdlog::debug
-			async_logger->log(loc, spdlog::level::debug, fmt::runtime(fmt.fmt), std::forward<Args>(args)...);
+			async_logger_debug->log(loc, spdlog::level::debug, fmt::runtime(fmt.fmt), std::forward<Args>(args)...);
 		}
 
 		template<typename ...Args>
@@ -263,7 +265,7 @@ namespace neon::core
 			};
 
 			// 2. 将 loc 作为第一个参数传给 spdlog::trace
-			async_logger->log(loc, spdlog::level::trace, fmt::runtime(fmt.fmt), std::forward<Args>(args)...);
+			async_logger_debug->log(loc, spdlog::level::trace, fmt::runtime(fmt.fmt), std::forward<Args>(args)...);
 		}
 	};
 
