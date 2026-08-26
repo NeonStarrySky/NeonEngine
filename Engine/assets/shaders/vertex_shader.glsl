@@ -1,14 +1,12 @@
-// vertex_shader.glsl
 #version 460 core
 
 layout(location = 0) in vec3 p;
-uniform vec3 cameraFront;//n1
-uniform vec3 cameraPosition;//o
-void main() {
 
-    vec3 op = p - cameraPosition;
-    float ph = dot(op, cameraFront);
-    vec3 oh = op-ph*cameraFront;
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
 
-    gl_Position = vec4(oh.x/ph/10, oh.y/ph/10 , ph/10 , 1.0);
+void main()
+{
+    gl_Position = projection * view * model * vec4(p, 1.0);
 }

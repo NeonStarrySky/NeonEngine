@@ -6,14 +6,22 @@
 #include <glad/glad.h>
 #include <glm/fwd.hpp>
 
-namespace neon::graphics::gl
+namespace neon::graphics
 {
 	class Renderer
 	{
+		using Mesh = gl::Mesh;
+		using Program = gl::Program;
 	public:
 
-		static void Draw(const Mesh& mesh, const Program& shader, const glm::vec4& color, GLfloat t, const glm::vec3& cameraFront, const glm::vec3& cameraPosition, const glm::vec3& worldUp);
-
+		void Draw(
+			const Mesh& mesh,
+			const Program& program,
+			const glm::vec4& color,
+			const glm::mat4& model,
+			const glm::mat4& view,
+			const glm::mat4& projection
+		);
 	};
 
 }
