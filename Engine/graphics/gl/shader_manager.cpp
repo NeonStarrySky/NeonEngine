@@ -26,8 +26,8 @@ namespace neon::graphics::gl
 	Shader ShaderManager::loadAndCompileShader(const std::string& filePath, GLenum shaderType)
 	{
 
-		logger->debug("Loading and compiling shader <{}> of type {}", filePath, shaderType);
-		logger->debug("Shader type: {}", (shaderType == GL_VERTEX_SHADER ? "Vertex Shader" :
+		logger.debug("Loading and compiling shader <{}> of type {}", filePath, shaderType);
+		logger.debug("Shader type: {}", (shaderType == GL_VERTEX_SHADER ? "Vertex Shader" :
 			shaderType == GL_FRAGMENT_SHADER ? "Fragment Shader" :
 			shaderType == GL_GEOMETRY_SHADER ? "Geometry Shader" : "Unknown"));
 
