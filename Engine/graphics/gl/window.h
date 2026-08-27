@@ -122,7 +122,7 @@ namespace neon::graphics::gl
 	{
 		friend class Engine; // 友元类，允许Engine访问Window的私有成员
 	private:
-		core::Logger* logger = nullptr; // 日志记录器指针
+		core::Logger& logger; // 日志记录器指针
 	public:
 		struct GLInfo {
 			// 渲染配置
@@ -139,15 +139,10 @@ namespace neon::graphics::gl
 
 		inline static bool GladInitialized = false; // GLAD 初始化状态
 
-		void setLogger(core::Logger* log)
-		{
-			logger = log;
-		}
-
 	public:
 
 
-		Window(const WindowInfo&, core::Logger* logger, const std::source_location& loc = std::source_location::current());  // 构造函数
+		Window(const WindowInfo&, core::Logger& logger, const std::source_location& loc = std::source_location::current());  // 构造函数
 		~Window();                  // 析构函数
 
 		Window(Window&&) = default;		   // 移动构造函数
@@ -210,5 +205,5 @@ namespace neon::graphics::gl
 		std::unique_ptr<GLFWwindow, GLFWwindowDeleter> windowPtr;
 	};
 
-	std::optional<Window> initGlad(Window::GLInfo _GLInfo, core::Logger* logger);
+	std::optional<Window> initGlad(Window::GLInfo _GLInfo, core::Logger& logger);
 }

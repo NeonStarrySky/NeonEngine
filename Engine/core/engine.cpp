@@ -34,7 +34,7 @@ namespace neon::core
 
 		//局部作用域，确保临时窗口在创建正式窗口之后被销毁
 		{
-			auto temp = graphics::gl::initGlad(Window::GLInfo(), &logger); // Initialize GLAD to load OpenGL function pointers
+			auto temp = graphics::gl::initGlad(Window::GLInfo(), logger); // Initialize GLAD to load OpenGL function pointers
 			creatWindow(WindowInfo{});
 			getCurrentWindow().makeContextCurrent();
 		}
@@ -65,7 +65,7 @@ namespace neon::core
 	Engine::Engine() :
 		logger("log.txt"),
 		input_system(),
-		shader_manager(&logger)
+		shader_manager(logger)
 	{}
 
 	Engine::~Engine()//raii已经保证资源的正确释放，这里不需要手动清理窗口资源
@@ -78,7 +78,7 @@ namespace neon::core
 
 	int Engine::creatWindow(WindowInfo info)
 	{
-		windows.emplace_back(Window(info, &logger)); // Create a new window and add it to the list of windows
+		windows.emplace_back(Window(info, logger)); // Create a new window and add it to the list of windows
 		return windows.size();
 	}
 	void Engine::run()

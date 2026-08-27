@@ -19,10 +19,8 @@ namespace neon::graphics::gl
 
 		static void init();
 
-		ShaderManager(neon::core::Logger* logger) : logger(logger)
-		{
-			assert(logger != nullptr && "Logger pointer cannot be null");
-		}
+		ShaderManager(neon::core::Logger& logger) : logger(logger)
+		{}
 
 		Shader loadAndCompileShader(const std::string& filePath, GLenum shaderType);
 		bool loadShaders(const std::vector<std::pair<std::string, GLenum>>& shaderInfos);
@@ -34,7 +32,7 @@ namespace neon::graphics::gl
 		bool linkPrograms(const std::vector<std::string>& names);
 		gl::Program buildShader();
 	private:
-		neon::core::Logger* logger;
+		neon::core::Logger& logger;
 		std::vector<GLuint> shadersToLink;
 		static std::unordered_map<std::string, Shader> shaderPrograms;
 	};
