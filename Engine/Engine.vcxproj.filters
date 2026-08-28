@@ -64,9 +64,6 @@
     <ClCompile Include="core\input_system.cpp">
       <Filter>src\core\ecs</Filter>
     </ClCompile>
-    <ClCompile Include="core\ecs\movement_system.cpp">
-      <Filter>src\core\ecs</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -84,6 +81,7 @@
     </ClCompile>
     <ClCompile Include="core\logger.cpp" />
     <ClCompile Include="core\ecs\system\system_base.cpp" />
+    <ClCompile Include="graphics\TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="graphics\gl\GLResource_base.hpp">
@@ -116,13 +114,7 @@
     <ClInclude Include="core\ecs\component_storage.h">
       <Filter>src\core\ecs</Filter>
     </ClInclude>
-    <ClInclude Include="core\ecs\ecs_system.h">
-      <Filter>src\core\ecs</Filter>
-    </ClInclude>
     <ClInclude Include="core\input_system.h">
-      <Filter>src\core\ecs</Filter>
-    </ClInclude>
-    <ClInclude Include="core\ecs\movement_system.h">
       <Filter>src\core\ecs</Filter>
     </ClInclude>
     <ClInclude Include="core\ecs\entity.h">
@@ -156,7 +148,7 @@
       <Filter>src\core\ecs</Filter>
     </ClInclude>
     <ClInclude Include="core\logger.h" />
-    <ClInclude Include="gameplay\components\position_component.h" />
+    <ClInclude Include="core\ecs\components\position_component.h" />
     <ClInclude Include="core\ecs\system\renderer_system.h" />
     <ClInclude Include="core\ecs\system\system_base.h" />
   </ItemGroup>
