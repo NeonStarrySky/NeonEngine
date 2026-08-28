@@ -8,7 +8,12 @@ namespace neon::core::ecs
 	class RendererSystem
 	{
 		Logger& logger;
+		ComponentManager& componentManager;
 	public:
-		void update(ComponentManager& componentManager);
+		RendererSystem(ComponentManager& componentManager, Logger& logger) :
+			componentManager(componentManager),
+			logger(logger)
+		{}
+		void update();
 	};
 }
