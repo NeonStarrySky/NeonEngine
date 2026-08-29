@@ -1,5 +1,7 @@
 #pragma once
 
+#include "image.h"
+
 //-----------------标准库-----------------
 
 #include <filesystem>
@@ -19,7 +21,7 @@
 #include "gl/texture.h"
 
 namespace neon::graphics {
-	static gl::Texture loadTexture_stb(const std::string& path, bool sRGB = false, bool flip = true) {
+	gl::Texture loadTexture_stb(const std::string& path, bool sRGB, bool flip) {
 		// 1. flip guard（线程安全）
 		/*struct FlipGuard {
 			int old;

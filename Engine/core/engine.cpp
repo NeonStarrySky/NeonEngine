@@ -1,6 +1,5 @@
 ﻿#include "engine.h"
 
-#include "gameplay/world.h"
 #include "graphics/frameRateController.h"
 
 #include <GLFW/glfw3.h>
@@ -180,7 +179,7 @@ namespace neon::core
 		graphics::FrameRateController frameRateController;
 		frameRateController.setFrameRate(120);
 
-		gameplay::World world;
+		//gameplay::World world;
 
 		auto forward = glm::normalize(cameraFront);
 		auto right = glm::normalize(glm::cross(forward, worldUp));
@@ -237,50 +236,6 @@ namespace neon::core
 
 			}
 
-
-			k = 1.0f;
-			bool f = false;
-			// 处理方向键
-			//if (input_system.keyPressed(Key::Up))
-			//{
-			//	pitch += sensitivity * deltaTime;
-			//	f = true;
-			//}
-			//if (input_system.keyPressed(Key::Down))
-			//{
-			//	pitch -= sensitivity * deltaTime;
-			//	f = true;
-			//}
-			//if (input_system.keyPressed(Key::Left))
-			//{
-			//	yaw -= sensitivity * deltaTime;
-			//	f = true;
-			//}
-			//if (input_system.keyPressed(Key::Right))
-			//{
-			//	yaw += sensitivity * deltaTime;
-			//	f = true;
-			//}
-
-			//// 限制俯仰角，防止翻转
-			//if (pitch > 89.0f) pitch = 89.0f;
-			//if (pitch < -89.0f) pitch = -89.0f;
-
-
-
-			// 输出格式: <x, y, z> length
-			//auto printFront = [&front]() {
-			//	float length = std::sqrt(front.x * front.x +
-			//		front.y * front.y +
-			//		front.z * front.z);
-			//	std::cout << "<" << front.x << ", " << front.y << ", " << front.z
-			//		<< "> length = " << length << std::endl;
-			//	};
-
-			//if (f) {
-			//	printFront();
-			//}
-
 			//world.update(deltaTime);
 			//input_system.swap(); // Update the input system state
 
@@ -296,7 +251,7 @@ namespace neon::core
 
 			frameRateController.checkAndWait();
 			frameCount++;
-			if (frameCount % 60 == 0) // 每60帧输出一次FPS
+			if (frameCount % setting.FrameRate == 0) // 每60帧输出一次FPS
 			{
 				using std::round;
 				frameCount = 0;

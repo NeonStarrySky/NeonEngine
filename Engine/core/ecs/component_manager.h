@@ -29,38 +29,44 @@ namespace neon::core::ecs
 		ComponentManager(const ComponentManager&) = delete;
 		ComponentManager& operator=(const ComponentManager&) = delete;
 
+		//注册组件（而非组件存储器！！
 		template<typename T>
-		void registerComponent()
+		ComponentStorage<T>& registerComponent()
 		{
 
-			static_assert(std::is_base_of_v<ComponentStorageBase, T>);// 确保 T 是 ComponentStorageBase 的派生类
+			static_assert(std::is_class_v<T>, "Template parameter T must be a struct or class!");
 
 			auto typeId = core::type_system::getTypeId<T>();
 
-			if (indexMap.contains(typeId)) return;// 防止重复注册
+			if (indexMap.contains(typeId)) return *static_cast<ComponentStorage<T>*>(data[indexMap[typeId]].get());// 如果已经注册过该组件类型，则直接返回对应的存储器
 
-			T temp; // 创建一个临时对象以获取其类型 ID
+			ComponentStorage<T> temp;
 			temp.setTypeId(typeId);// 设置类型 ID
 
-			data.push_back(std::make_unique<T>(std::move(temp)));// 将临时对象移动到 vector 中
+			data.push_back(std::make_unique<ComponentStorage<T>>(std::move(temp)));// 将临时对象移动到 vector 中
 
 
 			indexMap[typeId] = data.size() - 1;// 记录组件类型对应的索引
+
+			return *static_cast<ComponentStorage<T>*>(data.back().get());
 		}
 
 		template<typename T>
 		void unregisterComponent()
 		{
 
-			static_assert(std::is_base_of_v<ComponentStorageBase, T>);// 确保 T 是 ComponentStorageBase 的派生类
+			static_assert(std::is_class_v<T>, "Template parameter T must be a struct or class!");
 
 			auto typeId = core::type_system::getTypeId<T>();
 			auto it = indexMap.find(typeId);
 
-			// 1. 安全检查：如果该组件根本没有注册，直接返回
-			if (it == indexMap.end()) {
-				return;
-			}
+			// 使用未注册的组件类型时，抛出异常或断言失败
+			assert
+			(
+				it != indexMap.end()
+				&&
+				(std::string("Type not registered: ") + std::string(typeid(T).name())).c_str()
+			);
 
 			std::size_t targetIndex = it->second;// 获取要删除的组件在 data 中的索引
 			std::size_t lastIndex = data.size() - 1;// 获取最后一个组件的索引
@@ -87,15 +93,21 @@ namespace neon::core::ecs
 		}
 
 		template<typename T>
-		T& get()
+		ComponentStorage<T>& get()
 		{
 
-			static_assert(std::is_base_of_v<ComponentStorageBase, T>);// 确保 T 是 ComponentStorageBase 的派生类
+			static_assert(std::is_class_v<T>, "Template parameter T must be a struct or class!");
 
 			auto typeId = core::type_system::getTypeId<T>();
 			auto it = indexMap.find(typeId);
-			assert(it != indexMap.end());// 确保组件类型已注册
-			return static_cast<T&>(*data[it->second]);
+
+			assert
+			(
+				it != indexMap.end()
+				&&
+				(std::string("Type not registered: ") + std::string(typeid(T).name())).c_str()
+			);// 确保组件类型已注册
+			return static_cast<ComponentStorage<T>&>(*data[it->second]);
 		}
 
 		template<typename T>

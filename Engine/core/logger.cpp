@@ -16,7 +16,7 @@
 namespace neon::core
 {
 	//文件sink有问题，以后再改，先用控制台sink
-	Logger::Logger(const std::string& log_path = "log.txt")
+	Logger::Logger(const std::string& log_path)
 	{
 		//同步日志初始化
 		//普通级别时不需要源代码位置，只有在debug和trace级别时才需要源代码位置
@@ -109,10 +109,7 @@ namespace neon::core
 		);
 
 		async_logger_debug->set_level(spdlog::level::trace);
-		async_logger_debug->set_pattern("[%d %H:%M:%S.%e] [%^%l%$] [%s:%#] [thread:%t] 555 %v");
+		async_logger_debug->set_pattern("[%d %H:%M:%S.%e] [%^%l%$] [%s:%#] [thread:%t] %v");
 	}
-
-
-
 
 }

@@ -45,24 +45,31 @@ namespace neon::core::ecs
 		ComponentStorage(ComponentStorage&&) noexcept = default;
 		ComponentStorage& operator=(ComponentStorage&&) noexcept = default;
 
+		// 迭代器支持
+		auto begin() { return data.begin(); }
+		auto end() { return data.end(); }
+
 		// 支持左值引用拷贝
-		void add(Entity entity, const T& component)
+		void addTo(Entity entity, const T& component)
 		{
 			if (has(entity)) return; // 避免重复添加
 
 			data.push_back(component);
-			indexToEntity.push_back(entity);
 			entityToIndex[entity] = data.size() - 1;
+
+			indexToEntity.push_back(entity);
+
 		}
 
 		// 支持右值引用移动（更高效）
-		void add(Entity entity, T&& component)
+		void addTo(Entity entity, T&& component)
 		{
 			if (has(entity)) return;
 
 			data.push_back(std::move(component));
-			indexToEntity.push_back(entity);
 			entityToIndex[entity] = data.size() - 1;
+
+			indexToEntity.push_back(entity);
 		}
 
 		// O(1) 复杂度的删除操作

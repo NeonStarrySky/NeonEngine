@@ -5,11 +5,15 @@
 
 namespace neon::core::ecs
 {
-	class system_base
+	class SystemBase
 	{
-		//
-	protected:
-		neon::core::Logger& logger;
-		neon::core::ecs::ComponentManager& componentManager;
-	}
+		Logger& logger;
+		ComponentManager& componentManager;
+	public:
+		SystemBase(ComponentManager& componentManager, Logger& logger) :
+			componentManager(componentManager),
+			logger(logger)
+		{}
+		void update();
+	};
 }

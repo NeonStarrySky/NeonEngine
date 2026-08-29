@@ -27,7 +27,7 @@ namespace neon::core
 		std::shared_ptr<spdlog::details::thread_pool> thread_pool;
 
 	public:
-		Logger(const std::string& log_path);
+		Logger(const std::string& log_path = "log.txt");
 
 		enum class LogLevel
 		{

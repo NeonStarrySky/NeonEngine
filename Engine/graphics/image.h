@@ -24,5 +24,5 @@ namespace neon::graphics {
 	/// </summary>
 	/// <param name="path">文件路径</param>
 	/// <returns>纹理对象</returns>
-	static gl::Texture loadTexture_stb(const std::string& path);
+	gl::Texture loadTexture_stb(const std::string& path, bool sRGB = false, bool flip = true);
 }

@@ -4,14 +4,20 @@
 
 #include "entity.h"
 
+#include "core/logger.h"
+
 namespace neon::core::ecs
 {
 	class EntityManager
 	{
+		Logger& logger;
+
 		Entity usedEntityId = 0;
 		std::vector<Entity> freeEntityId;
 	public:
-		EntityManager() = default;
+		EntityManager(Logger& logger) : logger(logger) {
+			logger.info("EntityManager was created.");
+		}
 		Entity createEntity();
 		void destroyEntity(Entity entity);
 		bool isValid(Entity entity) const;

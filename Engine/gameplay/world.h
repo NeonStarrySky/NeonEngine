@@ -2,7 +2,7 @@
 
 #include "core/ecs/component_storage.h"
 #include "core/ecs/entity.h"
-#include "core/ecs/movement_system.h"
+//#include "core/ecs/movement_system.h"
 
 #include <cstdint>
 #include <iostream>
@@ -16,7 +16,7 @@ namespace neon::gameplay
 	class World
 	{
 		using Entity = neon::core::ecs::Entity;
-		using ComponentManager = neon::core::ecs::ComponentManager;
+		//using ComponentManager = neon::core::ecs::ComponentManager;
 		//using MovementSystem = neon::core::ecs::MovementSystem;
 	public:
 		// ===== Types =====

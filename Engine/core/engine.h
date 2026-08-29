@@ -5,6 +5,7 @@
 #include "graphics/gl/mesh.h"
 #include "graphics/gl/window.h"
 #include "graphics/window_info.h"
+#include "setting.h"
 
 //submodules
 #include "graphics/gl/renderer.h"
@@ -49,6 +50,8 @@ namespace neon::core
 		struct Context {
 			size_t current_window = 0;
 		}context;
+
+		Setting setting;
 
 		gladGLversionStruct glVersion;
 
@@ -131,5 +134,4 @@ namespace neon::core
 		/// <returns>包含OpenGL主版本号、次版本号等信息的gladGLversionStruct结构体。</returns>
 		const gladGLversionStruct getGLVersion() { return glVersion; }
 	};
-	;
 }
