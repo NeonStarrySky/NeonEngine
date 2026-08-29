@@ -5,6 +5,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "core/logger.h"
 #include "gl/texture.h"
 #include "image.h"
 
@@ -16,11 +17,15 @@ namespace neon::graphics::gl
 	{
 		using Texture = gl::Texture;// 方便切换
 
+		core::Logger& logger;
 
 		std::unordered_map<std::string, std::shared_ptr<Texture>> textureCache_;
 		mutable std::mutex cacheMutex_;
 
 	public:
+
+		TextureManager(core::Logger& logger) : logger(logger) {}
+
 		/// <summary>
 		/// 使用stb_image库加载纹理，并创建OpenGL纹理对象。
 		/// 如果纹理已加载，则返回缓存的纹理的共享指针。

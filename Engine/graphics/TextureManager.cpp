@@ -2,19 +2,21 @@
 
 namespace neon::graphics::gl
 {
-	std::weak_ptr<Texture> TextureManager::loadTexture(const std::string& path, bool forceReload = false)
+	std::weak_ptr<Texture> TextureManager::loadTexture(const std::string& path, bool forceReload)
 	{
 		std::lock_guard<std::mutex> lock(cacheMutex_);
 
-		// 1. 检查缓存
+		// 不用强制重新加载时，先检查缓存
+
 		if (!forceReload)
 		{
 			auto it = textureCache_.find(path);
 			if (it != textureCache_.end())
 			{
-				return it->second; // 返回缓存的共享指针
+				return it->second; // 返回缓存的指针
 			}
 		}
+
 
 		try
 		{
@@ -32,6 +34,7 @@ namespace neon::graphics::gl
 		}
 		catch (const std::exception& e)
 		{
+
 			// 4. 加载失败，记录错误（实际项目中应使用日志系统）
 			// 这里可以根据需要添加日志输出
 			return std::weak_ptr<Texture>(); // 返回空指针表示加载失败

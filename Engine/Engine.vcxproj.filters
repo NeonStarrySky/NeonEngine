@@ -82,6 +82,8 @@
     <ClCompile Include="core\logger.cpp" />
     <ClCompile Include="core\ecs\system\system_base.cpp" />
     <ClCompile Include="graphics\TextureManager.cpp" />
+    <ClCompile Include="core\ecs\system\physics_system.cpp" />
+    <ClCompile Include="core\setting.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="graphics\gl\GLResource_base.hpp">
@@ -123,9 +125,6 @@
     <ClInclude Include="core\engine.h">
       <Filter>src\core</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\world.h">
-      <Filter>src\gameplay</Filter>
-    </ClInclude>
     <ClInclude Include="graphics\image.h">
       <Filter>src\graphics</Filter>
     </ClInclude>
@@ -151,6 +150,8 @@
     <ClInclude Include="core\ecs\components\position_component.h" />
     <ClInclude Include="core\ecs\system\renderer_system.h" />
     <ClInclude Include="core\ecs\system\system_base.h" />
+    <ClInclude Include="core\ecs\system\physics_system.h" />
+    <ClInclude Include="core\setting.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\fragment_shader.glsl">
