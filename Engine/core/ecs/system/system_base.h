@@ -1,19 +1,33 @@
 #pragma once
 
 #include "core/ecs/component_manager.h"
+#include "core/ecs/component_storage.h"
 #include "core/logger.h"
+#include"core/setting.h"
 
 namespace neon::core::ecs
 {
-	class SystemBase
+
+	struct Component
+	{
+
+	};
+
+	class System
 	{
 		Logger& logger;
+		Setting& setting;
 		ComponentManager& componentManager;
+		ComponentStorage<Component>& Components;
 	public:
-		SystemBase(ComponentManager& componentManager, Logger& logger) :
+		System(Logger& logger, Setting& setting, ComponentManager& componentManager) :
+			logger(logger),
+			setting(setting),
 			componentManager(componentManager),
-			logger(logger)
-		{}
+			Components(componentManager.registerComponent<Component>())
+		{
+
+		}
 		void update();
 	};
 }

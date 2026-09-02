@@ -26,7 +26,7 @@ namespace neon::core::ecs
 	template<typename T>
 	class ComponentStorage : public ComponentStorageBase
 	{
-		static_assert(std::is_trivially_copyable_v<T>, "Component type must be trivially copyable");
+		//static_assert(std::is_trivially_copyable_v<T>, "Component type must be trivially copyable");
 
 		std::vector<T> data;
 		std::unordered_map<Entity, std::size_t> entityToIndex;

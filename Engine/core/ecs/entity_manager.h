@@ -15,9 +15,12 @@ namespace neon::core::ecs
 		Entity usedEntityId = 0;
 		std::vector<Entity> freeEntityId;
 	public:
+
 		EntityManager(Logger& logger) : logger(logger) {
 			logger.info("EntityManager was created.");
 		}
+		EntityManager& operator=(const EntityManager&) = default;
+
 		Entity createEntity();
 		void destroyEntity(Entity entity);
 		bool isValid(Entity entity) const;
