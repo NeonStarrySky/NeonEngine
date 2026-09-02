@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -33,6 +34,6 @@ namespace neon::graphics::gl
 		/// <param name="path">文件路径</param>
 		/// <param name="forceReload">是否强制重新加载，忽略缓存</param>
 		/// <returns>纹理对象的共享指针。如果加载失败，返回空指针</returns>
-		std::weak_ptr<gl::Texture> loadTexture(const std::string& path, bool forceReload = false);
+		std::weak_ptr<gl::Texture> loadTexture(const std::filesystem::path& path, bool forceReload = false);
 	};
 }

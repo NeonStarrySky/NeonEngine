@@ -37,11 +37,11 @@ namespace neon::graphics::gl
 		auto wireframeIndices = makeWireframeEBO_unique(indices);
 		EBO_l.IndexCount = static_cast<unsigned int>(wireframeIndices.size());
 
-		glGenVertexArrays(1, VAO_l.getIDPtr());
+		glGenVertexArrays(1, VAO_line.getIDPtr());
 		glGenBuffers(1, VBO.getIDPtr());
 		glGenBuffers(1, EBO_l.EBO.getIDPtr());
 
-		glBindVertexArray(VAO_l.getID());
+		glBindVertexArray(VAO_line.getID());
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO.getID());
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);

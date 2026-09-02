@@ -81,7 +81,7 @@
     </ClCompile>
     <ClCompile Include="core\logger.cpp" />
     <ClCompile Include="core\ecs\system\system_base.cpp" />
-    <ClCompile Include="graphics\TextureManager.cpp" />
+    <ClCompile Include="graphics\texture_manager.cpp" />
     <ClCompile Include="core\ecs\system\physics_system.cpp" />
     <ClCompile Include="core\setting.cpp" />
   </ItemGroup>
@@ -128,13 +128,13 @@
     <ClInclude Include="graphics\image.h">
       <Filter>src\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\TextureManager.h">
+    <ClInclude Include="graphics\texture_manager.h">
       <Filter>src\graphics</Filter>
     </ClInclude>
     <ClInclude Include="graphics\gl\texture.h">
       <Filter>src\graphics\gl</Filter>
     </ClInclude>
-    <ClInclude Include="graphics2D\sprite.h">
+    <ClInclude Include="core\ecs\components\sprite_component.h">
       <Filter>src\graphics2D</Filter>
     </ClInclude>
     <ClInclude Include="core\type_system\type_id.h">
@@ -148,10 +148,11 @@
     </ClInclude>
     <ClInclude Include="core\logger.h" />
     <ClInclude Include="core\ecs\components\position_component.h" />
-    <ClInclude Include="core\ecs\system\renderer_system.h" />
+    <ClInclude Include="core\ecs\system\sprite_system.h" />
     <ClInclude Include="core\ecs\system\system_base.h" />
     <ClInclude Include="core\ecs\system\physics_system.h" />
     <ClInclude Include="core\setting.h" />
+    <ClInclude Include="core\ecs\components\physics_component.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\fragment_shader.glsl">

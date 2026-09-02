@@ -31,7 +31,8 @@ namespace neon::core
 
 		std::vector<spdlog::sink_ptr> sinks =
 		{
-			consoleSink
+			consoleSink,
+			fileSink
 		};
 
 		logger = make_shared<spdlog::logger>("logger", sinks.begin(), sinks.end());
@@ -51,7 +52,8 @@ namespace neon::core
 
 		std::vector<spdlog::sink_ptr> sinks_debug =
 		{
-			consoleSink_debug
+			consoleSink_debug,
+			fileSink_debug
 		};
 		logger_debug = make_shared<spdlog::logger>("logger_debug", sinks_debug.begin(), sinks_debug.end());
 

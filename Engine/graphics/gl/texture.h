@@ -72,7 +72,7 @@ namespace neon::graphics::gl {
 		// 分配不可变存储（现代方式）
 		void allocateStorage(GLsizei levels, GLenum internalformat,
 			GLsizei width, GLsizei height = 1, GLsizei depth = 1) {
-			assert(isValid());
+			//assert(isValid() && "Texture invalid!");
 
 			// 先更新信息
 			info_.internalFormat = internalformat;

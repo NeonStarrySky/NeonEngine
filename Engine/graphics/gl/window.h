@@ -146,6 +146,7 @@ namespace neon::graphics::gl
 		~Window();                  // 析构函数
 
 		Window(Window&&) = default;		   // 移动构造函数
+		Window& operator=(Window&&) = default; // 移动赋值运算符
 
 		// 禁止复制和赋值
 		Window& operator=(const Window&) = delete;

@@ -42,7 +42,7 @@ namespace neon::graphics::gl
 			unsigned int IndexCount;
 		};
 
-		GLResource<VAO_Deleter> VAO_s, VAO_l;
+		GLResource<VAO_Deleter> VAO_s, VAO_line;
 		GLResource<VBO_Deleter> VBO;
 		EBO EBO_s, EBO_l;
 

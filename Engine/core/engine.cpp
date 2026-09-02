@@ -8,7 +8,6 @@
 
 #include <glad/glad.h>
 #include <iostream>
-#include<spdlog/spdlog.h>
 #include <stdexcept>
 #include<vector>
 
@@ -16,10 +15,7 @@
 #define NOMINMAX
 #include "logger.h"
 #include <graphics/gl/GLResource.hpp>
-#include <math.h>
-#include <memory>
 #include <timer.h>
-#include <Windows.h>
 
 namespace neon::core
 {
