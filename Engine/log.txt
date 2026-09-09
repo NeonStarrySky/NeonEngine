@@ -1,0 +1,20 @@
+[03 22:14:02.537] [debug] [window.cpp:103] [thread:12760] Creating GLFW window with title: Temporary GLAD Initialization Window,but how do you see this?
+[03 22:14:03.053] [debug] [window.cpp:103] [thread:12760] Creating GLFW window with title: Neon Engine
+[03 22:14:03.415] [debug] [texture_manager.cpp:54] [thread:12760] Star to load texture "pic.png"
+[03 22:14:03.416] [debug] [shader_manager.cpp:29] [thread:12760] Loading and compiling shader <assets/shaders/vertex_shader.glsl> of type 35633
+[03 22:14:03.417] [debug] [shader_manager.cpp:30] [thread:12760] Shader type: Vertex Shader
+[03 22:14:03.419] [debug] [shader_manager.cpp:29] [thread:12760] Loading and compiling shader <assets/shaders/fragment_shader.glsl> of type 35632
+[03 22:14:03.419] [debug] [shader_manager.cpp:30] [thread:12760] Shader type: Fragment Shader
+[03 22:14:02.520] [info] Game path: D:\neon\program\project\cpp\NeonEngine\x64\Release\Engine.exe
+[03 22:14:02.521] [info] EntityManager was created.
+[03 22:14:02.535] [info] GLFW initialized successfully.
+[03 22:14:03.008] [info] GLFW window created successfully with title: Temporary GLAD Initialization Window,but how do you see this?
+[03 22:14:03.013] [info] OpenGL Version: 4.6.0 NVIDIA 592.82
+[03 22:14:03.015] [info] GLSL Version: 4.60 NVIDIA
+[03 22:14:03.016] [info] Renderer: NVIDIA GeForce RTX 4060 Laptop GPU/PCIe/SSE2
+[03 22:14:03.016] [info] Vendor: NVIDIA Corporation
+[03 22:14:03.017] [info] GLAD initialized successfully.
+[03 22:14:03.411] [info] GLFW window created successfully with title: Neon Engine
+[03 22:14:18.982] [info] Average Frame Rate: 137.51 FPS
+[03 22:14:18.983] [info] FrameRate difference from target: -4.50 %
+[03 22:14:18.984] [info] FrameRate stability (CV): 17.71 %

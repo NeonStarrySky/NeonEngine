@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <type_traits>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace neon::core::ecs
@@ -28,10 +29,8 @@ namespace neon::core::ecs
 	{
 		//static_assert(std::is_trivially_copyable_v<T>, "Component type must be trivially copyable");
 
-		std::vector<T> data;
+		std::vector<std::pair<Entity, T>> data;
 		std::unordered_map<Entity, std::size_t> entityToIndex;
-		// 引入反向映射：通过数组索引快速找到对应的 Entity，用于 Swap-and-Pop 优化
-		std::vector<Entity> indexToEntity;
 
 	public:
 		ComponentStorage() = default;
@@ -54,11 +53,8 @@ namespace neon::core::ecs
 		{
 			if (has(entity)) return; // 避免重复添加
 
-			data.push_back(component);
+			data.emplace_back(entity, component);
 			entityToIndex[entity] = data.size() - 1;
-
-			indexToEntity.push_back(entity);
-
 		}
 
 		// 支持右值引用移动（更高效）
@@ -66,10 +62,8 @@ namespace neon::core::ecs
 		{
 			if (has(entity)) return;
 
-			data.push_back(std::move(component));
+			data.emplace_back(entity, std::move(component));
 			entityToIndex[entity] = data.size() - 1;
-
-			indexToEntity.push_back(entity);
 		}
 
 		// O(1) 复杂度的删除操作
@@ -84,11 +78,9 @@ namespace neon::core::ecs
 			if (indexToRemove != lastIndex)
 			{
 				// 将要删除的元素与最后一个元素交换
-				T lastComponent = std::move(data[lastIndex]);
-				Entity lastEntity = indexToEntity[lastIndex];
+				Entity lastEntity = data[lastIndex].first;
 
-				data[indexToRemove] = std::move(lastComponent);
-				indexToEntity[indexToRemove] = lastEntity;
+				data[indexToRemove] = std::move(data[lastIndex]);
 
 				// 更新被移动的那个实体的索引映射
 				entityToIndex[lastEntity] = indexToRemove;
@@ -96,7 +88,6 @@ namespace neon::core::ecs
 
 			// 弹出最后一个元素
 			data.pop_back();
-			indexToEntity.pop_back();
 			entityToIndex.erase(it);
 		}
 
@@ -110,7 +101,7 @@ namespace neon::core::ecs
 			auto it = entityToIndex.find(entity);
 			if (it != entityToIndex.end())
 			{
-				return data[it->second];
+				return data[it->second].second;
 			}
 			throw std::runtime_error("Component not found for the given entity");
 		}
@@ -120,7 +111,7 @@ namespace neon::core::ecs
 			auto it = entityToIndex.find(entity);
 			if (it != entityToIndex.end())
 			{
-				return data[it->second];
+				return data[it->second].second;
 			}
 			throw std::runtime_error("Component not found for the given entity");
 		}

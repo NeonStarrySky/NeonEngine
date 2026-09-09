@@ -20,7 +20,11 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <random>
 #include <ranges>
+
+#include <cmath>
+#include <deque>
 
 // 先给 glm::vec3 重载输出
 std::ostream& operator<<(std::ostream& os, const glm::vec3& v) {
@@ -34,9 +38,25 @@ std::ostream& operator<<(std::ostream& os, const neon::core::ecs::PhysicsCompone
 		<< ", .velocity = " << p.velocity << " }";
 	return os;
 }
+inline std::mt19937& getRng() {
+	thread_local std::mt19937 rng{ std::random_device{}() };
+	return rng;
+}
 
+// ---------- 1. 随机单位向量（球面均匀分布） ----------
+inline glm::vec3 randomUnitVector() {
+	std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
+	glm::vec3 v;
+	do {
+		v = glm::vec3(dist(getRng()), dist(getRng()), dist(getRng()));
+	} while (glm::dot(v, v) > 1.0f || glm::dot(v, v) < 1e-6f); // 拒绝采样，保证在单位球内且非零
+	return glm::normalize(v);
+}
 int main(int argc, char* argv[]) {
+	//std::cout << "Game path:" << argv[0] << '\n';
 
+	int frameRate = 144; // 设置目标帧率为 144 FPS
+	std::string picPath = "pic.png";
 	using namespace neon;
 	using
 		neon::core::Logger, neon::core::Setting,
@@ -56,6 +76,7 @@ int main(int argc, char* argv[]) {
 	Logger logger{};
 	Setting setting;
 
+	logger.info("Game path: {}", argv[0]);
 	/*创建*/
 	//ecs
 	EntityManager entityManager{ logger };
@@ -66,7 +87,7 @@ int main(int argc, char* argv[]) {
 	PhysicsSystem physicsSystem(logger, setting, componentManager);
 	SpriteSystem spriteSystem(logger, setting, componentManager);
 
-	auto&& entity = entityManager.createEntity();
+
 
 	auto&& physicsStorage = componentManager.get<core::ecs::PhysicsComponent>();
 	auto&& spriteStorage = componentManager.get<core::ecs::SpriteComponent>();
@@ -81,7 +102,8 @@ int main(int argc, char* argv[]) {
 	window.makeContextCurrent();
 
 	FrameRateController frameRateController;
-	frameRateController.setFrameRate(144);
+
+	frameRateController.setFrameRate(frameRate);
 	Renderer renderer;
 
 
@@ -89,7 +111,7 @@ int main(int argc, char* argv[]) {
 	//graphics
 	Program program;
 	try {
-		textureManager.loadTexture("assets/images/pic.png");
+		textureManager.loadTexture(picPath);
 
 		shaderManager.init(); // Initialize the shader manager
 		shaderManager.loadShaders({// Load and compile shaders from specified file paths and types
@@ -109,17 +131,11 @@ int main(int argc, char* argv[]) {
 
 
 	//ecs
-	physicsStorage.addTo(
-		entity,
-		core::ecs::PhysicsComponent{
-			.position = glm::vec3{0, 0, 0},
-			.velocity = glm::vec3{0.5, 0.2, 0}
-		}
-	);
+
 
 
 	std::vector<Vertex> vertices = {
-	{ {-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f} },  // 左下
+	{ {-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f} },  // 左下
 	{ { 0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f} },  // 右下
 	{ { 0.5f,  0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f} },  // 右上
 	{ {-0.5f,  0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f} }   // 左上
@@ -133,7 +149,7 @@ int main(int argc, char* argv[]) {
 	Mesh mesh{ vertices, indices };
 
 
-	auto texture = textureManager.loadTexture("assets/images/pic.png").lock();
+	auto texture = textureManager.loadTexture(picPath).lock();
 	if (!texture) {
 		logger.error("Failed to load texture.");
 		return EXIT_FAILURE;
@@ -141,45 +157,134 @@ int main(int argc, char* argv[]) {
 
 	SpriteRegion region{ 0, 0, texture->info().width, texture->info().height };
 
-	spriteStorage.addTo(
-		entity,
-		core::ecs::SpriteComponent{ mesh, *texture, region }
-	);
+	for (size_t i = 0; i < 1; i++)
+	{
+		auto&& entity = entityManager.createEntity();
 
-	auto&& spriteComponent = spriteStorage.get(entity);
-	auto&& physicsComponent = physicsStorage.get(entity);
 
-	/*game loop*/
+		physicsStorage.addTo(
+			entity,
+			core::ecs::PhysicsComponent
+			{
+				.position = glm::vec3{0, 0, 0},
+				.velocity = randomUnitVector() * 0.5f
+			}
+		);
+
+		spriteStorage.addTo
+		(
+			entity,
+			core::ecs::SpriteComponent{ mesh, *texture, region }
+		);
+	}
+
+
+
+	float averageFrameRate = 0.0f;
+	float frameRateStdDev = 0.0f;
+	float frameRateStability = 0.0f;
+
+	int frameCount = 0;
+
+	constexpr int sampleCount = 60;
+	std::deque<float> frameRates;
+	glfwSwapInterval(0);
+	/* game loop */
 	while (!glfwWindowShouldClose(window.getGLFWwindow()))
 	{
-
 		window.pollEvents();
 
-
-
-		//ecs
+		// ecs
 		physicsSystem.update();
 
-		//for (auto& component : physicsStorage) {
-		//	std::cout << component << std::endl;
-		//}
-
-		//graphics
-		// 清屏
+		// graphics
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		renderer.Draw(
-			spriteComponent,
-			physicsComponent,
-			program,
-			glm::mat4(1.0f),
-			glm::mat4(1.0f)
-		);
+		auto&& spriteComponents = componentManager.get<core::ecs::SpriteComponent>();
+		auto&& physicComponents = componentManager.get<core::ecs::PhysicsComponent>();
+
+		for (auto&& [entity, spriteComponent] : spriteComponents)
+		{
+			auto&& physicsComponent = physicComponents.get(entity);
+			renderer.Draw(
+				spriteComponent,
+				physicsComponent,
+				program,
+				glm::mat4(1.0f),
+				glm::mat4(1.0f)
+			);
+		}
 
 		window.swapBuffers();
 
 		frameRateController.checkAndWait();
+
+		const float currentFrameRate =
+			frameRateController.getActualFrameRate();
+
+		// --------------------------------------------------
+		// 最近 N 帧 FPS
+		// --------------------------------------------------
+
+		frameRates.push_back(currentFrameRate);
+
+		if (frameRates.size() > sampleCount)
+			frameRates.pop_front();
+
+		// --------------------------------------------------
+		// 平均 FPS
+		// --------------------------------------------------
+
+		float sum = 0.0f;
+
+		for (float fps : frameRates)
+			sum += fps;
+
+		averageFrameRate = sum / frameRates.size();
+
+		// --------------------------------------------------
+		// FPS 标准差
+		// --------------------------------------------------
+
+		float variance = 0.0f;
+
+		for (float fps : frameRates)
+		{
+			const float difference = fps - averageFrameRate;
+			variance += difference * difference;
+		}
+
+		variance /= frameRates.size();
+
+		frameRateStdDev = std::sqrt(variance);
+
+		// --------------------------------------------------
+		// 稳定度（变异系数）
+		//
+		// 0%   = 完全稳定
+		// 1%   = 非常稳定
+		// 5%   = 有一定波动
+		// 10%+ = 波动明显
+		// --------------------------------------------------
+
+		if (averageFrameRate > 0.0f)
+		{
+			frameRateStability =
+				frameRateStdDev / averageFrameRate * 100.0f;
+		}
+
+		frameCount++;
 	}
 
+	logger.info("Average Frame Rate: {:.2f} FPS", averageFrameRate);
+	logger.info(
+		"FrameRate difference from target: {:.2f} %",
+		(averageFrameRate - frameRate) / frameRate * 100.0f
+	);
+
+	logger.info(
+		"FrameRate stability (CV): {:.2f} %",
+		frameRateStability
+	);
 }
