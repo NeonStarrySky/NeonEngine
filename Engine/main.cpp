@@ -265,6 +265,7 @@ int main(int argc, char* argv[]) {
 
 
 
+
 	float averageFrameRate = 0.0f;
 	float frameRateStdDev = 0.0f;
 	float frameRateStability = 0.0f;
@@ -304,6 +305,15 @@ int main(int argc, char* argv[]) {
 			const double stageMs = std::chrono::duration<double, std::milli>(DiagnosticClock::now() - stageStart).count();
 			logger.debug("Frame {}: window events complete in {:.2f} ms; checking input.", frameCount, stageMs);
 		}
+
+		const bool toggleKeyIsPressed =
+			glfwGetKey(window.getGLFWwindow(), GLFW_KEY_TAB) == GLFW_PRESS;
+		if (toggleKeyIsPressed && !toggleKeyWasPressed)
+		{
+			useSpriteArrayRenderer = !useSpriteArrayRenderer;
+			logger.debug("Renderer mode toggled: {}", useSpriteArrayRenderer ? "Sprite Array Renderer" : "Individual Sprite Renderer");
+		}
+		toggleKeyWasPressed = toggleKeyIsPressed;
 
 		const bool toggleKeyIsPressed =
 			glfwGetKey(window.getGLFWwindow(), GLFW_KEY_TAB) == GLFW_PRESS;
