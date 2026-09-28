@@ -48,15 +48,15 @@ inline glm::vec3 randomUnitVector() {
 	std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
 	glm::vec3 v;
 	do {
-		v = glm::vec3(dist(getRng()), dist(getRng()), dist(getRng()));
+		v = glm::vec3(dist(getRng()), dist(getRng()), 0);
 	} while (glm::dot(v, v) > 1.0f || glm::dot(v, v) < 1e-6f); // 拒绝采样，保证在单位球内且非零
 	return glm::normalize(v);
 }
 int main(int argc, char* argv[]) {
 	//std::cout << "Game path:" << argv[0] << '\n';
 
-	int frameRate = 144; // 设置目标帧率为 144 FPS
-	std::string picPath = "pic.png";
+	int frameRate = 60; // 设置目标帧率为 144 FPS
+	std::string picPath = "1pic.png";
 	using namespace neon;
 	using
 		neon::core::Logger, neon::core::Setting,
@@ -67,7 +67,8 @@ int main(int argc, char* argv[]) {
 		neon::graphics::gl::TextureManager, neon::graphics::gl::Texture,
 		neon::graphics::gl::Vertex, neon::core::ecs::SpriteRegion,
 		neon::graphics::gl::ShaderManager, neon::graphics::gl::Program,
-		neon::graphics::gl::Shader, neon::graphics::WindowInfo;
+		neon::graphics::gl::Shader, neon::graphics::WindowInfo,
+		neon::core::ecs::Entity;
 
 	std::system("chcp 65001 > nul");  // 65001 就是 UTF-8
 
@@ -84,8 +85,8 @@ int main(int argc, char* argv[]) {
 	TextureManager textureManager{ logger };
 	ShaderManager shaderManager{ logger };
 
-	PhysicsSystem physicsSystem(logger, setting, componentManager);
-	SpriteSystem spriteSystem(logger, setting, componentManager);
+	PhysicsSystem physicsSystem{ logger, setting, componentManager };
+	SpriteSystem spriteSystem{ logger, setting, componentManager };
 
 
 
@@ -98,7 +99,7 @@ int main(int argc, char* argv[]) {
 		auto temp_window = graphics::gl::initGlad(Window::GLInfo(), logger);
 	}
 
-	Window window{ WindowInfo{ 1920, 1080, "Neon Engine" }, logger };
+	Window window{ WindowInfo{ setting.windowInfo.width, setting.windowInfo.height, setting.windowInfo.title }, logger };
 	window.makeContextCurrent();
 
 	FrameRateController frameRateController;
@@ -135,10 +136,10 @@ int main(int argc, char* argv[]) {
 
 
 	std::vector<Vertex> vertices = {
-	{ {-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f} },  // 左下
-	{ { 0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f} },  // 右下
-	{ { 0.5f,  0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f} },  // 右上
-	{ {-0.5f,  0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f} }   // 左上
+	{ {-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f} },  // 左下
+	{ { 1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f} },  // 右下
+	{ {1.0f,  1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f} },  // 右上
+	{ {-1.0f,  1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f} }   // 左上
 	};
 
 	// 两个三角形，逆时针（CCW）为正面
@@ -149,15 +150,34 @@ int main(int argc, char* argv[]) {
 	Mesh mesh{ vertices, indices };
 
 
-	auto texture = textureManager.loadTexture(picPath).lock();
-	if (!texture) {
+	auto texture_obj = textureManager.loadTexture(picPath).lock();
+	if (!texture_obj) {
 		logger.error("Failed to load texture.");
 		return EXIT_FAILURE;
 	}
 
-	SpriteRegion region{ 0, 0, texture->info().width, texture->info().height };
+	SpriteRegion region{ 0, 0, texture_obj->info().width, texture_obj->info().height };
 
-	for (size_t i = 0; i < 1; i++)
+	//background
+	//auto&& entity = entityManager.createEntity();
+
+
+	//physicsStorage.addTo(
+	//	entity,
+	//	core::ecs::PhysicsComponent
+	//	{
+	//		.position = glm::vec3{0, 0, 0},
+	//		.velocity = glm::vec3{0, 0, 0}
+	//	}
+	//);
+
+	//spriteStorage.addTo
+	//(
+	//	entity,
+	//	core::ecs::SpriteComponent{ mesh, *textureManager.loadTexture("pixel_grid.png").lock(), region, setting }
+	//);
+
+	for (size_t i = 0; i < 10000; i++)
 	{
 		auto&& entity = entityManager.createEntity();
 
@@ -166,17 +186,18 @@ int main(int argc, char* argv[]) {
 			entity,
 			core::ecs::PhysicsComponent
 			{
-				.position = glm::vec3{0, 0, 0},
-				.velocity = randomUnitVector() * 0.5f
+				.position = glm::vec3{50, 50, 5},
+				.velocity = glm::vec3{0, 1, 0}
 			}
 		);
 
 		spriteStorage.addTo
 		(
 			entity,
-			core::ecs::SpriteComponent{ mesh, *texture, region }
+			core::ecs::SpriteComponent{ mesh, *texture_obj, region, setting }
 		);
 	}
+
 
 
 
@@ -189,10 +210,28 @@ int main(int argc, char* argv[]) {
 	constexpr int sampleCount = 60;
 	std::deque<float> frameRates;
 	glfwSwapInterval(0);
+
+	GLuint shareUBO;
+	glGenBuffers(1, &shareUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, shareUBO);
+	glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), nullptr, GL_DYNAMIC_DRAW);
+	const glm::mat4 view{ 1.0f };
+	const glm::mat4 projection{ 1.0f };
+	bool useSpriteArrayRenderer = false;
+	bool toggleKeyWasPressed = false;
 	/* game loop */
 	while (!glfwWindowShouldClose(window.getGLFWwindow()))
 	{
 		window.pollEvents();
+
+		const bool toggleKeyIsPressed =
+			glfwGetKey(window.getGLFWwindow(), GLFW_KEY_TAB) == GLFW_PRESS;
+		if (toggleKeyIsPressed && !toggleKeyWasPressed)
+		{
+			useSpriteArrayRenderer = !useSpriteArrayRenderer;
+			logger.debug("Renderer mode toggled: {}", useSpriteArrayRenderer ? "Sprite Array Renderer" : "Individual Sprite Renderer");
+		}
+		toggleKeyWasPressed = toggleKeyIsPressed;
 
 		// ecs
 		physicsSystem.update();
@@ -201,20 +240,36 @@ int main(int argc, char* argv[]) {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		auto&& spriteComponents = componentManager.get<core::ecs::SpriteComponent>();
-		auto&& physicComponents = componentManager.get<core::ecs::PhysicsComponent>();
+		auto& spriteComponents =
+			componentManager.get<core::ecs::SpriteComponent>();
 
-		for (auto&& [entity, spriteComponent] : spriteComponents)
+		auto& physicsComponents =
+			componentManager.get<core::ecs::PhysicsComponent>();
+
+		const auto& spriteEntities = spriteComponents.getEntities();
+
+		auto& sprites = spriteComponents.getAllComponents();
+		auto physics = physicsComponents.getForEntities(spriteEntities);
+
+		if (useSpriteArrayRenderer)
 		{
-			auto&& physicsComponent = physicComponents.get(entity);
-			renderer.Draw(
-				spriteComponent,
-				physicsComponent,
+			renderer.DrawSpriteArray(
+				sprites,
+				physics,
 				program,
-				glm::mat4(1.0f),
-				glm::mat4(1.0f)
+				shareUBO,
+				view,
+				projection
 			);
 		}
+		else
+		{
+			for (std::size_t i = 0; i < sprites.size() && i < physics.size(); ++i)
+			{
+				renderer.Draw(sprites[i], physics[i], program, view, projection);
+			}
+		}
+
 
 		window.swapBuffers();
 

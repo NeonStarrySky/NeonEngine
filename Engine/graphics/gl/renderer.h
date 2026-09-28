@@ -5,9 +5,10 @@
 
 #include "core/ecs/components/sprite_component.h"
 
-#include <core/ecs/components/physics_component.h>
+#include "core/ecs/components/physics_component.h"
 #include <glad/glad.h>
 #include <glm/fwd.hpp>
+#include <ranges>
 
 namespace neon::graphics
 {
@@ -33,6 +34,27 @@ namespace neon::graphics
 			const glm::mat4& view,
 			const glm::mat4& projection
 		);
+		template<std::ranges::range SpriteRange, std::ranges::range PhysicsRange>
+		void DrawSpriteArray(
+			SpriteRange&& sprites,
+			PhysicsRange&& physics,
+			const Program& program,
+			GLuint shareUBO,
+			const glm::mat4& view,
+			const glm::mat4& projection
+		)
+		{
+			(void)shareUBO;
+
+			auto sprite = std::ranges::begin(sprites);
+			auto spriteEnd = std::ranges::end(sprites);
+			auto physic = std::ranges::begin(physics);
+			auto physicEnd = std::ranges::end(physics);
+			for (; sprite != spriteEnd && physic != physicEnd; ++sprite, ++physic)
+			{
+				Draw(*sprite, *physic, program, view, projection);
+			}
+		}
 	};
 
 }
