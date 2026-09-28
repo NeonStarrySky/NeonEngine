@@ -1,4 +1,4 @@
-> **Disclaimer:** This repository contains AI-generated content.
+> **Disclaimer:** This README is AI-generated and may overstate the current completeness of the project. Some features may be incomplete, inaccurate, or not yet implemented.
 # NeonEngine 🎮
 
 A modern C++ graphics engine built for high-performance 3D rendering and game development.
