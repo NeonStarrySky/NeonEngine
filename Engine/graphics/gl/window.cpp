@@ -100,7 +100,7 @@ namespace neon::graphics::gl
 	{
 		//assert(logger != nullptr && "Logger pointer must not be null");
 
-		logger.debug("Creating GLFW window with title: {} | File: {} | Line: {}", info.title, loc.file_name(), loc.line());
+		logger.debug("Creating GLFW window with title: {}", info.title);
 
 		// 2. 配置 OpenGL 4.6 Core Profile
 		glfwDefaultWindowHints();
@@ -124,7 +124,7 @@ namespace neon::graphics::gl
 		}
 
 
-		logger.info("GLFW window created successfully with title: {} | File: {} | Line: {}", info.title, loc.file_name(), loc.line());
+		logger.info("GLFW window created successfully with title: {}", info.title);
 
 	}
 
