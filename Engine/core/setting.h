@@ -15,7 +15,5 @@ namespace neon::core
 			0, // monitorIndex
 			true // resizable
 		};
-		int pch = 1080;
-		int pcw = 1920;
 	};
 }

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "core/setting.h"
 #include "graphics/gl/mesh.h"
 #include "graphics/gl/texture.h"
 
@@ -27,17 +26,9 @@ namespace neon::core::ecs {
 		graphics::gl::Mesh& mesh; // 关联的网格
 		graphics::gl::Texture& texture;
 		SpriteRegion region;    // 图集中的哪个区域
-		float rotation = 0;
-		glm::vec2 size;
 
-		SpriteComponent(Mesh& mesh, Texture& texture, const SpriteRegion& region, const Setting& setting)
-			:
-			mesh(mesh), texture(texture), region(region),
-			size(
-				(float)texture.info().width / setting.windowInfo.width * 2,
-				(float)texture.info().height / setting.windowInfo.height * 2
-			)
-		{}
+		SpriteComponent(Mesh& mesh, Texture& texture, const SpriteRegion& region)
+			: mesh(mesh), texture(texture), region(region) {}
 
 		UVRect getUVCoordinates() const {
 			UVRect uv;

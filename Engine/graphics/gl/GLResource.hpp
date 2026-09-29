@@ -4,10 +4,6 @@
 
 #include "GLResource_base.hpp"
 
-#include <string>
-#include <string_view>
-#include <unordered_map>
-
 namespace neon::graphics::gl
 {
 
@@ -198,23 +194,11 @@ namespace neon::graphics::gl
 
 	class Program {
 		GLResource<detail::ProgramDeleter> handle;
-		mutable std::unordered_map<std::string, GLint> uniformLocations;
 	public:
 		Program() = default;
 		explicit Program(GLuint id) : handle(id) {};
 		void use() const noexcept { glUseProgram(handle.getID()); }
 		auto getID() const noexcept { return handle.getID(); }
-
-		/// @brief 获取 uniform 位置；首次查询后会按名称缓存结果（包括 -1）。
-		GLint getUniformLocation(std::string_view name) const
-		{
-			auto [it, inserted] = uniformLocations.try_emplace(std::string(name));
-			if (inserted)
-			{
-				it->second = glGetUniformLocation(handle.getID(), it->first.c_str());
-			}
-			return it->second;
-		}
 	};
 	//using Programs = GLResources<ProgramsDeleter>;
 

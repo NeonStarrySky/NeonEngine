@@ -21,21 +21,21 @@ namespace neon::graphics
 
 		// 上传矩阵
 		glUniformMatrix4fv(
-			program.getUniformLocation("model"),
+			glGetUniformLocation(program.getID(), "model"),
 			1,
 			GL_FALSE,
 			glm::value_ptr(model)
 		);
 
 		glUniformMatrix4fv(
-			program.getUniformLocation("view"),
+			glGetUniformLocation(program.getID(), "view"),
 			1,
 			GL_FALSE,
 			glm::value_ptr(view)
 		);
 
 		glUniformMatrix4fv(
-			program.getUniformLocation("projection"),
+			glGetUniformLocation(program.getID(), "projection"),
 			1,
 			GL_FALSE,
 			glm::value_ptr(projection)
@@ -44,7 +44,7 @@ namespace neon::graphics
 
 		// 绘制面
 		glUniform4fv(
-			program.getUniformLocation("ourColor"),
+			glGetUniformLocation(program.getID(), "ourColor"),
 			1,
 			glm::value_ptr(color)
 		);
@@ -73,7 +73,7 @@ namespace neon::graphics
 
 
 		glUniform4fv(
-			program.getUniformLocation("ourColor"),
+			glGetUniformLocation(program.getID(), "ourColor"),
 			1,
 			glm::value_ptr(invertedColor)
 		);
@@ -106,17 +106,19 @@ namespace neon::graphics
 		// 1. 构建模型矩阵
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, physic.position);
-		model = glm::rotate(model, glm::radians(sprite.rotation), glm::vec3(0.0f, 0.0f, 1.0f));
-		model = glm::scale(model, glm::vec3(sprite.size, 1.0f));
+		//model = glm::rotate(model, glm::radians(sprite.rotation), glm::vec3(0.0f, 0.0f, 1.0f));
+		//model = glm::scale(model, glm::vec3(sprite.size, 1.0f));
 
-		// 2. 获取 uniform 位置并设置（Program 会缓存查询结果）
-		GLint locModel = program.getUniformLocation("model");
+		// 2. 获取 uniform 位置并设置（最原始的方式）
+		GLuint progID = program.getID();
+
+		GLint locModel = glGetUniformLocation(progID, "model");
 		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
 
-		GLint locView = program.getUniformLocation("view");
+		GLint locView = glGetUniformLocation(progID, "view");
 		glUniformMatrix4fv(locView, 1, GL_FALSE, glm::value_ptr(view));
 
-		GLint locProj = program.getUniformLocation("projection");
+		GLint locProj = glGetUniformLocation(progID, "projection");
 		glUniformMatrix4fv(locProj, 1, GL_FALSE, glm::value_ptr(projection));
 
 		// 3. 纹理
@@ -129,7 +131,7 @@ namespace neon::graphics
 			GL_LINEAR
 		);
 
-		GLint locTex = program.getUniformLocation("ourTexture");
+		GLint locTex = glGetUniformLocation(progID, "ourTexture");
 		glUniform1i(locTex, 0);
 
 		// 4. 绘制
@@ -140,4 +142,5 @@ namespace neon::graphics
 		glBindVertexArray(0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
+
 }

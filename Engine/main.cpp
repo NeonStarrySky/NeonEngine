@@ -20,11 +20,7 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <random>
 #include <ranges>
-
-#include <cmath>
-#include <deque>
 
 // 先给 glm::vec3 重载输出
 std::ostream& operator<<(std::ostream& os, const glm::vec3& v) {
@@ -38,25 +34,9 @@ std::ostream& operator<<(std::ostream& os, const neon::core::ecs::PhysicsCompone
 		<< ", .velocity = " << p.velocity << " }";
 	return os;
 }
-inline std::mt19937& getRng() {
-	thread_local std::mt19937 rng{ std::random_device{}() };
-	return rng;
-}
 
-// ---------- 1. 随机单位向量（球面均匀分布） ----------
-inline glm::vec3 randomUnitVector() {
-	std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
-	glm::vec3 v;
-	do {
-		v = glm::vec3(dist(getRng()), dist(getRng()), 0);
-	} while (glm::dot(v, v) > 1.0f || glm::dot(v, v) < 1e-6f); // 拒绝采样，保证在单位球内且非零
-	return glm::normalize(v);
-}
 int main(int argc, char* argv[]) {
-	//std::cout << "Game path:" << argv[0] << '\n';
 
-	int frameRate = 60; // 设置目标帧率为 144 FPS
-	std::string picPath = "1pic.png";
 	using namespace neon;
 	using
 		neon::core::Logger, neon::core::Setting,
@@ -67,8 +47,7 @@ int main(int argc, char* argv[]) {
 		neon::graphics::gl::TextureManager, neon::graphics::gl::Texture,
 		neon::graphics::gl::Vertex, neon::core::ecs::SpriteRegion,
 		neon::graphics::gl::ShaderManager, neon::graphics::gl::Program,
-		neon::graphics::gl::Shader, neon::graphics::WindowInfo,
-		neon::core::ecs::Entity;
+		neon::graphics::gl::Shader, neon::graphics::WindowInfo;
 
 	std::system("chcp 65001 > nul");  // 65001 就是 UTF-8
 
@@ -77,7 +56,6 @@ int main(int argc, char* argv[]) {
 	Logger logger{};
 	Setting setting;
 
-	logger.info("Game path: {}", argv[0]);
 	/*创建*/
 	//ecs
 	EntityManager entityManager{ logger };
@@ -85,10 +63,10 @@ int main(int argc, char* argv[]) {
 	TextureManager textureManager{ logger };
 	ShaderManager shaderManager{ logger };
 
-	PhysicsSystem physicsSystem{ logger, setting, componentManager };
-	SpriteSystem spriteSystem{ logger, setting, componentManager };
+	PhysicsSystem physicsSystem(logger, setting, componentManager);
+	SpriteSystem spriteSystem(logger, setting, componentManager);
 
-
+	auto&& entity = entityManager.createEntity();
 
 	auto&& physicsStorage = componentManager.get<core::ecs::PhysicsComponent>();
 	auto&& spriteStorage = componentManager.get<core::ecs::SpriteComponent>();
@@ -99,12 +77,11 @@ int main(int argc, char* argv[]) {
 		auto temp_window = graphics::gl::initGlad(Window::GLInfo(), logger);
 	}
 
-	Window window{ WindowInfo{ setting.windowInfo.width, setting.windowInfo.height, setting.windowInfo.title }, logger };
+	Window window{ WindowInfo{ 1920, 1080, "Neon Engine" }, logger };
 	window.makeContextCurrent();
 
 	FrameRateController frameRateController;
-
-	frameRateController.setFrameRate(frameRate);
+	frameRateController.setFrameRate(144);
 	Renderer renderer;
 
 
@@ -112,7 +89,7 @@ int main(int argc, char* argv[]) {
 	//graphics
 	Program program;
 	try {
-		textureManager.loadTexture(picPath);
+		textureManager.loadTexture("assets/images/pic.png");
 
 		shaderManager.init(); // Initialize the shader manager
 		shaderManager.loadShaders({// Load and compile shaders from specified file paths and types
@@ -132,14 +109,20 @@ int main(int argc, char* argv[]) {
 
 
 	//ecs
-
+	physicsStorage.addTo(
+		entity,
+		core::ecs::PhysicsComponent{
+			.position = glm::vec3{0, 0, 0},
+			.velocity = glm::vec3{0.5, 0.2, 0}
+		}
+	);
 
 
 	std::vector<Vertex> vertices = {
-	{ {-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f} },  // 左下
-	{ { 1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f} },  // 右下
-	{ {1.0f,  1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f} },  // 右上
-	{ {-1.0f,  1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f} }   // 左上
+	{ {-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f} },  // 左下
+	{ { 0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f} },  // 右下
+	{ { 0.5f,  0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f} },  // 右上
+	{ {-0.5f,  0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f} }   // 左上
 	};
 
 	// 两个三角形，逆时针（CCW）为正面
@@ -150,196 +133,53 @@ int main(int argc, char* argv[]) {
 	Mesh mesh{ vertices, indices };
 
 
-	auto texture_obj = textureManager.loadTexture(picPath).lock();
-	if (!texture_obj) {
+	auto texture = textureManager.loadTexture("assets/images/pic.png").lock();
+	if (!texture) {
 		logger.error("Failed to load texture.");
 		return EXIT_FAILURE;
 	}
 
-	SpriteRegion region{ 0, 0, texture_obj->info().width, texture_obj->info().height };
+	SpriteRegion region{ 0, 0, texture->info().width, texture->info().height };
 
-	//background
-	//auto&& entity = entityManager.createEntity();
+	spriteStorage.addTo(
+		entity,
+		core::ecs::SpriteComponent{ mesh, *texture, region }
+	);
 
+	auto&& spriteComponent = spriteStorage.get(entity);
+	auto&& physicsComponent = physicsStorage.get(entity);
 
-	//physicsStorage.addTo(
-	//	entity,
-	//	core::ecs::PhysicsComponent
-	//	{
-	//		.position = glm::vec3{0, 0, 0},
-	//		.velocity = glm::vec3{0, 0, 0}
-	//	}
-	//);
-
-	//spriteStorage.addTo
-	//(
-	//	entity,
-	//	core::ecs::SpriteComponent{ mesh, *textureManager.loadTexture("pixel_grid.png").lock(), region, setting }
-	//);
-
-	for (size_t i = 0; i < 10000; i++)
-	{
-		auto&& entity = entityManager.createEntity();
-
-
-		physicsStorage.addTo(
-			entity,
-			core::ecs::PhysicsComponent
-			{
-				.position = glm::vec3{50, 50, 5},
-				.velocity = glm::vec3{0, 1, 0}
-			}
-		);
-
-		spriteStorage.addTo
-		(
-			entity,
-			core::ecs::SpriteComponent{ mesh, *texture_obj, region, setting }
-		);
-	}
-
-
-
-
-	float averageFrameRate = 0.0f;
-	float frameRateStdDev = 0.0f;
-	float frameRateStability = 0.0f;
-
-	int frameCount = 0;
-
-	constexpr int sampleCount = 60;
-	std::deque<float> frameRates;
-	glfwSwapInterval(0);
-
-	GLuint shareUBO;
-	glGenBuffers(1, &shareUBO);
-	glBindBuffer(GL_UNIFORM_BUFFER, shareUBO);
-	glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), nullptr, GL_DYNAMIC_DRAW);
-	const glm::mat4 view{ 1.0f };
-	const glm::mat4 projection{ 1.0f };
-	bool useSpriteArrayRenderer = false;
-	bool toggleKeyWasPressed = false;
-	/* game loop */
+	/*game loop*/
 	while (!glfwWindowShouldClose(window.getGLFWwindow()))
 	{
+
 		window.pollEvents();
 
-		const bool toggleKeyIsPressed =
-			glfwGetKey(window.getGLFWwindow(), GLFW_KEY_TAB) == GLFW_PRESS;
-		if (toggleKeyIsPressed && !toggleKeyWasPressed)
-		{
-			useSpriteArrayRenderer = !useSpriteArrayRenderer;
-			logger.debug("Renderer mode toggled: {}", useSpriteArrayRenderer ? "Sprite Array Renderer" : "Individual Sprite Renderer");
-		}
-		toggleKeyWasPressed = toggleKeyIsPressed;
 
-		// ecs
+
+		//ecs
 		physicsSystem.update();
 
-		// graphics
+		//for (auto& component : physicsStorage) {
+		//	std::cout << component << std::endl;
+		//}
+
+		//graphics
+		// 清屏
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		auto& spriteComponents =
-			componentManager.get<core::ecs::SpriteComponent>();
-
-		auto& physicsComponents =
-			componentManager.get<core::ecs::PhysicsComponent>();
-
-		const auto& spriteEntities = spriteComponents.getEntities();
-
-		auto& sprites = spriteComponents.getAllComponents();
-		auto physics = physicsComponents.getForEntities(spriteEntities);
-
-		if (useSpriteArrayRenderer)
-		{
-			renderer.DrawSpriteArray(
-				sprites,
-				physics,
-				program,
-				shareUBO,
-				view,
-				projection
-			);
-		}
-		else
-		{
-			for (std::size_t i = 0; i < sprites.size() && i < physics.size(); ++i)
-			{
-				renderer.Draw(sprites[i], physics[i], program, view, projection);
-			}
-		}
-
+		renderer.Draw(
+			spriteComponent,
+			physicsComponent,
+			program,
+			glm::mat4(1.0f),
+			glm::mat4(1.0f)
+		);
 
 		window.swapBuffers();
 
 		frameRateController.checkAndWait();
-
-		const float currentFrameRate =
-			frameRateController.getActualFrameRate();
-
-		// --------------------------------------------------
-		// 最近 N 帧 FPS
-		// --------------------------------------------------
-
-		frameRates.push_back(currentFrameRate);
-
-		if (frameRates.size() > sampleCount)
-			frameRates.pop_front();
-
-		// --------------------------------------------------
-		// 平均 FPS
-		// --------------------------------------------------
-
-		float sum = 0.0f;
-
-		for (float fps : frameRates)
-			sum += fps;
-
-		averageFrameRate = sum / frameRates.size();
-
-		// --------------------------------------------------
-		// FPS 标准差
-		// --------------------------------------------------
-
-		float variance = 0.0f;
-
-		for (float fps : frameRates)
-		{
-			const float difference = fps - averageFrameRate;
-			variance += difference * difference;
-		}
-
-		variance /= frameRates.size();
-
-		frameRateStdDev = std::sqrt(variance);
-
-		// --------------------------------------------------
-		// 稳定度（变异系数）
-		//
-		// 0%   = 完全稳定
-		// 1%   = 非常稳定
-		// 5%   = 有一定波动
-		// 10%+ = 波动明显
-		// --------------------------------------------------
-
-		if (averageFrameRate > 0.0f)
-		{
-			frameRateStability =
-				frameRateStdDev / averageFrameRate * 100.0f;
-		}
-
-		frameCount++;
 	}
 
-	logger.info("Average Frame Rate: {:.2f} FPS", averageFrameRate);
-	logger.info(
-		"FrameRate difference from target: {:.2f} %",
-		(averageFrameRate - frameRate) / frameRate * 100.0f
-	);
-
-	logger.info(
-		"FrameRate stability (CV): {:.2f} %",
-		frameRateStability
-	);
 }
