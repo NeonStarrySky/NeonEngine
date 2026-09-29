@@ -5,11 +5,10 @@ layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTexCoord;
 
 out vec2 TexCoord;
-layout(std140, binding = 0) uniform ViewMatrix {
-    mat4 view;
-    mat4 projection;
-};
+
 uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
 
 void main()
 {

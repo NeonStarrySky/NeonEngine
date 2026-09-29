@@ -28,8 +28,8 @@ namespace neon::graphics::gl
 
 	std::weak_ptr<Texture> TextureManager::loadTexture(const std::filesystem::path& path_std, bool forceReload)
 	{
+
 		std::string path = path_std.string();
-		//logger.debug("Star to load texture \"{}\"", path);
 
 		//std::lock_guard<std::mutex> lock(cacheMutex_);
 
@@ -51,7 +51,6 @@ namespace neon::graphics::gl
 		// 2. 调用实际的纹理加载函数（在neon::graphics命名空间）
 		// 注意：需要使用完全限定名，因为TextureManager在neon::graphics::gl命名空间
 		// image.cpp中的loadTexture_stb函数返回gl::Texture对象
-		logger.debug("Star to load texture \"{}\"", path);
 		auto texture = std::make_shared<gl::Texture>(
 			std::move(neon::graphics::loadTexture_stb(path))
 		);
