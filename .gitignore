@@ -364,3 +364,4 @@ FodyWeavers.xsd
 
 # Vcpkg package manager
 vcpkg_installed/
+/Engine/assets/images/pic.png
