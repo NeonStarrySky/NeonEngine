@@ -19,12 +19,16 @@
 #include "core/type_system/type_id.h"
 
 #include <cstdlib>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <iostream>
 #include <random>
 #include <ranges>
 
 #include <cmath>
 #include <deque>
+
+#include <glm/gtc/type_ptr.hpp>
 
 // 先给 glm::vec3 重载输出
 std::ostream& operator<<(std::ostream& os, const glm::vec3& v) {
@@ -68,7 +72,7 @@ int main(int argc, char* argv[]) {
 		neon::graphics::gl::Vertex, neon::core::ecs::SpriteRegion,
 		neon::graphics::gl::ShaderManager, neon::graphics::gl::Program,
 		neon::graphics::gl::Shader, neon::graphics::WindowInfo,
-		neon::core::ecs::Entity;
+		neon::core::ecs::Entity, neon::graphics::gl::UniformBuffer;
 
 	std::system("chcp 65001 > nul");  // 65001 就是 UTF-8
 
@@ -101,6 +105,17 @@ int main(int argc, char* argv[]) {
 
 	Window window{ WindowInfo{ setting.windowInfo.width, setting.windowInfo.height, setting.windowInfo.title }, logger };
 	window.makeContextCurrent();
+	glfwSetFramebufferSizeCallback(
+		window.getGLFWwindow(),
+		[](GLFWwindow*, int width, int height)
+		{
+			glViewport(0, 0, width, height);
+		}
+	);
+	int framebufferWidth = 0;
+	int framebufferHeight = 0;
+	glfwGetFramebufferSize(window.getGLFWwindow(), &framebufferWidth, &framebufferHeight);
+	glViewport(0, 0, framebufferWidth, framebufferHeight);
 
 	FrameRateController frameRateController;
 
@@ -186,8 +201,8 @@ int main(int argc, char* argv[]) {
 			entity,
 			core::ecs::PhysicsComponent
 			{
-				.position = glm::vec3{50, 50, 5},
-				.velocity = glm::vec3{0, 1, 0}
+				.position = glm::vec3{0.5, 0.5, 0},
+				.velocity = randomUnitVector()
 			}
 		);
 
@@ -211,13 +226,15 @@ int main(int argc, char* argv[]) {
 	std::deque<float> frameRates;
 	glfwSwapInterval(0);
 
-	GLuint shareUBO;
-	glGenBuffers(1, &shareUBO);
-	glBindBuffer(GL_UNIFORM_BUFFER, shareUBO);
-	glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), nullptr, GL_DYNAMIC_DRAW);
+	UniformBuffer shareUBO;
+	shareUBO.allocate(sizeof(glm::mat4) * 2);
+
 	const glm::mat4 view{ 1.0f };
 	const glm::mat4 projection{ 1.0f };
-	bool useSpriteArrayRenderer = false;
+	shareUBO.update(0, sizeof(glm::mat4), glm::value_ptr(view));
+	shareUBO.update(sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
+	shareUBO.bindBase(0);
+	bool useSpriteArrayRenderer = true;
 	bool toggleKeyWasPressed = false;
 	/* game loop */
 	while (!glfwWindowShouldClose(window.getGLFWwindow()))
