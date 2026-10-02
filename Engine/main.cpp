@@ -26,6 +26,7 @@
 
 #include <cmath>
 #include <deque>
+#include <random>
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -42,7 +43,12 @@ std::ostream& operator<<(std::ostream& os, const neon::core::ecs::PhysicsCompone
 	return os;
 }
 
-// ---------- 1. 随机单位向量（球面均匀分布） ----------
+static std::mt19937& getRng() {
+	static thread_local std::mt19937 rng{ std::random_device{}() };
+	return rng;
+}
+
+// ---------- 1. 随机二维单位向量（圆周方向均匀） ----------
 inline glm::vec3 randomUnitVector() {
 	std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
 	glm::vec3 v;
