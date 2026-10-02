@@ -177,6 +177,14 @@ int main(int argc, char* argv[]) {
 
 	SpriteRegion region{ 0, 0, texture_obj->info().width, texture_obj->info().height };
 
+	// 外层 entity 已经拥有 PhysicsComponent，因此也必须补充 SpriteComponent，
+	// 否则后面的 spriteStorage.get(entity) 会访问不存在的组件。
+	spriteStorage.addTo
+	(
+		entity,
+		core::ecs::SpriteComponent{ mesh, *texture_obj, region, setting }
+	);
+
 	//background
 	//auto&& entity = entityManager.createEntity();
 
@@ -241,6 +249,7 @@ int main(int argc, char* argv[]) {
 	shareUBO.bindBase(0);
 	bool useSpriteArrayRenderer = true;
 	bool toggleKeyWasPressed = false;
+	int frameCount = 0;
 	/* game loop */
 	while (!glfwWindowShouldClose(window.getGLFWwindow()))
 	{
