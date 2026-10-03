@@ -83,48 +83,6 @@ namespace neon::core::ecs
 			auto end() const { return Iterator<EntityIterator, ComponentIterator>(entitiesEnd, componentsBegin + (entitiesEnd - entitiesBegin)); }
 		};
 
-		template<typename EntityIterator, typename ComponentIterator>
-		class Iterator
-		{
-			EntityIterator entityIterator;
-			ComponentIterator componentIterator;
-		public:
-			Iterator(EntityIterator entityIterator, ComponentIterator componentIterator)
-				: entityIterator(entityIterator), componentIterator(componentIterator) {}
-
-			auto operator*() const
-			{
-				return std::pair<decltype(*entityIterator), decltype(*componentIterator)>(*entityIterator, *componentIterator);
-			}
-
-			Iterator& operator++()
-			{
-				++entityIterator;
-				++componentIterator;
-				return *this;
-			}
-
-			bool operator!=(const Iterator& other) const
-			{
-				return entityIterator != other.entityIterator;
-			}
-		};
-
-		template<typename EntityIterator, typename ComponentIterator>
-		class DataView
-		{
-			EntityIterator entitiesBegin;
-			EntityIterator entitiesEnd;
-			ComponentIterator componentsBegin;
-			//为什么不要end呢？因为entitiesEnd和componentsEnd的长度是一样的，所以可以通过entitiesEnd - entitiesBegin来计算componentsEnd的位置
-		public:
-			DataView(EntityIterator entitiesBegin, EntityIterator entitiesEnd, ComponentIterator componentsBegin)
-				: entitiesBegin(entitiesBegin), entitiesEnd(entitiesEnd), componentsBegin(componentsBegin) {}
-
-			auto begin() const { return Iterator<EntityIterator, ComponentIterator>(entitiesBegin, componentsBegin); }
-			auto end() const { return Iterator<EntityIterator, ComponentIterator>(entitiesEnd, componentsBegin + (entitiesEnd - entitiesBegin)); }
-		};
-
 	public:
 		ComponentStorage() = default;
 		~ComponentStorage() override = default;

@@ -19,6 +19,7 @@
 
 #include <array>
 #include <chrono>
+#include <cstdint>
 #include <cstdlib>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -54,44 +55,9 @@ inline glm::vec3 randomUnitVector(std::mt19937& randomEngine) {
 	return glm::normalize(v);
 }
 
-// 将初始速度角度映射到 HSV 色环：0 度为红色，逆时针连续渐变。
-inline std::array<std::uint8_t, 4> colorFromDirection(const glm::vec3& direction) {
-	constexpr float tau = 6.2831853071795864769f;
-	constexpr float sectorSize = tau / 6.0f;
-
-	float hue = std::atan2(direction.y, direction.x);
-	if (hue < 0.0f) hue += tau;
-
-	const float sectorPosition = hue / sectorSize;
-	const int rawSector = static_cast<int>(sectorPosition);
-	const int sector = rawSector % 6;
-	const float fraction = sectorPosition - static_cast<float>(rawSector);
-	const float ascending = fraction;
-	const float descending = 1.0f - fraction;
-
-	float red = 0.0f;
-	float green = 0.0f;
-	float blue = 0.0f;
-	switch (sector) {
-	case 0: red = 1.0f; green = ascending; break;
-	case 1: red = descending; green = 1.0f; break;
-	case 2: green = 1.0f; blue = ascending; break;
-	case 3: green = descending; blue = 1.0f; break;
-	case 4: red = ascending; blue = 1.0f; break;
-	default: red = 1.0f; blue = descending; break;
-	}
-
-	return {
-		static_cast<std::uint8_t>(std::lround(red * 255.0f)),
-		static_cast<std::uint8_t>(std::lround(green * 255.0f)),
-		static_cast<std::uint8_t>(std::lround(blue * 255.0f)),
-		255
-	};
-}
 int main(int argc, char* argv[]) {
 
-	int frameRate = 1000; // 设置目标帧率为 144 FPS
-	std::string picPath = "1pic.png";
+	int frameRate = 1000; // 设置基准测试的目标帧率
 	using namespace neon;
 	using
 		neon::core::Logger, neon::core::Setting,
@@ -110,9 +76,8 @@ int main(int argc, char* argv[]) {
 	/*申明*/
 	//common
 	Logger logger{};
-	logger.setLogLevel(Logger::LogLevel::info);
-	Setting setting;
 	logger.setLogLevel(Logger::LogLevel::debug);
+	Setting setting;
 	logger.info("Game path: {}", argv[0]);
 	/*创建*/
 	//ecs
@@ -150,7 +115,6 @@ int main(int argc, char* argv[]) {
 	glViewport(0, 0, framebufferWidth, framebufferHeight);
 
 	FrameRateController frameRateController;
-	frameRateController.setFrameRate(144);
 	frameRateController.setFrameRate(frameRate);
 	Renderer renderer;
 
@@ -245,15 +209,9 @@ int main(int argc, char* argv[]) {
 	//	core::ecs::SpriteComponent{ mesh, *textureManager.loadTexture("pixel_grid.png").lock(), region, setting }
 	//);
 	for (std::size_t i = 0; i < entityCount; ++i)
-	for (std::size_t i = 0; i < entityCount; i++)
 	{
 		auto&& entity = entityManager.createEntity();
 		const glm::vec3 initialVelocity = randomUnitVector(randomEngine);
-		const auto pixel = colorFromDirection(initialVelocity);
-		entityTextures.emplace_back(
-			Texture::create2D(1, 1, pixel.data(), colorSampler)
-		);
-
 
 		physicsStorage.addTo(
 			entity,
@@ -266,8 +224,8 @@ int main(int argc, char* argv[]) {
 
 		spriteStorage.addTo
 		(
+			entity,
 			core::ecs::SpriteComponent{ mesh, entityTextures[textureIndex(randomEngine)], region, setting }
-			core::ecs::SpriteComponent{ mesh, entityTextures.back(), region, setting }
 		);
 
 		if ((i + 1) % 1000 == 0) {
@@ -312,6 +270,10 @@ int main(int argc, char* argv[]) {
 	std::array<bool, renderModeKeys.size()> renderModeKeyWasPressed{};
 	auto modeIntervalStartedAt = std::chrono::steady_clock::now();
 	std::size_t modeIntervalFrameCount = 0;
+	int frameCount = 0;
+	constexpr int diagnosticIntervalFrames = 180;
+	using DiagnosticClock = std::chrono::steady_clock;
+	logger.info("Main: entering render loop; diagnostic checkpoint every {} frames.", diagnosticIntervalFrames);
 	/* game loop */
 	while (!glfwWindowShouldClose(window.getGLFWwindow()))
 	{
@@ -328,15 +290,6 @@ int main(int argc, char* argv[]) {
 			const double stageMs = std::chrono::duration<double, std::milli>(DiagnosticClock::now() - stageStart).count();
 			logger.debug("Frame {}: window events complete in {:.2f} ms; checking input.", frameCount, stageMs);
 		}
-
-		const bool toggleKeyIsPressed =
-			glfwGetKey(window.getGLFWwindow(), GLFW_KEY_TAB) == GLFW_PRESS;
-		if (toggleKeyIsPressed && !toggleKeyWasPressed)
-		{
-			useSpriteArrayRenderer = !useSpriteArrayRenderer;
-			logger.debug("Renderer mode toggled: {}", useSpriteArrayRenderer ? "Sprite Array Renderer" : "Individual Sprite Renderer");
-		}
-		toggleKeyWasPressed = toggleKeyIsPressed;
 
 		for (std::size_t i = 0; i < renderModeKeys.size(); ++i)
 		{
