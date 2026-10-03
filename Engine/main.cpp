@@ -14,19 +14,21 @@
 #include "graphics/gl/mesh.h"
 #include "graphics/gl/renderer.h"
 #include "graphics/gl/window.h"
-#include "graphics/texture_manager.h"
 
 #include "core/type_system/type_id.h"
 
+#include <array>
+#include <chrono>
+#include <cstdint>
 #include <cstdlib>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <random>
 #include <ranges>
 
 #include <cmath>
 #include <deque>
-#include <random>
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -43,24 +45,53 @@ std::ostream& operator<<(std::ostream& os, const neon::core::ecs::PhysicsCompone
 	return os;
 }
 
-static std::mt19937& getRng() {
-	static thread_local std::mt19937 rng{ std::random_device{}() };
-	return rng;
-}
-
-// ---------- 1. 随机二维单位向量（圆周方向均匀） ----------
-inline glm::vec3 randomUnitVector() {
+// ---------- 随机单位向量（二维单位圆盘内均匀分布） ----------
+inline glm::vec3 randomUnitVector(std::mt19937& randomEngine) {
 	std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
 	glm::vec3 v;
 	do {
-		v = glm::vec3(dist(getRng()), dist(getRng()), 0);
-	} while (glm::dot(v, v) > 1.0f || glm::dot(v, v) < 1e-6f); // 拒绝采样，保证在单位球内且非零
+		v = glm::vec3(dist(randomEngine), dist(randomEngine), 0);
+	} while (glm::dot(v, v) > 1.0f || glm::dot(v, v) < 1e-6f); // 拒绝采样，保证在单位圆盘内且非零
 	return glm::normalize(v);
+}
+
+// 将初始速度角度映射到 HSV 色环：0 度为红色，逆时针连续渐变。
+inline std::array<std::uint8_t, 4> colorFromDirection(const glm::vec3& direction) {
+	constexpr float tau = 6.2831853071795864769f;
+	constexpr float sectorSize = tau / 6.0f;
+
+	float hue = std::atan2(direction.y, direction.x);
+	if (hue < 0.0f) hue += tau;
+
+	const float sectorPosition = hue / sectorSize;
+	const int rawSector = static_cast<int>(sectorPosition);
+	const int sector = rawSector % 6;
+	const float fraction = sectorPosition - static_cast<float>(rawSector);
+	const float ascending = fraction;
+	const float descending = 1.0f - fraction;
+
+	float red = 0.0f;
+	float green = 0.0f;
+	float blue = 0.0f;
+	switch (sector) {
+	case 0: red = 1.0f; green = ascending; break;
+	case 1: red = descending; green = 1.0f; break;
+	case 2: green = 1.0f; blue = ascending; break;
+	case 3: green = descending; blue = 1.0f; break;
+	case 4: red = ascending; blue = 1.0f; break;
+	default: red = 1.0f; blue = descending; break;
+	}
+
+	return {
+		static_cast<std::uint8_t>(std::lround(red * 255.0f)),
+		static_cast<std::uint8_t>(std::lround(green * 255.0f)),
+		static_cast<std::uint8_t>(std::lround(blue * 255.0f)),
+		255
+	};
 }
 int main(int argc, char* argv[]) {
 
 	int frameRate = 60; // 设置目标帧率为 144 FPS
-	std::string picPath = "1pic.png";
 	using namespace neon;
 	using
 		neon::core::Logger, neon::core::Setting,
@@ -68,7 +99,7 @@ int main(int argc, char* argv[]) {
 		neon::core::ecs::PhysicsSystem, neon::graphics::FrameRateController,
 		neon::graphics::gl::Window, neon::graphics::Renderer,
 		neon::core::ecs::SpriteSystem, neon::graphics::gl::Mesh,
-		neon::graphics::gl::TextureManager, neon::graphics::gl::Texture,
+		neon::graphics::gl::Texture,
 		neon::graphics::gl::Vertex, neon::core::ecs::SpriteRegion,
 		neon::graphics::gl::ShaderManager, neon::graphics::gl::Program,
 		neon::graphics::gl::Shader, neon::graphics::WindowInfo,
@@ -79,13 +110,14 @@ int main(int argc, char* argv[]) {
 	/*申明*/
 	//common
 	Logger logger{};
+	logger.setLogLevel(Logger::LogLevel::info);
 	Setting setting;
+	logger.info("Main: starting initialization.");
 
 	/*创建*/
 	//ecs
 	EntityManager entityManager{ logger };
 	ComponentManager componentManager;
-	TextureManager textureManager{ logger };
 	ShaderManager shaderManager{ logger };
 
 	PhysicsSystem physicsSystem{ logger, setting, componentManager };
@@ -104,6 +136,7 @@ int main(int argc, char* argv[]) {
 
 	Window window{ WindowInfo{ setting.windowInfo.width, setting.windowInfo.height, setting.windowInfo.title }, logger };
 	window.makeContextCurrent();
+	logger.info("Main: OpenGL window and context are ready.");
 	glfwSetFramebufferSizeCallback(
 		window.getGLFWwindow(),
 		[](GLFWwindow*, int width, int height)
@@ -125,8 +158,7 @@ int main(int argc, char* argv[]) {
 	//graphics
 	Program program;
 	try {
-		textureManager.loadTexture("assets/images/pic.png");
-
+		logger.info("Main: loading and linking shaders.");
 		shaderManager.init(); // Initialize the shader manager
 		shaderManager.loadShaders({// Load and compile shaders from specified file paths and types
 			{"assets/shaders/vertex_shader.glsl", GL_VERTEX_SHADER},
@@ -136,10 +168,11 @@ int main(int argc, char* argv[]) {
 
 
 		program = shaderManager.buildShader();
+		logger.info("Main: shader program is ready.");
 	}
 	catch (const std::runtime_error& e)
 	{
-		logger.error("Shader build error: {}", e.what());
+		logger.error("Main: shader initialization failed: {}", e.what());
 		return EXIT_FAILURE;
 	}
 
@@ -167,23 +200,17 @@ int main(int argc, char* argv[]) {
 		0, 2, 3    // 第二个三角形：左下 → 右上 → 左上
 	};
 	Mesh mesh{ vertices, indices };
+	logger.info("Main: sprite mesh is ready.");
 
 
-	auto texture_obj = textureManager.loadTexture(picPath).lock();
-	if (!texture_obj) {
-		logger.error("Failed to load texture.");
-		return EXIT_FAILURE;
-	}
-
-	SpriteRegion region{ 0, 0, texture_obj->info().width, texture_obj->info().height };
-
-	// 外层 entity 已经拥有 PhysicsComponent，因此也必须补充 SpriteComponent，
-	// 否则后面的 spriteStorage.get(entity) 会访问不存在的组件。
-	spriteStorage.addTo
-	(
-		entity,
-		core::ecs::SpriteComponent{ mesh, *texture_obj, region, setting }
-	);
+	constexpr std::size_t entityCount = 10000;
+	SpriteRegion region{ 0, 0, 1, 1 };
+	std::deque<Texture> entityTextures;
+	std::mt19937 randomEngine{ std::random_device{}() };
+	Texture::SamplerInfo colorSampler;
+	colorSampler.minFilter = GL_NEAREST;
+	colorSampler.magFilter = GL_NEAREST;
+	logger.info("Main: creating {} entities and 1x1 direction-color textures.", entityCount);
 
 	//background
 	//auto&& entity = entityManager.createEntity();
@@ -204,9 +231,14 @@ int main(int argc, char* argv[]) {
 	//	core::ecs::SpriteComponent{ mesh, *textureManager.loadTexture("pixel_grid.png").lock(), region, setting }
 	//);
 
-	for (size_t i = 0; i < 10000; i++)
+	for (std::size_t i = 0; i < entityCount; i++)
 	{
 		auto&& entity = entityManager.createEntity();
+		const glm::vec3 initialVelocity = randomUnitVector(randomEngine);
+		const auto pixel = colorFromDirection(initialVelocity);
+		entityTextures.emplace_back(
+			Texture::create2D(1, 1, pixel.data(), colorSampler)
+		);
 
 
 		physicsStorage.addTo(
@@ -214,16 +246,21 @@ int main(int argc, char* argv[]) {
 			core::ecs::PhysicsComponent
 			{
 				.position = glm::vec3{0.5, 0.5, 0},
-				.velocity = randomUnitVector()
+				.velocity = initialVelocity
 			}
 		);
 
 		spriteStorage.addTo
 		(
 			entity,
-			core::ecs::SpriteComponent{ mesh, *texture_obj, region, setting }
+			core::ecs::SpriteComponent{ mesh, entityTextures.back(), region, setting }
 		);
+
+		if ((i + 1) % 1000 == 0) {
+			logger.info("Main: initialized {}/{} entities.", i + 1, entityCount);
+		}
 	}
+	logger.info("Main: entity and texture creation completed.");
 
 
 
@@ -231,9 +268,6 @@ int main(int argc, char* argv[]) {
 	float averageFrameRate = 0.0f;
 	float frameRateStdDev = 0.0f;
 	float frameRateStability = 0.0f;
-
-	auto&& spriteComponent = spriteStorage.get(entity);
-	auto&& physicsComponent = physicsStorage.get(entity);
 
 	constexpr int sampleCount = 60;
 	std::deque<float> frameRates;
@@ -247,14 +281,29 @@ int main(int argc, char* argv[]) {
 	shareUBO.update(0, sizeof(glm::mat4), glm::value_ptr(view));
 	shareUBO.update(sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
 	shareUBO.bindBase(0);
+	logger.info("Main: uniform buffer is ready.");
 	bool useSpriteArrayRenderer = true;
 	bool toggleKeyWasPressed = false;
 	int frameCount = 0;
+	constexpr int diagnosticIntervalFrames = 180;
+	using DiagnosticClock = std::chrono::steady_clock;
+	logger.info("Main: entering render loop; diagnostic checkpoint every {} frames.", diagnosticIntervalFrames);
 	/* game loop */
 	while (!glfwWindowShouldClose(window.getGLFWwindow()))
 	{
+		const bool diagnosticFrame = frameCount % diagnosticIntervalFrames == 0;
+		const auto frameStart = diagnosticFrame ? DiagnosticClock::now() : DiagnosticClock::time_point{};
+		DiagnosticClock::time_point stageStart{};
+		if (diagnosticFrame) {
+			logger.debug("Frame {}: polling window events.", frameCount);
+			stageStart = DiagnosticClock::now();
+		}
 
 		window.pollEvents();
+		if (diagnosticFrame) {
+			const double stageMs = std::chrono::duration<double, std::milli>(DiagnosticClock::now() - stageStart).count();
+			logger.debug("Frame {}: window events complete in {:.2f} ms; checking input.", frameCount, stageMs);
+		}
 
 		const bool toggleKeyIsPressed =
 			glfwGetKey(window.getGLFWwindow(), GLFW_KEY_TAB) == GLFW_PRESS;
@@ -266,7 +315,15 @@ int main(int argc, char* argv[]) {
 		toggleKeyWasPressed = toggleKeyIsPressed;
 
 		// ecs
+		if (diagnosticFrame) {
+			logger.debug("Frame {}: physics update started.", frameCount);
+			stageStart = DiagnosticClock::now();
+		}
 		physicsSystem.update();
+		if (diagnosticFrame) {
+			const double stageMs = std::chrono::duration<double, std::milli>(DiagnosticClock::now() - stageStart).count();
+			logger.debug("Frame {}: physics update complete in {:.2f} ms; collecting render components.", frameCount, stageMs);
+		}
 
 		//for (auto& component : physicsStorage) {
 		//	std::cout << component << std::endl;
@@ -274,6 +331,10 @@ int main(int argc, char* argv[]) {
 
 		//graphics
 		// 清屏
+		if (diagnosticFrame) {
+			logger.debug("Frame {}: clearing frame and gathering render components.", frameCount);
+			stageStart = DiagnosticClock::now();
+		}
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -287,9 +348,17 @@ int main(int argc, char* argv[]) {
 
 		auto& sprites = spriteComponents.getAllComponents();
 		auto physics = physicsComponents.getForEntities(spriteEntities);
+		if (diagnosticFrame) {
+			const double stageMs = std::chrono::duration<double, std::milli>(DiagnosticClock::now() - stageStart).count();
+			logger.debug("Frame {}: cleared frame and prepared {} render components in {:.2f} ms.", frameCount, sprites.size(), stageMs);
+			stageStart = DiagnosticClock::now();
+		}
 
 		if (useSpriteArrayRenderer)
 		{
+			if (diagnosticFrame) {
+				logger.debug("Frame {}: drawing {} sprites with array renderer.", frameCount, sprites.size());
+			}
 			renderer.DrawSpriteArray(
 				sprites,
 				physics,
@@ -301,6 +370,9 @@ int main(int argc, char* argv[]) {
 		}
 		else
 		{
+			if (diagnosticFrame) {
+				logger.debug("Frame {}: drawing {} sprites individually.", frameCount, sprites.size());
+			}
 			for (std::size_t i = 0; i < sprites.size() && i < physics.size(); ++i)
 			{
 				renderer.Draw(sprites[i], physics[i], program, view, projection);
@@ -308,9 +380,23 @@ int main(int argc, char* argv[]) {
 		}
 
 
+		if (diagnosticFrame) {
+			const double stageMs = std::chrono::duration<double, std::milli>(DiagnosticClock::now() - stageStart).count();
+			logger.debug("Frame {}: rendering complete in {:.2f} ms; swapping buffers.", frameCount, stageMs);
+			stageStart = DiagnosticClock::now();
+		}
 		window.swapBuffers();
+		if (diagnosticFrame) {
+			const double stageMs = std::chrono::duration<double, std::milli>(DiagnosticClock::now() - stageStart).count();
+			logger.debug("Frame {}: buffer swap complete in {:.2f} ms; frame limiter started.", frameCount, stageMs);
+			stageStart = DiagnosticClock::now();
+		}
 
 		frameRateController.checkAndWait();
+		if (diagnosticFrame) {
+			const double stageMs = std::chrono::duration<double, std::milli>(DiagnosticClock::now() - stageStart).count();
+			logger.debug("Frame {}: frame limiter returned in {:.2f} ms.", frameCount, stageMs);
+		}
 
 		const float currentFrameRate =
 			frameRateController.getActualFrameRate();
@@ -367,7 +453,19 @@ int main(int argc, char* argv[]) {
 		}
 
 		frameCount++;
+		if (diagnosticFrame) {
+			const double frameMs = std::chrono::duration<double, std::milli>(DiagnosticClock::now() - frameStart).count();
+			logger.info(
+				"Main loop heartbeat: frame={}, frame time={:.2f} ms, FPS={:.1f}, average={:.1f}, stability={:.2f}%.",
+				frameCount,
+				frameMs,
+				currentFrameRate,
+				averageFrameRate,
+				frameRateStability
+			);
+		}
 	}
+	logger.info("Main: render loop exited at frame {}.", frameCount);
 
 	logger.info("Average Frame Rate: {:.2f} FPS", averageFrameRate);
 	logger.info(
