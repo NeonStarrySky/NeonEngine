@@ -27,36 +27,56 @@ The project uses **vcpkg** for dependency management:
 - **STB** - Image loading and processing
 - **spdlog** - Fast C++ logging library
 
-## Building
+## Building (Windows)
 
-### Prerequisites
+### Requirements
 
-- Visual Studio 2022 or later (Windows)
-- C++ compiler with C++17 or later support
-- vcpkg (for dependency management)
+- Windows and Visual Studio C++ Build Tools with the **v145** platform toolset and a Windows 10 SDK.
+- [vcpkg](https://github.com/microsoft/vcpkg), available as `vcpkg.exe` on `PATH` or through the `VCPKG_ROOT` environment variable.
+- PowerShell.
 
-### Build Steps
+The project uses C++23. Dependencies are described in `vcpkg.json`; the repository's `vcpkg-configuration.json` pins the vcpkg registry baseline.
 
-1. Clone the repository:
-```bash
+### Build with the script
+
+Clone the repository, then run this from its root in PowerShell:
+
+```powershell
 git clone https://github.com/NeonStarrySky/NeonEngine.git
 cd NeonEngine
+./scripts/build.ps1
 ```
 
-2. Install dependencies using vcpkg:
-```bash
-vcpkg install --config=vcpkg-configuration.json
+The script installs the manifest dependencies for `x64-windows`, locates MSBuild through `PATH` or Visual Studio Installer's `vswhere`, and builds the solution in x64 Release mode. The executable and runtime DLLs are written to `x64/Release/`.
+
+To build Debug instead, run `./scripts/build.ps1 -Configuration Debug`. If dependencies are already installed, pass `-SkipDependencyInstall` to skip the vcpkg install step.
+
+### Build manually
+
+From the repository root, install dependencies and build with MSBuild:
+
+```powershell
+vcpkg install --triplet x64-windows
+msbuild .\NeonEngine.slnx /m /p:Configuration=Release /p:Platform=x64 /v:minimal
 ```
 
-3. Open the solution file:
-```bash
-NeonEngine.slnx
+The solution is `NeonEngine.slnx`, and the C++ project is `Engine/Engine.vcxproj`.
+
+### Run
+
+Shaders are loaded from paths relative to the process working directory. Start the executable with `Engine` as its working directory:
+
+```powershell
+$repo = (Get-Location).Path
+Push-Location .\Engine
+try {
+    & "$repo\x64\Release\Engine.exe"
+} finally {
+    Pop-Location
+}
 ```
 
-4. Build using Visual Studio or command line:
-```bash
-msbuild NeonEngine.slnx /p:Configuration=Release /p:Platform=x64
-```
+The program opens an OpenGL window and runs until the window is closed or Escape is pressed.
 
 ## Project Structure
 
