@@ -126,8 +126,8 @@ int main(int argc, char* argv[]) {
 	try {
 		logger.info("Main: loading and linking shaders.");
 		shaderManager.init(); // Initialize the shader manager
-		const std::string vertexShaderPath = "Engine/assets/shaders/vertex_shader.glsl";
-		const std::string fragmentShaderPath = "Engine/assets/shaders/fragment_shader.glsl";
+		const std::string vertexShaderPath = "assets/shaders/vertex_shader.glsl";
+		const std::string fragmentShaderPath = "assets/shaders/fragment_shader.glsl";
 		shaderManager.loadShaders({// Load and compile shaders from specified file paths and types
 			{vertexShaderPath, GL_VERTEX_SHADER},
 			{fragmentShaderPath, GL_FRAGMENT_SHADER}
