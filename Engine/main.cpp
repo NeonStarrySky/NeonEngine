@@ -18,6 +18,8 @@
 
 #include "core/type_system/type_id.h"
 
+#include <array>
+#include <chrono>
 #include <cstdlib>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -59,7 +61,7 @@ inline glm::vec3 randomUnitVector() {
 int main(int argc, char* argv[]) {
 	//std::cout << "Game path:" << argv[0] << '\n';
 
-	int frameRate = 60; // 设置目标帧率为 144 FPS
+	int frameRate = 1000; // 设置目标帧率为 144 FPS
 	std::string picPath = "1pic.png";
 	using namespace neon;
 	using
@@ -80,7 +82,7 @@ int main(int argc, char* argv[]) {
 	//common
 	Logger logger{};
 	Setting setting;
-
+	logger.setLogLevel(Logger::LogLevel::debug);
 	logger.info("Game path: {}", argv[0]);
 	/*创建*/
 	//ecs
@@ -118,8 +120,7 @@ int main(int argc, char* argv[]) {
 	glViewport(0, 0, framebufferWidth, framebufferHeight);
 
 	FrameRateController frameRateController;
-
-	frameRateController.setFrameRate(frameRate);
+	frameRateController.setFrameRate(90);
 	Renderer renderer;
 
 
@@ -131,10 +132,10 @@ int main(int argc, char* argv[]) {
 
 		shaderManager.init(); // Initialize the shader manager
 		shaderManager.loadShaders({// Load and compile shaders from specified file paths and types
-			{"assets/shaders/vertex_shader.glsl", GL_VERTEX_SHADER},
-			{ "assets/shaders/fragment_shader.glsl", GL_FRAGMENT_SHADER }
+			{"D:/neon/program/project/cpp/NeonEngine/Engine/assets/shaders/vertex_shader.glsl", GL_VERTEX_SHADER},
+			{ "D:/neon/program/project/cpp/NeonEngine/Engine/assets/shaders/fragment_shader.glsl", GL_FRAGMENT_SHADER }
 			});
-		shaderManager.linkPrograms({ "assets/shaders/vertex_shader.glsl", "assets/shaders/fragment_shader.glsl" });
+		shaderManager.linkPrograms({ "D:/neon/program/project/cpp/NeonEngine/Engine/assets/shaders/vertex_shader.glsl", "D:/neon/program/project/cpp/NeonEngine/Engine/assets/shaders/fragment_shader.glsl" });
 
 
 		program = shaderManager.buildShader();
@@ -164,14 +165,28 @@ int main(int argc, char* argv[]) {
 	};
 	Mesh mesh{ vertices, indices };
 
-
-	auto texture_obj = textureManager.loadTexture(picPath).lock();
-	if (!texture_obj) {
-		logger.error("Failed to load texture.");
-		return EXIT_FAILURE;
+	/*creat entities */
+	constexpr std::size_t entityCount = 10000 * 10;
+	SpriteRegion region{ 0, 0, 1, 1 };
+	std::deque<Texture> entityTextures;
+	std::mt19937 randomEngine{ std::random_device{}() };
+	constexpr std::array<std::array<std::uint8_t, 4>, 4> textureColors{ {
+		{{255, 80, 80, 255}},
+		{{80, 255, 120, 255}},
+		{{80, 140, 255, 255}},
+		{{255, 220, 80, 255}}
+	} };
+	for (const auto& color : textureColors)
+	{
+		entityTextures.emplace_back(Texture::Info{});
+		auto& texture = entityTextures.back();
+		texture.allocateStorage(1, GL_RGBA8, 1, 1);
+		texture.uploadData(0, GL_RGBA, GL_UNSIGNED_BYTE, color.data());
+		texture.setParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		texture.setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	}
-
-	SpriteRegion region{ 0, 0, texture_obj->info().width, texture_obj->info().height };
+	std::uniform_int_distribution<std::size_t> textureIndex(0, entityTextures.size() - 1);
+	logger.info("Main: creating {} entities and {} shared 1x1 color textures.", entityCount, entityTextures.size());
 
 	//background
 	//auto&& entity = entityManager.createEntity();
@@ -192,7 +207,7 @@ int main(int argc, char* argv[]) {
 	//	core::ecs::SpriteComponent{ mesh, *textureManager.loadTexture("pixel_grid.png").lock(), region, setting }
 	//);
 
-	for (size_t i = 0; i < 10000; i++)
+	for (std::size_t i = 0; i < entityCount; ++i)
 	{
 		auto&& entity = entityManager.createEntity();
 
@@ -209,7 +224,7 @@ int main(int argc, char* argv[]) {
 		spriteStorage.addTo
 		(
 			entity,
-			core::ecs::SpriteComponent{ mesh, *texture_obj, region, setting }
+			core::ecs::SpriteComponent{ mesh, entityTextures[textureIndex(randomEngine)], region, setting }
 		);
 	}
 
@@ -234,21 +249,61 @@ int main(int argc, char* argv[]) {
 	shareUBO.update(0, sizeof(glm::mat4), glm::value_ptr(view));
 	shareUBO.update(sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
 	shareUBO.bindBase(0);
-	bool useSpriteArrayRenderer = true;
-	bool toggleKeyWasPressed = false;
+	enum class SpriteRenderMode
+	{
+		Individual,
+		Array,
+		TextureGrouped
+	};
+	SpriteRenderMode renderMode = SpriteRenderMode::Array;
+	constexpr std::array<int, 3> renderModeKeys{ GLFW_KEY_1, GLFW_KEY_2, GLFW_KEY_3 };
+	constexpr std::array<const char*, 3> renderModeNames{
+		"Individual Sprite Renderer",
+		"Sprite Array Renderer",
+		"Texture Grouped Sprite Renderer"
+	};
+	std::array<bool, renderModeKeys.size()> renderModeKeyWasPressed{};
+	auto modeIntervalStartedAt = std::chrono::steady_clock::now();
+	std::size_t modeIntervalFrameCount = 0;
 	/* game loop */
 	while (!glfwWindowShouldClose(window.getGLFWwindow()))
 	{
 		window.pollEvents();
 
-		const bool toggleKeyIsPressed =
-			glfwGetKey(window.getGLFWwindow(), GLFW_KEY_TAB) == GLFW_PRESS;
-		if (toggleKeyIsPressed && !toggleKeyWasPressed)
+		for (std::size_t i = 0; i < renderModeKeys.size(); ++i)
 		{
-			useSpriteArrayRenderer = !useSpriteArrayRenderer;
-			logger.debug("Renderer mode toggled: {}", useSpriteArrayRenderer ? "Sprite Array Renderer" : "Individual Sprite Renderer");
+			const bool keyIsPressed = glfwGetKey(window.getGLFWwindow(), renderModeKeys[i]) == GLFW_PRESS;
+			if (keyIsPressed && !renderModeKeyWasPressed[i])
+			{
+				const auto nextMode = static_cast<SpriteRenderMode>(i);
+				if (nextMode != renderMode)
+				{
+					const auto now = std::chrono::steady_clock::now();
+					const double elapsedSeconds =
+						std::chrono::duration<double>(now - modeIntervalStartedAt).count();
+					if (modeIntervalFrameCount > 0 && elapsedSeconds > 0.0)
+					{
+						const double averageFrameLatencyMs =
+							elapsedSeconds * 1000.0 / modeIntervalFrameCount;
+						const double averageFrameRateForMode =
+							modeIntervalFrameCount / elapsedSeconds;
+						logger.info(
+							"Renderer mode {} finished: average frame latency {:.3f} ms, average frame rate {:.2f} FPS ({} frames)",
+							renderModeNames[static_cast<std::size_t>(renderMode)],
+							averageFrameLatencyMs,
+							averageFrameRateForMode,
+							modeIntervalFrameCount
+						);
+					}
+
+					renderMode = nextMode;
+					modeIntervalStartedAt = now;
+					modeIntervalFrameCount = 0;
+					logger.info("Renderer mode: {}", renderModeNames[i]);
+				}
+			}
+			renderModeKeyWasPressed[i] = keyIsPressed;
 		}
-		toggleKeyWasPressed = toggleKeyIsPressed;
 
 		// ecs
 		physicsSystem.update();
@@ -268,8 +323,15 @@ int main(int argc, char* argv[]) {
 		auto& sprites = spriteComponents.getAllComponents();
 		auto physics = physicsComponents.getForEntities(spriteEntities);
 
-		if (useSpriteArrayRenderer)
+		switch (renderMode)
 		{
+		case SpriteRenderMode::Individual:
+			for (std::size_t i = 0; i < sprites.size() && i < physics.size(); ++i)
+			{
+				renderer.Draw(sprites[i], physics[i], program, view, projection);
+			}
+			break;
+		case SpriteRenderMode::Array:
 			renderer.DrawSpriteArray(
 				sprites,
 				physics,
@@ -278,19 +340,24 @@ int main(int argc, char* argv[]) {
 				view,
 				projection
 			);
-		}
-		else
-		{
-			for (std::size_t i = 0; i < sprites.size() && i < physics.size(); ++i)
-			{
-				renderer.Draw(sprites[i], physics[i], program, view, projection);
-			}
+			break;
+		case SpriteRenderMode::TextureGrouped:
+			renderer.DrawSpriteArrayByTexture(
+				sprites,
+				physics,
+				program,
+				shareUBO,
+				view,
+				projection
+			);
+			break;
 		}
 
 
 		window.swapBuffers();
 
 		frameRateController.checkAndWait();
+		++modeIntervalFrameCount;
 
 		const float currentFrameRate =
 			frameRateController.getActualFrameRate();
