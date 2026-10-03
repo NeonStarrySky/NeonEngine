@@ -3,6 +3,8 @@
 #include "graphics/gl/GLResource.hpp"
 #include "graphics/gl/GLResource_base.hpp"
 
+#include <stdexcept>
+
 namespace neon::graphics::gl {
 
 	struct TextureDeleter {
@@ -25,6 +27,14 @@ namespace neon::graphics::gl {
 			GLint levels = 1;                   // mipmap 层数
 		};
 
+		// 适用于常见 2D 贴图的采样设置。
+		struct SamplerInfo {
+			GLint minFilter = GL_LINEAR;
+			GLint magFilter = GL_LINEAR;
+			GLint wrapS = GL_CLAMP_TO_EDGE;
+			GLint wrapT = GL_CLAMP_TO_EDGE;
+		};
+
 		Texture() = default;
 
 		// 接管现有ID
@@ -38,6 +48,41 @@ namespace neon::graphics::gl {
 			GLuint newID = 0;
 			glGenTextures(1, &newID);
 			handle.reset(newID);
+		}
+
+		// 创建并初始化 2D 纹理。默认输入为 RGBA8 字节数据；pixels 可以为空，
+		// 为空时只分配存储，之后可通过 uploadData() 写入内容。
+		static Texture create2D(GLsizei width, GLsizei height, const void* pixels = nullptr) {
+			return create2D(width, height, pixels, SamplerInfo{});
+		}
+
+		// 可指定采样参数、GPU 内部格式以及输入像素的格式和类型。
+		static Texture create2D(
+			GLsizei width,
+			GLsizei height,
+			const void* pixels,
+			const SamplerInfo& sampler,
+			GLenum internalFormat = GL_RGBA8,
+			GLenum format = GL_RGBA,
+			GLenum type = GL_UNSIGNED_BYTE)
+		{
+			if (width <= 0 || height <= 0) {
+				throw std::invalid_argument("2D texture dimensions must be positive");
+			}
+
+			Info info;
+			info.target = GL_TEXTURE_2D;
+			info.width = width;
+			info.height = height;
+			info.internalFormat = internalFormat;
+
+			Texture texture(info);
+			texture.allocateStorage(1, internalFormat, width, height);
+			if (pixels != nullptr) {
+				texture.uploadData(0, format, type, pixels);
+			}
+			texture.setSampler(sampler);
+			return texture;
 		}
 
 		GLuint getID() const noexcept { return handle.getID(); }
@@ -65,6 +110,16 @@ namespace neon::graphics::gl {
 			assert(isValid());
 			glBindTexture(info_.target, getID());
 			glTexParameteri(info_.target, pname, param);
+		}
+
+		void setSampler(const SamplerInfo& sampler) {
+			assert(isValid());
+			assert(info_.target == GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, getID());
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, sampler.minFilter);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, sampler.magFilter);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, sampler.wrapS);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, sampler.wrapT);
 		}
 
 		// ========== 核心改正 ==========
@@ -116,6 +171,18 @@ namespace neon::graphics::gl {
 			if (depth == 0) depth = info_.depth;
 
 			glBindTexture(info_.target, getID());
+
+			// OpenGL 默认按 4 字节对齐；按 1 字节上传可兼容 RGB 等紧密排列的数据。
+			struct UnpackAlignmentGuard {
+				GLint previousAlignment = 4;
+				UnpackAlignmentGuard() {
+					glGetIntegerv(GL_UNPACK_ALIGNMENT, &previousAlignment);
+					glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+				}
+				~UnpackAlignmentGuard() {
+					glPixelStorei(GL_UNPACK_ALIGNMENT, previousAlignment);
+				}
+			} unpackAlignmentGuard;
 
 			switch (info_.target) {
 			case GL_TEXTURE_1D:
