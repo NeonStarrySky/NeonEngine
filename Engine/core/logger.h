@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <concepts>
 #include <fmt/base.h>
@@ -60,6 +60,26 @@ namespace neon::core
 
 		void setLogLevel(LogLevel level) {
 			currentLogLevel = level;
+
+			// LogLevel 的枚举顺序（info/warn/error/critical/debug/trace）和 spdlog::level 的
+			// 枚举顺序（trace/debug/info/warn/err/critical）不一致，必须显式映射，不能强转。
+			spdlog::level::level_enum spdlogLevel = spdlog::level::info;
+			switch (level)
+			{
+			case LogLevel::trace:    spdlogLevel = spdlog::level::trace;    break;
+			case LogLevel::debug:    spdlogLevel = spdlog::level::debug;    break;
+			case LogLevel::info:     spdlogLevel = spdlog::level::info;     break;
+			case LogLevel::warn:     spdlogLevel = spdlog::level::warn;     break;
+			case LogLevel::error:    spdlogLevel = spdlog::level::err;      break;
+			case LogLevel::critical: spdlogLevel = spdlog::level::critical; break;
+			}
+
+			// 过滤发生在底层 spdlog logger 上，而且信息级和 debug/trace 走的是不同的
+			// logger（同步/异步各一套），只写 currentLogLevel 不会影响任何输出。
+			logger->set_level(spdlogLevel);
+			logger_debug->set_level(spdlogLevel);
+			async_logger->set_level(spdlogLevel);
+			async_logger_debug->set_level(spdlogLevel);
 		}
 		void setLogType(LogType type) {
 			currentLogType = type;
