@@ -50,13 +50,19 @@ The window can be closed with **Escape** or the window close button. Press **1**
 | `2` | Sprite array renderer (default) |
 | `3` | Texture-grouped sprite array renderer |
 
-The program writes diagnostic and frame-rate information to its logger while running. Shader files are loaded from paths relative to the process working directory, so launch the executable from the repository root:
+The program writes diagnostic and frame-rate information to its logger while running. Shader files are loaded from paths relative to the process working directory, so set `Engine` as the working directory when launching the executable:
 
 ```powershell
-& .\x64\Release\Engine.exe
+$repo = (Get-Location).Path
+Push-Location .\Engine
+try {
+    & "$repo\x64\Release\Engine.exe"
+} finally {
+    Pop-Location
+}
 ```
 
-For a Debug build, use `& .\x64\Debug\Engine.exe` instead. The working directory should remain the repository root so `Engine/assets/shaders/` resolves correctly.
+For a Debug build, replace `Release` with `Debug` in the executable path. The working directory must be `Engine` so `assets/shaders/` resolves correctly.
 
 ## Source layout
 
