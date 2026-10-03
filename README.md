@@ -50,9 +50,13 @@ The window can be closed with **Escape** or the window close button. Press **1**
 | `2` | Sprite array renderer (default) |
 | `3` | Texture-grouped sprite array renderer |
 
-The program writes diagnostic and frame-rate information to its logger while running.
+The program writes diagnostic and frame-rate information to its logger while running. Shader files are loaded from paths relative to the process working directory, so launch the executable from the repository root:
 
-**Current checkout limitation:** `Engine/main.cpp` loads both shaders using absolute paths from the original developer's machine. As checked in, a build on another machine will not find those shader files at runtime until those paths are changed to point to that checkout's `Engine/assets/shaders` directory. Building the executable does not depend on these runtime shader paths.
+```powershell
+& .\x64\Release\Engine.exe
+```
+
+For a Debug build, use `& .\x64\Debug\Engine.exe` instead. The working directory should remain the repository root so `Engine/assets/shaders/` resolves correctly.
 
 ## Source layout
 

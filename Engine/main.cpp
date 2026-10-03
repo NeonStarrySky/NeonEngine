@@ -26,6 +26,7 @@
 #include <iostream>
 #include <random>
 #include <ranges>
+#include <string>
 
 #include <cmath>
 #include <deque>
@@ -125,11 +126,13 @@ int main(int argc, char* argv[]) {
 	try {
 		logger.info("Main: loading and linking shaders.");
 		shaderManager.init(); // Initialize the shader manager
+		const std::string vertexShaderPath = "Engine/assets/shaders/vertex_shader.glsl";
+		const std::string fragmentShaderPath = "Engine/assets/shaders/fragment_shader.glsl";
 		shaderManager.loadShaders({// Load and compile shaders from specified file paths and types
-			{"D:/neon/program/project/cpp/NeonEngine/Engine/assets/shaders/vertex_shader.glsl", GL_VERTEX_SHADER},
-			{ "D:/neon/program/project/cpp/NeonEngine/Engine/assets/shaders/fragment_shader.glsl", GL_FRAGMENT_SHADER }
+			{vertexShaderPath, GL_VERTEX_SHADER},
+			{fragmentShaderPath, GL_FRAGMENT_SHADER}
 			});
-		shaderManager.linkPrograms({ "D:/neon/program/project/cpp/NeonEngine/Engine/assets/shaders/vertex_shader.glsl", "D:/neon/program/project/cpp/NeonEngine/Engine/assets/shaders/fragment_shader.glsl" });
+		shaderManager.linkPrograms({vertexShaderPath, fragmentShaderPath});
 
 
 		program = shaderManager.buildShader();
