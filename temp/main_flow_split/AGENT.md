@@ -118,16 +118,33 @@ Engine.exe exited with code 0
 
 结论：拆分后的 main 能正常构建、创建窗口/上下文、加载着色器、创建 10 万实体、跑满整个渲染循环并正常退出，各流程函数的诊断日志（含行号，指向 `main.cpp` 中对应的流程函数）都按原节奏输出。
 
-### 过程中修掉的两个问题
+### 过程中修掉的三个问题
 
 1. `reportSummary` 最初写成 `const AppContext&`，而 `Logger::info` 非 const → C2662。已改为 `AppContext&`。
 2. 构建脚本最初用中文注释：Windows PowerShell 5.1 会用 ANSI 代码页读取**无 BOM 的 UTF-8** 脚本，
    中文字符的字节数与 ANSI 双字节规则不匹配时会**吞掉行尾换行**，导致下一行被并入注释
    （现象：脚本里的 `VcpkgInstalledDir` 默认值赋值语句从未执行，构建报 “Join-Path 参数为空”）。
    已把 `scripts\build.ps1` 改为**纯 ASCII 注释**，脚本在 PowerShell 5.1 / 7 下均可正常运行。
-   注意：`Engine\main.cpp` 里的中文注释不受影响，因为 MSVC 侧由 `/utf-8` 指定源文件编码。
+3. **把本目录的 `Engine\main.cpp` 复制到真实工程时不能走 PowerShell 的文本管道**：该文件是无 BOM 的 UTF-8，
+   PowerShell 5.1 的 `Get-Content` 会按 ANSI 解码并吞掉中文注释后的换行（同问题 2），
+   复制后真实工程编译报 “`logger` 未声明的标识符 / `AppContext` 没有成员 `logger`”。
+   正确做法是**按字节复制**，再补 UTF-8 BOM 并把 LF 转成 CRLF，全程不经任何文本解码：
 
-### 原工程未被改动
+   ```powershell
+   $bytes = [System.IO.File]::ReadAllBytes($src)      # 字节级读取
+   # LF -> CRLF（按字节插入 0x0D），必要时前置 BOM
+   [System.IO.File]::WriteAllBytes($dst, $final)
+   ```
 
-- 原 `Engine\main.cpp` 内容、`Engine.vcxproj`、`vcpkg.json` 及 `vcpkg_installed\.msbuildstamp-x64-windows.stamp`
-  的时间戳均保持构建前状态；本次所有写入都发生在 `temp\main_flow_split\` 内。
+   落地后建议用显式 UTF-8 解码逐字比对（`[System.IO.File]::ReadAllText($p, [System.Text.UTF8Encoding]::new($false))`），
+   确认与 temp 版本完全一致；MSVC 侧仍由 `/utf-8` 指定源文件编码。
+
+### 落地到真实工程
+
+本目录仍是实验/验证副本。经确认后，拆分版已应用到真实工程：
+
+- 分支 `deepseek/refactor-main-into-flows`，提交 `5dd741f`
+  （`Engine/main.cpp`：+362 / −278，共 582 行）。
+- 拆分前的原文件内容保留在提交 `7833878:Engine/main.cpp`（blob `0f6cb44f2ed5702aa3626343418da8d4c1486616`）。
+- 回退方式：`git revert 5dd741f`，或只回退文件 `git checkout 7833878 -- Engine/main.cpp`。
+- 拆分前工作区里那处未提交的括号空格改动已存入 `stash@{0}`（`git stash show -p stash@{0}` 可查看）。
