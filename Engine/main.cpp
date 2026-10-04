@@ -555,6 +555,7 @@ namespace
 	{
 		const float kineticEnergy = app.physicsSystem.getTotalKineticEnergy();
 		const float potentialEnergy = app.physicsSystem.getTotalPotentialEnergy();
+		const core::ecs::RepulsionStats& repulsion = app.physicsSystem.getLastRepulsionStats();
 		app.logger.info(
 			"Energy: step={}, simulated time={:.2f} s, kinetic={:.4f}, potential={:.4f}, total={:.4f}.",
 			app.frameCount,
@@ -562,6 +563,13 @@ namespace
 			kineticEnergy,
 			potentialEnergy,
 			kineticEnergy + potentialEnergy
+		);
+		app.logger.info(
+			"Repulsion: active pairs={}, clamped pairs={}, sum |dv|={:.4f} per step, potential={:.4f}.",
+			repulsion.pairCount,
+			repulsion.clampedPairCount,
+			repulsion.velocityChange,
+			repulsion.potentialEnergy
 		);
 	}
 
@@ -624,11 +632,24 @@ int main(int argc, char* argv[])
 
 	AppContext app;
 
-	// 快速验证：Engine.exe --physics [步数] → 只跑物理，不渲染、不限帧
-	if (argc > 1 && std::string(argv[1]) == "--physics") {
-		app.physicsOnly = true;
-		if (argc > 2) {
-			app.physicsStepBudget = std::atoi(argv[2]);
+	// 快速验证用的命令行开关：
+	//   --physics [步数]  只跑物理：不渲染、不限帧，跑满步数后退出（等价于 --steps）
+	//   --steps <步数>    同上，显式指定步数
+	//   --framerate <n>   覆盖 Setting::FrameRate（在只跑物理模式里就等于改变积分步长 dt = 1/n）
+	//   --no-repulsion    关闭近距斥力，用于对照实验
+	for (int i = 1; i < argc; ++i) {
+		const std::string argument = argv[i];
+		if (argument == "--physics" || argument == "--steps") {
+			app.physicsOnly = true;
+			if (i + 1 < argc && argv[i + 1][0] != '-') {
+				app.physicsStepBudget = std::atoi(argv[++i]);
+			}
+		}
+		else if (argument == "--framerate" && i + 1 < argc) {
+			app.setting.FrameRate = std::atoi(argv[++i]);
+		}
+		else if (argument == "--no-repulsion") {
+			app.setting.repulsionStrength = 0.0f;
 		}
 	}
 
