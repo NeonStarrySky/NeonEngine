@@ -10,10 +10,11 @@
 
 namespace neon::core::ecs
 {
-	/// @brief 单步的斥力诊断量，用来判断动能增长是否与“斥力生效”同步。
+	/// @brief 一帧内的斥力诊断量，用来判断动能增长是否与“斥力生效”同步。
+	///        velocityChange / potentialEnergy 在一帧的所有子步上累加；pairCount / clampedPairCount 取最后一个子步的快照。
 	struct RepulsionStats
 	{
-		float velocityChange = 0.0f;		// 这一步斥力给出的速度改变量 Σ|Δv|
+		float velocityChange = 0.0f;		// 斥力给出的速度改变量 Σ|Δv|
 		float potentialEnergy = 0.0f;		// 斥力总势能（未钳制的解析形式；有钳制时它是上界）
 		std::size_t pairCount = 0;			// 距离小于斥力半径的对数（斥力真正生效）
 		std::size_t clampedPairCount = 0;	// 其中触发加速度上限的对数
@@ -25,7 +26,9 @@ namespace neon::core::ecs
 		Setting& setting;
 		ComponentManager& componentManager;
 		ComponentStorage<PhysicsComponent>& physicsComponents;
-		RepulsionStats lastRepulsion;		// 上一步的斥力诊断量
+		RepulsionStats lastRepulsion;		// 上一帧的斥力诊断量
+		int lastSubsteps = 1;				// 上一帧实际使用的子步数
+		float simulatedTime = 0.0f;			// 累计推进的模拟时间（秒）
 
 		// 引力 + 近距斥力：任意两个粒子之间都有相互作用（O(N²)，实体数量多时开销明显）
 		void applyGravity(float deltaTime);
@@ -34,8 +37,12 @@ namespace neon::core::ecs
 		float getTotalKineticEnergy();
 		// 引力总势能（软化形式，与 applyGravity 使用的力一致）：用于检查总能量是否守恒
 		float getTotalPotentialEnergy();
-		// 上一步的斥力诊断量
+		// 上一帧的斥力诊断量
 		const RepulsionStats& getLastRepulsionStats() const { return lastRepulsion; }
+		// 上一帧实际使用的子步数
+		int getLastSubsteps() const { return lastSubsteps; }
+		// 累计推进的模拟时间（秒）
+		float getSimulatedTime() const { return simulatedTime; }
 		PhysicsSystem(Logger& logger, Setting& setting, ComponentManager& componentManager) :
 			logger(logger),
 			setting(setting),
@@ -44,6 +51,7 @@ namespace neon::core::ecs
 		{
 
 		}
-		void update();
+		/// @param frameDeltaTime 本帧的真实时长（秒）：子步数由它和 Setting::physicsRate 决定
+		void update(float frameDeltaTime);
 	};
 }

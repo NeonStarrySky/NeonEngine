@@ -16,7 +16,6 @@ namespace neon::core::ecs
 		const std::size_t particleCount = physicsComponents.getEntities().size();
 		if (particleCount < 2)
 		{
-			lastRepulsion = stepRepulsion;
 			return;
 		}
 
@@ -72,7 +71,7 @@ namespace neon::core::ecs
 
 					acceleration -= offset * repulsionMagnitude; // 方向与引力相反：把两颗推开
 
-					// 诊断：这一步斥力贡献的速度改变量 |Δv| = magnitude * |offset|、生效对数与斥力势能
+					// 诊断：本子步斥力贡献的速度改变量 |Δv| = magnitude * |offset|、生效对数与斥力势能
 					const float distance = std::sqrt(rawDistanceSq);
 					const float inverseDistanceCubed = inverseDistanceSq * inverseDistance;
 					++stepRepulsion.pairCount;
@@ -87,7 +86,11 @@ namespace neon::core::ecs
 			}
 		}
 
-		lastRepulsion = stepRepulsion;
+		// 累加到本帧的诊断量上（一帧可能有多个子步）
+		lastRepulsion.velocityChange += stepRepulsion.velocityChange;
+		lastRepulsion.potentialEnergy += stepRepulsion.potentialEnergy;
+		lastRepulsion.pairCount = stepRepulsion.pairCount;
+		lastRepulsion.clampedPairCount = stepRepulsion.clampedPairCount;
 	}
 
 	// 总动能 = Σ ½ m v²；质量与引力一致（每颗 1/粒子数），因此数值也落在同一量级
@@ -129,35 +132,56 @@ namespace neon::core::ecs
 		return totalPotentialEnergy;
 	}
 
-	void PhysicsSystem::update() {
-		const float deltaTime = 1.0f / static_cast<float>(setting.FrameRate);
+	void PhysicsSystem::update(float frameDeltaTime) {
+		// 帧时长保护：太小会让子步数变成 0，太大（例如卡顿之后）会让一帧里塞进过多子步
+		constexpr float minFrameDelta = 1.0f / 2000.0f;
+		constexpr float maxFrameDelta = 0.1f;
+		constexpr int maxSubsteps = 32;
 
-		// 先由粒子间相互作用（引力 + 近距斥力）更新速度，再按速度积分位置
-		applyGravity(deltaTime);
+		float frameDelta = frameDeltaTime;
+		if (frameDelta < minFrameDelta) frameDelta = minFrameDelta;
+		if (frameDelta > maxFrameDelta) frameDelta = maxFrameDelta;
 
-		for (auto&& componentEntry : physicsComponents) {
-			auto& physicsComponent = componentEntry.second;
-			auto& position = physicsComponent.position;
-			auto& velocity = physicsComponent.velocity;
+		// 子步积分：把这一帧的相互作用与积分拆成若干小步，使内部积分步长 ≈ 1/physicsRate。
+		// 刚性斥力（1/r⁴）在 dt = 1/60 下显式积分会指数式注入能量，细化步长即可消除这种不稳定；
+		// 关键在于每帧推进的时间仍然等于真实帧时长，所以提高显示帧率不会让模拟变慢。
+		int substeps = static_cast<int>(std::lround(frameDelta * setting.physicsRate));
+		if (substeps < 1) substeps = 1;
+		if (substeps > maxSubsteps) substeps = maxSubsteps;
+		lastSubsteps = substeps;
 
-			// Update the position based on velocity and delta time
-			//边界反弹setting里的窗口边界大小
-			position += velocity * deltaTime;
+		const float deltaTime = frameDelta / static_cast<float>(substeps);
+		simulatedTime += frameDelta;
 
-			if (position.x < -1.0f) {
-				position.x = -1.0f;
-				if (velocity.x < 0.0f) velocity.x = -velocity.x;
-			} else if (position.x > 1.0f) {
-				position.x = 1.0f;
-				if (velocity.x > 0.0f) velocity.x = -velocity.x;
-			}
+		lastRepulsion = RepulsionStats{};
+		for (int substep = 0; substep < substeps; ++substep) {
+			// 先由粒子间相互作用（引力 + 近距斥力）更新速度，再按速度积分位置
+			applyGravity(deltaTime);
 
-			if (position.y < -1.0f) {
-				position.y = -1.0f;
-				if (velocity.y < 0.0f) velocity.y = -velocity.y;
-			} else if (position.y > 1.0f) {
-				position.y = 1.0f;
-				if (velocity.y > 0.0f) velocity.y = -velocity.y;
+			for (auto&& componentEntry : physicsComponents) {
+				auto& physicsComponent = componentEntry.second;
+				auto& position = physicsComponent.position;
+				auto& velocity = physicsComponent.velocity;
+
+				// Update the position based on velocity and delta time
+				//边界反弹setting里的窗口边界大小
+				position += velocity * deltaTime;
+
+				if (position.x < -1.0f) {
+					position.x = -1.0f;
+					if (velocity.x < 0.0f) velocity.x = -velocity.x;
+				} else if (position.x > 1.0f) {
+					position.x = 1.0f;
+					if (velocity.x > 0.0f) velocity.x = -velocity.x;
+				}
+
+				if (position.y < -1.0f) {
+					position.y = -1.0f;
+					if (velocity.y < 0.0f) velocity.y = -velocity.y;
+				} else if (position.y > 1.0f) {
+					position.y = 1.0f;
+					if (velocity.y > 0.0f) velocity.y = -velocity.y;
+				}
 			}
 		}
 	}

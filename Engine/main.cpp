@@ -81,6 +81,7 @@ namespace
 	constexpr int diagnosticIntervalFrames = 180;		// 每隔多少帧打印一次诊断日志
 	constexpr std::size_t entityCount = 1000;			// 创建的实体数量（两两引力是 O(N²)：1000 个约 50 万对/帧）
 	constexpr int physicsLogInterval = 1000;			// 只跑物理模式下，每隔多少步打印一次能量
+	constexpr float physicsOnlyFrameDelta = 1.0f / 60.0f; // 只跑物理模式下固定使用的帧时长，保证结果可复现
 
 	using DiagnosticClock = std::chrono::steady_clock;
 
@@ -373,7 +374,7 @@ namespace
 	}
 
 	/* ---------- 流程 7：每帧更新（物理系统） ---------- */
-	void updateFrameSimulation(AppContext& app, bool diagnosticFrame)
+	void updateFrameSimulation(AppContext& app, bool diagnosticFrame, float frameDeltaTime)
 	{
 		DiagnosticClock::time_point stageStart{};
 		if (diagnosticFrame) {
@@ -381,7 +382,7 @@ namespace
 			stageStart = DiagnosticClock::now();
 		}
 
-		app.physicsSystem.update();
+		app.physicsSystem.update(frameDeltaTime);
 
 		if (diagnosticFrame) {
 			const double stageMs = std::chrono::duration<double, std::milli>(DiagnosticClock::now() - stageStart).count();
@@ -537,8 +538,10 @@ namespace
 			const float kineticEnergy = app.physicsSystem.getTotalKineticEnergy();
 			const float potentialEnergy = app.physicsSystem.getTotalPotentialEnergy();
 			app.logger.info(
-				"Main loop heartbeat: frame={}, frame time={:.2f} ms, FPS={:.1f}, average={:.1f}, stability={:.2f}%, kinetic={:.4f}, potential={:.4f}, total energy={:.4f}.",
+				"Main loop heartbeat: frame={}, sim time={:.2f} s, substeps={}, frame time={:.2f} ms, FPS={:.1f}, average={:.1f}, stability={:.2f}%, kinetic={:.4f}, potential={:.4f}, total energy={:.4f}.",
 				app.frameCount,
+				app.physicsSystem.getSimulatedTime(),
+				app.physicsSystem.getLastSubsteps(),
 				frameMs,
 				currentFrameRate,
 				app.averageFrameRate,
@@ -557,15 +560,16 @@ namespace
 		const float potentialEnergy = app.physicsSystem.getTotalPotentialEnergy();
 		const core::ecs::RepulsionStats& repulsion = app.physicsSystem.getLastRepulsionStats();
 		app.logger.info(
-			"Energy: step={}, simulated time={:.2f} s, kinetic={:.4f}, potential={:.4f}, total={:.4f}.",
+			"Energy: step={}, substeps={}, simulated time={:.2f} s, kinetic={:.4f}, potential={:.4f}, total={:.4f}.",
 			app.frameCount,
-			app.frameCount / static_cast<float>(app.setting.FrameRate),
+			app.physicsSystem.getLastSubsteps(),
+			app.physicsSystem.getSimulatedTime(),
 			kineticEnergy,
 			potentialEnergy,
 			kineticEnergy + potentialEnergy
 		);
 		app.logger.info(
-			"Repulsion: active pairs={}, clamped pairs={}, sum |dv|={:.4f} per step, potential={:.4f}.",
+			"Repulsion: active pairs={}, clamped pairs={}, sum |dv|={:.4f} per frame, potential={:.4f}.",
 			repulsion.pairCount,
 			repulsion.clampedPairCount,
 			repulsion.velocityChange,
@@ -585,14 +589,22 @@ namespace
 			logEnergy(app);
 		}
 		/* game loop */
+		auto previousFrameTime = DiagnosticClock::now();
 		while (!glfwWindowShouldClose(window.getGLFWwindow()))
 		{
 			const bool diagnosticFrame =
 				!app.physicsOnly && app.frameCount % diagnosticIntervalFrames == 0;
 			const auto frameStart = diagnosticFrame ? DiagnosticClock::now() : DiagnosticClock::time_point{};
 
+			// 本帧的真实时长：只跑物理模式用固定值（结果可复现），渲染模式用实测值
+			const auto now = DiagnosticClock::now();
+			const float frameDeltaTime = app.physicsOnly
+				? physicsOnlyFrameDelta
+				: std::chrono::duration<float>(now - previousFrameTime).count();
+			previousFrameTime = now;
+
 			updateFrameInput(app, diagnosticFrame);
-			updateFrameSimulation(app, diagnosticFrame);
+			updateFrameSimulation(app, diagnosticFrame, frameDeltaTime);
 
 			if (app.physicsOnly) {
 				// 快速验证：跳过渲染与帧率限制，只推进物理，并定期打印能量
@@ -633,10 +645,11 @@ int main(int argc, char* argv[])
 	AppContext app;
 
 	// 快速验证用的命令行开关：
-	//   --physics [步数]  只跑物理：不渲染、不限帧，跑满步数后退出（等价于 --steps）
-	//   --steps <步数>    同上，显式指定步数
-	//   --framerate <n>   覆盖 Setting::FrameRate（在只跑物理模式里就等于改变积分步长 dt = 1/n）
-	//   --no-repulsion    关闭近距斥力，用于对照实验
+	//   --physics [步数]     只跑物理：不渲染、不限帧，跑满步数后退出（等价于 --steps）
+	//   --steps <步数>       同上，显式指定步数
+	//   --physics-rate <hz>  物理目标频率（内部子步步长 ≈ 1/hz），用于对比不同积分步长
+	//   --framerate <n>      显示/限帧目标（只跑物理模式下没有意义）
+	//   --no-repulsion       关闭近距斥力，用于对照实验
 	for (int i = 1; i < argc; ++i) {
 		const std::string argument = argv[i];
 		if (argument == "--physics" || argument == "--steps") {
@@ -644,6 +657,9 @@ int main(int argc, char* argv[])
 			if (i + 1 < argc && argv[i + 1][0] != '-') {
 				app.physicsStepBudget = std::atoi(argv[++i]);
 			}
+		}
+		else if (argument == "--physics-rate" && i + 1 < argc) {
+			app.setting.physicsRate = static_cast<float>(std::atof(argv[++i]));
 		}
 		else if (argument == "--framerate" && i + 1 < argc) {
 			app.setting.FrameRate = std::atoi(argv[++i]);
