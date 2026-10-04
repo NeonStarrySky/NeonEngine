@@ -4,6 +4,32 @@
 
 namespace neon::core::ecs
 {
+	namespace
+	{
+		// 周期边界（环面空间）：可见区是 [-1, 1]²，粒子越过某条边就从对面出现，
+		// 速度保持不变（不反弹），于是左右、上下各自首尾相接。
+		constexpr float domainHalfExtent = 1.0f;
+		constexpr float domainPeriod = 2.0f * domainHalfExtent;
+
+		// 把坐标折回 [-domainHalfExtent, domainHalfExtent)。
+		// 用取模而不是“越界就减一个周期”，这样一帧内跨过多个周期（高速粒子）也能得到正确结果。
+		//
+		// 注意必须先判断“已经在范围内就直接返回”：value + 1.0f 会把小于 1 的坐标提升到 [1, 2)，
+		// 而该区间的 ulp 比 [0, 1) 大一倍，再减回 1.0f 就不是原值了（float32 下约一半的坐标会被改动 1 ulp）。
+		// 那会让每帧都“看似发生环绕”，还会持续给粒子施加微小位移，所以范围内的坐标必须原样返回。
+		float wrapCoordinate(float value)
+		{
+			if (value >= -domainHalfExtent && value < domainHalfExtent)
+			{
+				return value;
+			}
+
+			float shifted = std::fmod(value + domainHalfExtent, domainPeriod);
+			if (shifted < 0.0f) shifted += domainPeriod;
+			return shifted - domainHalfExtent;
+		}
+	}
+
 	// 粒子间相互作用，每一对粒子都计算一次：
 	//   1) 引力：任何距离都存在（牛顿引力 + 软化长度，避免 r→0 时发散）；
 	//   2) 近距斥力：只有距离小于 Setting::repulsionRadius 时才出现，按 1/r⁴ 增长，
@@ -164,24 +190,15 @@ namespace neon::core::ecs
 				auto& velocity = physicsComponent.velocity;
 
 				// Update the position based on velocity and delta time
-				//边界反弹setting里的窗口边界大小
 				position += velocity * deltaTime;
 
-				if (position.x < -1.0f) {
-					position.x = -1.0f;
-					if (velocity.x < 0.0f) velocity.x = -velocity.x;
-				} else if (position.x > 1.0f) {
-					position.x = 1.0f;
-					if (velocity.x > 0.0f) velocity.x = -velocity.x;
-				}
-
-				if (position.y < -1.0f) {
-					position.y = -1.0f;
-					if (velocity.y < 0.0f) velocity.y = -velocity.y;
-				} else if (position.y > 1.0f) {
-					position.y = 1.0f;
-					if (velocity.y > 0.0f) velocity.y = -velocity.y;
-				}
+				// 周期边界：越界不反弹，而是从对面出现（速度不变），使空间成为循环的环面
+				const float wrappedX = wrapCoordinate(position.x);
+				const float wrappedY = wrapCoordinate(position.y);
+				if (wrappedX != position.x) ++totalWrapCount;
+				if (wrappedY != position.y) ++totalWrapCount;
+				position.x = wrappedX;
+				position.y = wrappedY;
 			}
 		}
 	}

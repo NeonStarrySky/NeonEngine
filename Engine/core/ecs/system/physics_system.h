@@ -28,6 +28,7 @@ namespace neon::core::ecs
 		ComponentStorage<PhysicsComponent>& physicsComponents;
 		RepulsionStats lastRepulsion;		// 上一帧的斥力诊断量
 		int lastSubsteps = 1;				// 上一帧实际使用的子步数
+		std::size_t totalWrapCount = 0;		// 累计从边界一侧环绕到另一侧的坐标分量个数（只增不减）
 		float simulatedTime = 0.0f;			// 累计推进的模拟时间（秒）
 
 		// 引力 + 近距斥力：任意两个粒子之间都有相互作用（O(N²)，实体数量多时开销明显）
@@ -41,6 +42,8 @@ namespace neon::core::ecs
 		const RepulsionStats& getLastRepulsionStats() const { return lastRepulsion; }
 		// 上一帧实际使用的子步数
 		int getLastSubsteps() const { return lastSubsteps; }
+		// 累计从边界一侧环绕到另一侧的坐标分量个数（0 表示还没有粒子越过边界）
+		std::size_t getTotalWrapCount() const { return totalWrapCount; }
 		// 累计推进的模拟时间（秒）
 		float getSimulatedTime() const { return simulatedTime; }
 		PhysicsSystem(Logger& logger, Setting& setting, ComponentManager& componentManager) :

@@ -152,7 +152,7 @@ namespace
 	/* ---------- 流程 1：启动（日志与设置） ---------- */
 	void startup(AppContext& app, char* argv[])
 	{
-		app.logger.setLogLevel(core::Logger::LogLevel::debug);
+		app.logger.setLogLevel(core::Logger::LogLevel::info);
 		app.logger.info("Game path: {}", argv[0]);
 	}
 
@@ -251,11 +251,9 @@ namespace
 
 		/*creat entities */
 		core::ecs::SpriteRegion region{ 0, 0, 1, 1 };
-		constexpr std::array<std::array<std::uint8_t, 4>, 4> textureColors{ {
-			{{255, 80, 80, 255}},
-			{{80, 255, 120, 255}},
-			{{80, 140, 255, 255}},
-			{{255, 220, 80, 255}}
+		constexpr std::array<std::array<std::uint8_t, 4>, 2> textureColors{ {
+			{{0, 80, 255, 0}}, // 所有普通粒子的颜色
+			{{255, 80, 80, 255}}   // 唯一例外粒子的颜色
 		} };
 		for (const auto& color : textureColors)
 		{
@@ -266,7 +264,6 @@ namespace
 			texture.setParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			texture.setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		}
-		std::uniform_int_distribution<std::size_t> textureIndex(0, app.entityTextures.size() - 1);
 		app.logger.info("Main: creating {} entities and {} shared 1x1 color textures.", entityCount, app.entityTextures.size());
 
 		for (std::size_t i = 0; i < entityCount; ++i)
@@ -286,7 +283,7 @@ namespace
 			spriteStorage.addTo
 			(
 				entity,
-				core::ecs::SpriteComponent{ *app.mesh, app.entityTextures[textureIndex(app.randomEngine)], region, app.setting }
+				core::ecs::SpriteComponent{ *app.mesh, app.entityTextures[i == 0 ? 1 : 0], region, app.setting }
 			);
 
 			if ((i + 1) % 10000 == 0) {
@@ -538,10 +535,11 @@ namespace
 			const float kineticEnergy = app.physicsSystem.getTotalKineticEnergy();
 			const float potentialEnergy = app.physicsSystem.getTotalPotentialEnergy();
 			app.logger.info(
-				"Main loop heartbeat: frame={}, sim time={:.2f} s, substeps={}, frame time={:.2f} ms, FPS={:.1f}, average={:.1f}, stability={:.2f}%, kinetic={:.4f}, potential={:.4f}, total energy={:.4f}.",
+				"Main loop heartbeat: frame={}, sim time={:.2f} s, substeps={}, total wraps={}, frame time={:.2f} ms, FPS={:.1f}, average={:.1f}, stability={:.2f}%, kinetic={:.4f}, potential={:.4f}, total energy={:.4f}.",
 				app.frameCount,
 				app.physicsSystem.getSimulatedTime(),
 				app.physicsSystem.getLastSubsteps(),
+				app.physicsSystem.getTotalWrapCount(),
 				frameMs,
 				currentFrameRate,
 				app.averageFrameRate,
@@ -560,10 +558,11 @@ namespace
 		const float potentialEnergy = app.physicsSystem.getTotalPotentialEnergy();
 		const core::ecs::RepulsionStats& repulsion = app.physicsSystem.getLastRepulsionStats();
 		app.logger.info(
-			"Energy: step={}, substeps={}, simulated time={:.2f} s, kinetic={:.4f}, potential={:.4f}, total={:.4f}.",
+			"Energy: step={}, substeps={}, simulated time={:.2f} s, total wraps={}, kinetic={:.4f}, potential={:.4f}, total={:.4f}.",
 			app.frameCount,
 			app.physicsSystem.getLastSubsteps(),
 			app.physicsSystem.getSimulatedTime(),
+			app.physicsSystem.getTotalWrapCount(),
 			kineticEnergy,
 			potentialEnergy,
 			kineticEnergy + potentialEnergy
@@ -650,6 +649,7 @@ int main(int argc, char* argv[])
 	//   --physics-rate <hz>  物理目标频率（内部子步步长 ≈ 1/hz），用于对比不同积分步长
 	//   --framerate <n>      显示/限帧目标（只跑物理模式下没有意义）
 	//   --no-repulsion       关闭近距斥力，用于对照实验
+	//   --no-gravity         关闭引力，用于对照实验（粒子走直线，可直接观察周期边界）
 	for (int i = 1; i < argc; ++i) {
 		const std::string argument = argv[i];
 		if (argument == "--physics" || argument == "--steps") {
@@ -666,6 +666,9 @@ int main(int argc, char* argv[])
 		}
 		else if (argument == "--no-repulsion") {
 			app.setting.repulsionStrength = 0.0f;
+		}
+		else if (argument == "--no-gravity") {
+			app.setting.gravity = 0.0f;
 		}
 	}
 
