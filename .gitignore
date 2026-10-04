@@ -366,3 +366,4 @@ FodyWeavers.xsd
 vcpkg_installed/
 /Engine/assets/images/pic.png
 /temp/main_flow_split
+/temp
