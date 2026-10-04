@@ -82,6 +82,30 @@ namespace neon::core::ecs
 		return totalKineticEnergy;
 	}
 
+	// 引力势能：U = -Σ_{i<j} G m² / sqrt(r² + ε²)，与 applyGravity 里的软化力严格对应
+	float PhysicsSystem::getTotalPotentialEnergy()
+	{
+		const std::vector<PhysicsComponent>& particles = physicsComponents.getAllComponents();
+		const std::size_t particleCount = particles.size();
+		if (particleCount < 2) return 0.0f;
+
+		const float particleMass = 1.0f / static_cast<float>(particleCount);
+		const float softeningSq = setting.gravitySoftening * setting.gravitySoftening;
+		const float pairFactor = -setting.gravity * particleMass * particleMass;
+
+		float totalPotentialEnergy = 0.0f;
+		for (std::size_t i = 0; i < particleCount; ++i)
+		{
+			for (std::size_t j = i + 1; j < particleCount; ++j)
+			{
+				const glm::vec3 offset = particles[j].position - particles[i].position;
+				const float distanceSq = glm::dot(offset, offset) + softeningSq;
+				totalPotentialEnergy += pairFactor / std::sqrt(distanceSq);
+			}
+		}
+		return totalPotentialEnergy;
+	}
+
 	void PhysicsSystem::update() {
 		const float deltaTime = 1.0f / static_cast<float>(setting.FrameRate);
 

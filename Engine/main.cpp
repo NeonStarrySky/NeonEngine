@@ -529,14 +529,18 @@ namespace
 		++app.frameCount;
 		if (diagnosticFrame) {
 			const double frameMs = std::chrono::duration<double, std::milli>(DiagnosticClock::now() - frameStart).count();
+			const float kineticEnergy = app.physicsSystem.getTotalKineticEnergy();
+			const float potentialEnergy = app.physicsSystem.getTotalPotentialEnergy();
 			app.logger.info(
-				"Main loop heartbeat: frame={}, frame time={:.2f} ms, FPS={:.1f}, average={:.1f}, stability={:.2f}%, kinetic energy={:.4f}.",
+				"Main loop heartbeat: frame={}, frame time={:.2f} ms, FPS={:.1f}, average={:.1f}, stability={:.2f}%, kinetic={:.4f}, potential={:.4f}, total energy={:.4f}.",
 				app.frameCount,
 				frameMs,
 				currentFrameRate,
 				app.averageFrameRate,
 				app.frameRateStability,
-				app.physicsSystem.getTotalKineticEnergy()
+				kineticEnergy,
+				potentialEnergy,
+				kineticEnergy + potentialEnergy
 			);
 		}
 	}

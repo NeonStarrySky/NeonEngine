@@ -21,6 +21,8 @@ namespace neon::core::ecs
 	public:
 		// 当前所有粒子的总动能（与引力一致，每颗粒子质量按 1/粒子数 归一化）
 		float getTotalKineticEnergy();
+		// 引力总势能（软化形式，与 applyGravity 使用的力一致）：用于检查总能量是否守恒
+		float getTotalPotentialEnergy();
 		PhysicsSystem(Logger& logger, Setting& setting, ComponentManager& componentManager) :
 			logger(logger),
 			setting(setting),
