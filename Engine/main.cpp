@@ -80,6 +80,7 @@ namespace
 	constexpr int sampleCount = 60;						// 帧率统计的采样窗口
 	constexpr int diagnosticIntervalFrames = 180;		// 每隔多少帧打印一次诊断日志
 	constexpr std::size_t entityCount = 1000;			// 创建的实体数量（两两引力是 O(N²)：1000 个约 50 万对/帧）
+	constexpr int physicsLogInterval = 1000;			// 只跑物理模式下，每隔多少步打印一次能量
 
 	using DiagnosticClock = std::chrono::steady_clock;
 
@@ -141,6 +142,10 @@ namespace
 		float averageFrameRate = 0.0f;
 		float frameRateStdDev = 0.0f;
 		float frameRateStability = 0.0f;
+
+		// 快速验证模式：只跑物理，不渲染、不限帧，跑满 physicsStepBudget 步后退出
+		bool physicsOnly = false;
+		int physicsStepBudget = 20000;
 	};
 
 	/* ---------- 流程 1：启动（日志与设置） ---------- */
@@ -545,18 +550,50 @@ namespace
 		}
 	}
 
+	/* ---------- 流程 10b：打印能量（快速验证用） ---------- */
+	void logEnergy(AppContext& app)
+	{
+		const float kineticEnergy = app.physicsSystem.getTotalKineticEnergy();
+		const float potentialEnergy = app.physicsSystem.getTotalPotentialEnergy();
+		app.logger.info(
+			"Energy: step={}, simulated time={:.2f} s, kinetic={:.4f}, potential={:.4f}, total={:.4f}.",
+			app.frameCount,
+			app.frameCount / static_cast<float>(app.setting.FrameRate),
+			kineticEnergy,
+			potentialEnergy,
+			kineticEnergy + potentialEnergy
+		);
+	}
+
 	/* ---------- 流程 11：主循环 ---------- */
 	void runMainLoop(AppContext& app)
 	{
 		auto& window = *app.window;
+		if (app.physicsOnly) {
+			app.logger.info(
+				"Main: physics-only mode (no rendering, no frame limiter), budget {} steps.",
+				app.physicsStepBudget
+			);
+			logEnergy(app);
+		}
 		/* game loop */
 		while (!glfwWindowShouldClose(window.getGLFWwindow()))
 		{
-			const bool diagnosticFrame = app.frameCount % diagnosticIntervalFrames == 0;
+			const bool diagnosticFrame =
+				!app.physicsOnly && app.frameCount % diagnosticIntervalFrames == 0;
 			const auto frameStart = diagnosticFrame ? DiagnosticClock::now() : DiagnosticClock::time_point{};
 
 			updateFrameInput(app, diagnosticFrame);
 			updateFrameSimulation(app, diagnosticFrame);
+
+			if (app.physicsOnly) {
+				// 快速验证：跳过渲染与帧率限制，只推进物理，并定期打印能量
+				++app.frameCount;
+				if (app.frameCount % physicsLogInterval == 0) logEnergy(app);
+				if (app.frameCount >= app.physicsStepBudget) break;
+				continue;
+			}
+
 			renderFrame(app, diagnosticFrame);
 			presentFrame(app, diagnosticFrame, frameStart);
 		}
@@ -587,9 +624,17 @@ int main(int argc, char* argv[])
 
 	AppContext app;
 
+	// 快速验证：Engine.exe --physics [步数] → 只跑物理，不渲染、不限帧
+	if (argc > 1 && std::string(argv[1]) == "--physics") {
+		app.physicsOnly = true;
+		if (argc > 2) {
+			app.physicsStepBudget = std::atoi(argv[2]);
+		}
+	}
+
 	startup(app, argv);							// 流程 1：启动
 	initWindow(app);							// 流程 2：创建窗口与上下文
-	if (!initGraphics(app)) {					// 流程 3：着色器
+	if (!app.physicsOnly && !initGraphics(app)) {					// 流程 3：着色器
 		return EXIT_FAILURE;
 	}
 	initScene(app);								// 流程 4：网格、纹理与实体
