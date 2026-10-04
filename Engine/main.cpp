@@ -57,6 +57,16 @@ inline glm::vec3 randomUnitVector(std::mt19937& randomEngine) {
 	return glm::normalize(v);
 }
 
+// ---------- 随机初始位置（可见区内切圆内均匀取点，避免铺满整个方形屏幕） ----------
+inline glm::vec3 randomSpawnPosition(std::mt19937& randomEngine) {
+	constexpr float spawnRadius = 1.0f; // 可见区 [-1,1]² 的内切圆半径
+	std::uniform_real_distribution<float> unit(0.0f, 1.0f);
+	// 半径取 sqrt 才能保证圆内按面积均匀，否则点会向圆心堆积
+	const float radius = spawnRadius * std::sqrt(unit(randomEngine));
+	const glm::vec3 direction = randomUnitVector(randomEngine);
+	return glm::vec3(direction.x * radius, direction.y * radius, 0);
+}
+
 // =====================================================================
 // 本次改动：只做拆分，不考虑复用。
 // 把原先全部堆在 main 里的代码按“流程”拆成若干函数，
@@ -214,7 +224,7 @@ namespace
 		physicsStorage.addTo(
 			entity,
 			core::ecs::PhysicsComponent{
-				.position = glm::vec3{0, 0, 0},
+				.position = randomSpawnPosition(app.randomEngine),
 				.velocity = glm::vec3{0.5, 0.2, 0}
 			}
 		);
@@ -257,13 +267,14 @@ namespace
 		for (std::size_t i = 0; i < entityCount; ++i)
 		{
 			auto&& entity = app.entityManager.createEntity();
+			const glm::vec3 initialPosition = randomSpawnPosition(app.randomEngine);
 			const glm::vec3 initialVelocity = randomUnitVector(app.randomEngine);
 
 			physicsStorage.addTo(
 				entity,
 				core::ecs::PhysicsComponent
 				{
-					.position = glm::vec3{0.5, 0.5, 0},
+					.position = initialPosition,
 					.velocity = initialVelocity
 				}
 			);
