@@ -79,7 +79,7 @@ namespace
 	/* ---------- 各流程共享的常量 ---------- */
 	constexpr int sampleCount = 60;						// 帧率统计的采样窗口
 	constexpr int diagnosticIntervalFrames = 180;		// 每隔多少帧打印一次诊断日志
-	constexpr std::size_t entityCount = 10000 * 10;		// 创建的实体数量
+	constexpr std::size_t entityCount = 1000;			// 创建的实体数量（两两引力是 O(N²)：1000 个约 50 万对/帧）
 
 	using DiagnosticClock = std::chrono::steady_clock;
 
@@ -267,14 +267,13 @@ namespace
 		{
 			auto&& entity = app.entityManager.createEntity();
 			const glm::vec3 initialPosition = randomSpawnPosition(app.randomEngine);
-			const glm::vec3 initialVelocity = randomUnitVector(app.randomEngine);
 
 			physicsStorage.addTo(
 				entity,
 				core::ecs::PhysicsComponent
 				{
 					.position = initialPosition,
-					.velocity = initialVelocity
+					.velocity = glm::vec3{0, 0, 0} // 初速度为 0：先静止，再由两两引力拉成一团，观感更直观
 				}
 			);
 
