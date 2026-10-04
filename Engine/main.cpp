@@ -77,7 +77,6 @@ namespace
 	using namespace neon;
 
 	/* ---------- 各流程共享的常量 ---------- */
-	constexpr int frameRate = 1000;						// 设置基准测试的目标帧率
 	constexpr int sampleCount = 60;						// 帧率统计的采样窗口
 	constexpr int diagnosticIntervalFrames = 180;		// 每隔多少帧打印一次诊断日志
 	constexpr std::size_t entityCount = 10000 * 10;		// 创建的实体数量
@@ -182,7 +181,7 @@ namespace
 		glfwGetFramebufferSize(window.getGLFWwindow(), &framebufferWidth, &framebufferHeight);
 		glViewport(0, 0, framebufferWidth, framebufferHeight);
 
-		app.frameRateController.setFrameRate(frameRate);
+		app.frameRateController.setFrameRate(app.setting.FrameRate);
 	}
 
 	/* ---------- 流程 3：加载着色器并生成着色器程序 ---------- */
@@ -562,7 +561,7 @@ namespace
 		app.logger.info("Average Frame Rate: {:.2f} FPS", app.averageFrameRate);
 		app.logger.info(
 			"FrameRate difference from target: {:.2f} %",
-			(app.averageFrameRate - frameRate) / frameRate * 100.0f
+			(app.averageFrameRate - app.setting.FrameRate) / app.setting.FrameRate * 100.0f
 		);
 
 		app.logger.info(
