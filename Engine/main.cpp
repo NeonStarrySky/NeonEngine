@@ -1,4 +1,4 @@
-﻿#include "core/engine.h"
+#include "core/engine.h"
 
 #include "core/ecs/component_manager.h"
 #include "core/ecs/component_storage.h"
@@ -154,6 +154,15 @@ namespace
 	{
 		app.logger.setLogLevel(core::Logger::LogLevel::info);
 		app.logger.info("Game path: {}", argv[0]);
+	}
+
+	/* ---------- 流程 1b：确认物理边界 ----------
+	 * 边界种类属于启动配置：在这里（命令行解析之后、主循环之前）确认一次，
+	 * 运行期间不再改变——物理系统没有切换边界的接口。
+	 */
+	void initPhysicsBoundary(AppContext& app)
+	{
+		app.physicsSystem.initializeBoundary();
 	}
 
 	/* ---------- 流程 2：创建窗口与 OpenGL 上下文 ---------- */
@@ -535,11 +544,11 @@ namespace
 			const float kineticEnergy = app.physicsSystem.getTotalKineticEnergy();
 			const float potentialEnergy = app.physicsSystem.getTotalPotentialEnergy();
 			app.logger.info(
-				"Main loop heartbeat: frame={}, sim time={:.2f} s, substeps={}, total wraps={}, frame time={:.2f} ms, FPS={:.1f}, average={:.1f}, stability={:.2f}%, kinetic={:.4f}, potential={:.4f}, total energy={:.4f}.",
+				"Main loop heartbeat: frame={}, sim time={:.2f} s, substeps={}, boundary hits={}, frame time={:.2f} ms, FPS={:.1f}, average={:.1f}, stability={:.2f}%, kinetic={:.4f}, potential={:.4f}, total energy={:.4f}.",
 				app.frameCount,
 				app.physicsSystem.getSimulatedTime(),
 				app.physicsSystem.getLastSubsteps(),
-				app.physicsSystem.getTotalWrapCount(),
+				app.physicsSystem.getTotalBoundaryHits(),
 				frameMs,
 				currentFrameRate,
 				app.averageFrameRate,
@@ -558,11 +567,11 @@ namespace
 		const float potentialEnergy = app.physicsSystem.getTotalPotentialEnergy();
 		const core::ecs::RepulsionStats& repulsion = app.physicsSystem.getLastRepulsionStats();
 		app.logger.info(
-			"Energy: step={}, substeps={}, simulated time={:.2f} s, total wraps={}, kinetic={:.4f}, potential={:.4f}, total={:.4f}.",
+			"Energy: step={}, substeps={}, simulated time={:.2f} s, boundary hits={}, kinetic={:.4f}, potential={:.4f}, total={:.4f}.",
 			app.frameCount,
 			app.physicsSystem.getLastSubsteps(),
 			app.physicsSystem.getSimulatedTime(),
-			app.physicsSystem.getTotalWrapCount(),
+			app.physicsSystem.getTotalBoundaryHits(),
 			kineticEnergy,
 			potentialEnergy,
 			kineticEnergy + potentialEnergy
@@ -650,6 +659,7 @@ int main(int argc, char* argv[])
 	//   --framerate <n>      显示/限帧目标（只跑物理模式下没有意义）
 	//   --no-repulsion       关闭近距斥力，用于对照实验
 	//   --no-gravity         关闭引力，用于对照实验（粒子走直线，可直接观察周期边界）
+	//   --boundary <名字>    边界处理方式（wrap 循环 / bounce 反弹）；默认 wrap，只在启动时生效
 	for (int i = 1; i < argc; ++i) {
 		const std::string argument = argv[i];
 		if (argument == "--physics" || argument == "--steps") {
@@ -670,9 +680,21 @@ int main(int argc, char* argv[])
 		else if (argument == "--no-gravity") {
 			app.setting.gravity = 0.0f;
 		}
+		else if (argument == "--boundary" && i + 1 < argc) {
+			const std::string name = argv[++i];
+			if (!core::physics::parseBoundaryType(name, app.setting.boundary)) {
+				app.logger.error(
+					"--boundary {} is not a known boundary; using '{}'. Available: {}.",
+					name,
+					core::physics::boundaryTypeName(app.setting.boundary),
+					core::physics::availableBoundaryNames()
+				);
+			}
+		}
 	}
 
 	startup(app, argv);							// 流程 1：启动
+	initPhysicsBoundary(app);					// 流程 1b：确认边界（启动时一次，之后不变）
 	initWindow(app);							// 流程 2：创建窗口与上下文
 	if (!app.physicsOnly && !initGraphics(app)) {					// 流程 3：着色器
 		return EXIT_FAILURE;

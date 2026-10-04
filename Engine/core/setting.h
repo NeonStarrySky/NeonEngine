@@ -1,6 +1,7 @@
 #pragma once
 
 #include "graphics/window_info.h"
+#include "physics/boundary.h"
 
 namespace neon::core
 {
@@ -12,6 +13,7 @@ namespace neon::core
 		float gravitySoftening = 0.05f;		// 引力软化长度：避免两粒子靠得极近时引力发散
 		float repulsionRadius = 0.08f;		// 近距斥力半径：只有距离小于它才产生斥力
 		float repulsionStrength = 0.01f;	// 近距斥力强度：按 1/r⁴ 增长（实现里另有加速度上限，避免数值爆炸）
+		physics::BoundaryType boundary = physics::BoundaryType::Wrap;	// 边界处理方式：只在启动时确认一次，运行期间不可切换
 		graphics::WindowInfo windowInfo{
 			800, // width
 			600, // height

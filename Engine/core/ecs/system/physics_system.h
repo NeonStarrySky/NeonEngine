@@ -4,9 +4,11 @@
 #include "core/ecs/component_storage.h"
 #include "core/ecs/components/physics_component.h"
 #include "core/logger.h"
+#include "core/physics/boundary.h"
 #include"core/setting.h"
 
 #include <cstddef>
+#include <memory>
 
 namespace neon::core::ecs
 {
@@ -28,8 +30,11 @@ namespace neon::core::ecs
 		ComponentStorage<PhysicsComponent>& physicsComponents;
 		RepulsionStats lastRepulsion;		// 上一帧的斥力诊断量
 		int lastSubsteps = 1;				// 上一帧实际使用的子步数
-		std::size_t totalWrapCount = 0;		// 累计从边界一侧环绕到另一侧的坐标分量个数（只增不减）
+		std::size_t totalBoundaryHits = 0;	// 累计被边界处理的坐标分量个数（只增不减）
 		float simulatedTime = 0.0f;			// 累计推进的模拟时间（秒）
+
+		// 边界：启动时根据 Setting::boundary 创建一次，之后不变（没有 setter，重复初始化会被拒绝）
+		std::unique_ptr<physics::Boundary> boundary;
 
 		// 引力 + 近距斥力：任意两个粒子之间都有相互作用（O(N²)，实体数量多时开销明显）
 		void applyGravity(float deltaTime);
@@ -42,10 +47,12 @@ namespace neon::core::ecs
 		const RepulsionStats& getLastRepulsionStats() const { return lastRepulsion; }
 		// 上一帧实际使用的子步数
 		int getLastSubsteps() const { return lastSubsteps; }
-		// 累计从边界一侧环绕到另一侧的坐标分量个数（0 表示还没有粒子越过边界）
-		std::size_t getTotalWrapCount() const { return totalWrapCount; }
+		// 累计被边界处理的坐标分量个数（0 表示还没有粒子碰到边界）
+		std::size_t getTotalBoundaryHits() const { return totalBoundaryHits; }
 		// 累计推进的模拟时间（秒）
 		float getSimulatedTime() const { return simulatedTime; }
+		// 当前生效的边界（启动时确认，未初始化时返回 nullptr）
+		const physics::Boundary* getBoundary() const { return boundary.get(); }
 		PhysicsSystem(Logger& logger, Setting& setting, ComponentManager& componentManager) :
 			logger(logger),
 			setting(setting),
@@ -56,5 +63,8 @@ namespace neon::core::ecs
 		}
 		/// @param frameDeltaTime 本帧的真实时长（秒）：子步数由它和 Setting::physicsRate 决定
 		void update(float frameDeltaTime);
+		/// 确认本系统的边界：只在启动流程里调用一次，之后边界不再改变。
+		/// 重复调用不会切换边界，只会打一条警告。
+		void initializeBoundary();
 	};
 }

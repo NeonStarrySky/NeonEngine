@@ -166,6 +166,7 @@
   <ItemGroup>
     <ClCompile Include="core\ecs\entity_manager.cpp" />
     <ClCompile Include="core\ecs\system\physics_system.cpp" />
+    <ClCompile Include="core\physics\boundary.cpp" />
     <ClCompile Include="core\ecs\system\system_base.cpp" />
     <ClCompile Include="core\engine.cpp" />
     <ClCompile Include="core\input_system.cpp" />
@@ -192,6 +193,7 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="core\physics\boundary.h" />
     <ClInclude Include="core\ecs\system\sprite_system.h" />
     <ClInclude Include="core\ecs\system\system_base.h" />
     <ClInclude Include="core\engine.h" />

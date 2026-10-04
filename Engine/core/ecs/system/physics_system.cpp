@@ -4,32 +4,6 @@
 
 namespace neon::core::ecs
 {
-	namespace
-	{
-		// 周期边界（环面空间）：可见区是 [-1, 1]²，粒子越过某条边就从对面出现，
-		// 速度保持不变（不反弹），于是左右、上下各自首尾相接。
-		constexpr float domainHalfExtent = 1.0f;
-		constexpr float domainPeriod = 2.0f * domainHalfExtent;
-
-		// 把坐标折回 [-domainHalfExtent, domainHalfExtent)。
-		// 用取模而不是“越界就减一个周期”，这样一帧内跨过多个周期（高速粒子）也能得到正确结果。
-		//
-		// 注意必须先判断“已经在范围内就直接返回”：value + 1.0f 会把小于 1 的坐标提升到 [1, 2)，
-		// 而该区间的 ulp 比 [0, 1) 大一倍，再减回 1.0f 就不是原值了（float32 下约一半的坐标会被改动 1 ulp）。
-		// 那会让每帧都“看似发生环绕”，还会持续给粒子施加微小位移，所以范围内的坐标必须原样返回。
-		float wrapCoordinate(float value)
-		{
-			if (value >= -domainHalfExtent && value < domainHalfExtent)
-			{
-				return value;
-			}
-
-			float shifted = std::fmod(value + domainHalfExtent, domainPeriod);
-			if (shifted < 0.0f) shifted += domainPeriod;
-			return shifted - domainHalfExtent;
-		}
-	}
-
 	// 粒子间相互作用，每一对粒子都计算一次：
 	//   1) 引力：任何距离都存在（牛顿引力 + 软化长度，避免 r→0 时发散）；
 	//   2) 近距斥力：只有距离小于 Setting::repulsionRadius 时才出现，按 1/r⁴ 增长，
@@ -158,7 +132,33 @@ namespace neon::core::ecs
 		return totalPotentialEnergy;
 	}
 
+	void PhysicsSystem::initializeBoundary()
+	{
+		// 边界在启动时确认一次。之后没有 setter，这里的重复调用也不会切换边界，
+		// 因为“边界种类”属于启动配置：运行期间换边界会让粒子突然被另一套规则处理。
+		if (boundary)
+		{
+			logger.warn(
+				"Physics: boundary is already '{}' and cannot be switched at runtime; ignoring the request for '{}'.",
+				boundary->getName(),
+				physics::boundaryTypeName(setting.boundary)
+			);
+			return;
+		}
+
+		boundary = physics::createBoundary(setting.boundary, physics::defaultHalfExtent);
+		logger.info(
+			"Physics: boundary = '{}', visible area = [{}, {}]^2 (fixed at startup).",
+			boundary->getName(),
+			-boundary->getHalfExtent(),
+			boundary->getHalfExtent()
+		);
+	}
+
 	void PhysicsSystem::update(float frameDeltaTime) {
+		// 边界应当由启动流程确认；万一没有，就在这里补上（仍然只会确认一次）
+		if (!boundary) initializeBoundary();
+
 		// 帧时长保护：太小会让子步数变成 0，太大（例如卡顿之后）会让一帧里塞进过多子步
 		constexpr float minFrameDelta = 1.0f / 2000.0f;
 		constexpr float maxFrameDelta = 0.1f;
@@ -192,13 +192,8 @@ namespace neon::core::ecs
 				// Update the position based on velocity and delta time
 				position += velocity * deltaTime;
 
-				// 周期边界：越界不反弹，而是从对面出现（速度不变），使空间成为循环的环面
-				const float wrappedX = wrapCoordinate(position.x);
-				const float wrappedY = wrapCoordinate(position.y);
-				if (wrappedX != position.x) ++totalWrapCount;
-				if (wrappedY != position.y) ++totalWrapCount;
-				position.x = wrappedX;
-				position.y = wrappedY;
+				// 到达边界的粒子交给边界处理（循环 / 反弹），物理系统不需要知道是哪一种
+				totalBoundaryHits += static_cast<std::size_t>(boundary->apply(position, velocity));
 			}
 		}
 	}
