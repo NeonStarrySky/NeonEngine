@@ -303,12 +303,16 @@ namespace
 		app.shareUBO.update(sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(app.projection));
 		app.shareUBO.bindBase(0);
 
-		app.renderMode = SpriteRenderMode::Array;
+		app.renderMode = SpriteRenderMode::TextureGrouped; // 默认用第三种渲染模式
 		app.renderModeKeyWasPressed.fill(false);
 		app.modeIntervalStartedAt = DiagnosticClock::now();
 		app.modeIntervalFrameCount = 0;
 		app.frameCount = 0;
-		app.logger.info("Main: entering render loop; diagnostic checkpoint every {} frames.", diagnosticIntervalFrames);
+		app.logger.info(
+			"Main: entering render loop with {}; diagnostic checkpoint every {} frames.",
+			renderModeNames[static_cast<std::size_t>(app.renderMode)],
+			diagnosticIntervalFrames
+		);
 	}
 
 	/* ---------- 流程 6：每帧输入（轮询事件 + 切换渲染模式） ---------- */
@@ -526,12 +530,13 @@ namespace
 		if (diagnosticFrame) {
 			const double frameMs = std::chrono::duration<double, std::milli>(DiagnosticClock::now() - frameStart).count();
 			app.logger.info(
-				"Main loop heartbeat: frame={}, frame time={:.2f} ms, FPS={:.1f}, average={:.1f}, stability={:.2f}%.",
+				"Main loop heartbeat: frame={}, frame time={:.2f} ms, FPS={:.1f}, average={:.1f}, stability={:.2f}%, kinetic energy={:.4f}.",
 				app.frameCount,
 				frameMs,
 				currentFrameRate,
 				app.averageFrameRate,
-				app.frameRateStability
+				app.frameRateStability,
+				app.physicsSystem.getTotalKineticEnergy()
 			);
 		}
 	}
@@ -567,6 +572,8 @@ namespace
 			"FrameRate stability (CV): {:.2f} %",
 			app.frameRateStability
 		);
+
+		app.logger.info("Total kinetic energy: {:.4f}", app.physicsSystem.getTotalKineticEnergy());
 	}
 }
 

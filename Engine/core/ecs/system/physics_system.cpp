@@ -67,6 +67,21 @@ namespace neon::core::ecs
 		}
 	}
 
+	// 总动能 = Σ ½ m v²；质量与引力一致（每颗 1/粒子数），因此数值也落在同一量级
+	float PhysicsSystem::getTotalKineticEnergy()
+	{
+		const std::vector<PhysicsComponent>& particles = physicsComponents.getAllComponents();
+		if (particles.empty()) return 0.0f;
+
+		const float particleMass = 1.0f / static_cast<float>(particles.size());
+
+		float totalKineticEnergy = 0.0f;
+		for (const PhysicsComponent& particle : particles)
+			totalKineticEnergy += 0.5f * particleMass * glm::dot(particle.velocity, particle.velocity);
+
+		return totalKineticEnergy;
+	}
+
 	void PhysicsSystem::update() {
 		const float deltaTime = 1.0f / static_cast<float>(setting.FrameRate);
 

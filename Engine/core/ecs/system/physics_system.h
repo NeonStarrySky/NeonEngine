@@ -19,6 +19,8 @@ namespace neon::core::ecs
 		// 两两引力：任意两个粒子之间都存在吸引力（O(N²)，实体数量多时开销明显）
 		void applyGravity(float deltaTime);
 	public:
+		// 当前所有粒子的总动能（与引力一致，每颗粒子质量按 1/粒子数 归一化）
+		float getTotalKineticEnergy();
 		PhysicsSystem(Logger& logger, Setting& setting, ComponentManager& componentManager) :
 			logger(logger),
 			setting(setting),
