@@ -213,17 +213,17 @@
     <ClInclude Include="graphics\window_info.h" />
     <ClInclude Include="core\setting.h" />
     <ClInclude Include="test1.h" />
+    <ClInclude Include="timer.h" />
     <ClInclude Include="tool\conhost.h" />
+    <ClInclude Include="gameplay\world.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.gitignore" />
     <None Include="..\vcpkg.json" />
     <None Include="assets\shaders\fragment_shader.glsl" />
     <None Include="assets\shaders\vertex_shader.glsl" />
+    <None Include="assets\shaders\aivs.glsl" />
     <None Include="core\ecs\component_manager.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="assets\images\pic.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
