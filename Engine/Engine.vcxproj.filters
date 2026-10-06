@@ -1,175 +1,191 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="assets">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="assets\shaders">
       <UniqueIdentifier>{c48d1b47-00eb-4ece-b4cc-11b1ec7a98ce}</UniqueIdentifier>
     </Filter>
-    <Filter Include="assets\images">
-      <UniqueIdentifier>{08d71a84-0a89-4a80-9da9-cc60dcaa848a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src">
-      <UniqueIdentifier>{b74a99be-6df0-449c-9664-6a8872c3b93a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\core">
+    <Filter Include="core">
       <UniqueIdentifier>{3a4f3bad-9d6b-4e8e-ba2b-924ee2727c6c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\graphics">
-      <UniqueIdentifier>{8bcfbc0f-56eb-48f5-b91a-22cc1056bdc2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\tool">
-      <UniqueIdentifier>{46dc0e91-94b9-48fa-92fd-2ecc9cdc609a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\graphics\gl">
-      <UniqueIdentifier>{b96463f8-5a75-4e9f-aee1-5b565383c6a8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\core\ecs">
+    <Filter Include="core\ecs">
       <UniqueIdentifier>{dfb5cfe9-0c14-4ebe-ace9-27d201683f4d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\gameplay">
-      <UniqueIdentifier>{83f608e4-1ae7-484f-9d4e-28d0e7f6e681}</UniqueIdentifier>
+    <Filter Include="core\ecs\components">
+      <UniqueIdentifier>{e9fdc0f7-a01a-426a-9de0-721a0ab0c201}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\graphics2D">
-      <UniqueIdentifier>{6799731d-090e-44cb-ad52-2f84aeb8a790}</UniqueIdentifier>
+    <Filter Include="core\ecs\system">
+      <UniqueIdentifier>{801715ea-39db-4622-ab19-3d2789d27f96}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\core\type_system">
+    <Filter Include="core\type_system">
       <UniqueIdentifier>{80566eb7-a21c-4fe7-a8b4-4f59e0fade3a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="gameplay">
+      <UniqueIdentifier>{83f608e4-1ae7-484f-9d4e-28d0e7f6e681}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="graphics">
+      <UniqueIdentifier>{8bcfbc0f-56eb-48f5-b91a-22cc1056bdc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="graphics\gl">
+      <UniqueIdentifier>{b96463f8-5a75-4e9f-aee1-5b565383c6a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tool">
+      <UniqueIdentifier>{46dc0e91-94b9-48fa-92fd-2ecc9cdc609a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="graphics\gl\mesh.cpp">
-      <Filter>src\graphics\gl</Filter>
+    <ClCompile Include="core\ecs\entity_manager.cpp">
+      <Filter>core\ecs</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\gl\renderer.cpp">
-      <Filter>src\graphics\gl</Filter>
+    <ClCompile Include="core\ecs\system\physics_system.cpp">
+      <Filter>core\ecs\system</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\gl\shader_manager.cpp">
-      <Filter>src\graphics\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="graphics\frameRateController.cpp">
-      <Filter>src\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="graphics\gl\window.cpp">
-      <Filter>src\graphics\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="tool\conhost.cpp">
-      <Filter>src\tool</Filter>
+    <ClCompile Include="core\ecs\system\system_base.cpp">
+      <Filter>core\ecs\system</Filter>
     </ClCompile>
     <ClCompile Include="core\engine.cpp">
-      <Filter>src\core</Filter>
+      <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="core\input_system.cpp">
-      <Filter>src\core\ecs</Filter>
+      <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="graphics\image.cpp">
-      <Filter>src\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="test1.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="core\logger.cpp">
+      <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="core\type_system\type_id.cpp">
-      <Filter>src\core\type_system</Filter>
+      <Filter>core\type_system</Filter>
     </ClCompile>
-    <ClCompile Include="core\ecs\entity_manager.cpp">
-      <Filter>src\core\ecs</Filter>
+    <ClCompile Include="graphics\frameRateController.cpp">
+      <Filter>graphics</Filter>
     </ClCompile>
-    <ClCompile Include="core\logger.cpp" />
-    <ClCompile Include="core\ecs\system\system_base.cpp" />
-    <ClCompile Include="graphics\texture_manager.cpp" />
-    <ClCompile Include="core\ecs\system\physics_system.cpp" />
-    <ClCompile Include="core\setting.cpp" />
+    <ClCompile Include="graphics\gl\mesh.cpp">
+      <Filter>graphics\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\gl\renderer.cpp">
+      <Filter>graphics\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\gl\shader_manager.cpp">
+      <Filter>graphics\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\gl\window.cpp">
+      <Filter>graphics\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\image.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\texture_manager.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="core\setting.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="test1.cpp" />
+    <ClCompile Include="tool\conhost.cpp">
+      <Filter>tool</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="graphics\gl\GLResource_base.hpp">
-      <Filter>src\graphics\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="graphics\gl\mesh.h">
-      <Filter>src\graphics\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="graphics\gl\renderer.h">
-      <Filter>src\graphics\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="graphics\gl\shader_manager.h">
-      <Filter>src\graphics\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="graphics\frameRateController.h">
-      <Filter>src\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="graphics\gl\window.h">
-      <Filter>src\graphics\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="graphics\window_info.h">
-      <Filter>src\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="graphics\gl\GLResource.hpp">
-      <Filter>src\graphics\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="tool\conhost.h">
-      <Filter>src\tool</Filter>
+    <ClInclude Include="core\ecs\components\physics_component.h">
+      <Filter>core\ecs\components</Filter>
     </ClInclude>
     <ClInclude Include="core\ecs\component_storage.h">
-      <Filter>src\core\ecs</Filter>
-    </ClInclude>
-    <ClInclude Include="core\input_system.h">
-      <Filter>src\core\ecs</Filter>
+      <Filter>core\ecs</Filter>
     </ClInclude>
     <ClInclude Include="core\ecs\entity.h">
-      <Filter>src\core\ecs</Filter>
-    </ClInclude>
-    <ClInclude Include="core\engine.h">
-      <Filter>src\core</Filter>
-    </ClInclude>
-    <ClInclude Include="graphics\image.h">
-      <Filter>src\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="graphics\texture_manager.h">
-      <Filter>src\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="graphics\gl\texture.h">
-      <Filter>src\graphics\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="core\ecs\components\sprite_component.h">
-      <Filter>src\graphics2D</Filter>
-    </ClInclude>
-    <ClInclude Include="core\type_system\type_id.h">
-      <Filter>src\core\type_system</Filter>
-    </ClInclude>
-    <ClInclude Include="test1.h">
-      <Filter>src</Filter>
+      <Filter>core\ecs</Filter>
     </ClInclude>
     <ClInclude Include="core\ecs\entity_manager.h">
-      <Filter>src\core\ecs</Filter>
+      <Filter>core\ecs</Filter>
     </ClInclude>
-    <ClInclude Include="core\logger.h" />
-    <ClInclude Include="core\ecs\components\position_component.h" />
-    <ClInclude Include="core\ecs\system\sprite_system.h" />
-    <ClInclude Include="core\ecs\system\system_base.h" />
-    <ClInclude Include="core\ecs\system\physics_system.h" />
-    <ClInclude Include="core\setting.h" />
-    <ClInclude Include="core\ecs\components\physics_component.h" />
+    <ClInclude Include="core\ecs\system\physics_system.h">
+      <Filter>core\ecs\system</Filter>
+    </ClInclude>
+    <ClInclude Include="core\ecs\system\sprite_system.h">
+      <Filter>core\ecs\system</Filter>
+    </ClInclude>
+    <ClInclude Include="core\ecs\system\system_base.h">
+      <Filter>core\ecs\system</Filter>
+    </ClInclude>
+    <ClInclude Include="core\engine.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\input_system.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\logger.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\type_system\type_id.h">
+      <Filter>core\type_system</Filter>
+    </ClInclude>
+    <ClInclude Include="core\ecs\components\position_component.h">
+      <Filter>core\ecs\components</Filter>
+    </ClInclude>
+    <ClInclude Include="core\ecs\components\sprite_component.h">
+      <Filter>core\ecs\components</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\frameRateController.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\gl\GLResource.hpp">
+      <Filter>graphics\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\gl\GLResource_base.hpp">
+      <Filter>graphics\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\gl\mesh.h">
+      <Filter>graphics\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\gl\renderer.h">
+      <Filter>graphics\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\gl\shader_manager.h">
+      <Filter>graphics\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\gl\texture.h">
+      <Filter>graphics\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\gl\window.h">
+      <Filter>graphics\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\image.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\texture_manager.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\window_info.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="core\setting.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="test1.h" />
+    <ClInclude Include="tool\conhost.h">
+      <Filter>tool</Filter>
+    </ClInclude>
+    <ClInclude Include="timer.h" />
+    <ClInclude Include="gameplay\world.h">
+      <Filter>gameplay</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\.gitignore" />
+    <None Include="..\vcpkg.json" />
     <None Include="assets\shaders\fragment_shader.glsl">
       <Filter>assets\shaders</Filter>
     </None>
     <None Include="assets\shaders\vertex_shader.glsl">
       <Filter>assets\shaders</Filter>
     </None>
-    <None Include="core\ecs\component_manager.h">
-      <Filter>src\core\ecs</Filter>
+    <None Include="assets\shaders\aivs.glsl">
+      <Filter>assets\shaders</Filter>
     </None>
-    <None Include="..\vcpkg.json" />
-    <None Include="..\.gitignore" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="assets\images\pic.png">
-      <Filter>assets\images</Filter>
-    </Image>
+    <None Include="core\ecs\component_manager.h">
+      <Filter>core\ecs</Filter>
+    </None>
   </ItemGroup>
 </Project>
