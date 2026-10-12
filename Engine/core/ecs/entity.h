@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 namespace neon::core::ecs {
-	using Entity = size_t;
+	using Entity = std::size_t;
 }

@@ -32,7 +32,7 @@ namespace neon::graphics::gl
 		std::vector<GLuint> ids;
 	public:
 
-		using HandleType = typename GLuint;
+		using HandleType = GLuint;
 
 		explicit GLResources(std::vector<GLuint> initialIds = {})
 		{
