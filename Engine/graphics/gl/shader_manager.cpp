@@ -11,7 +11,6 @@
 
 #include "graphics/gl/GLResource.hpp"
 #include "graphics/gl/shader_manager.h"
-#include "tool/conhost.h"
 
 
 namespace neon::graphics::gl
