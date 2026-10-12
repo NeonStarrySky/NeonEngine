@@ -38,7 +38,10 @@ namespace neon::graphics::gl {
 		Texture() = default;
 
 		// 接管现有ID
-		explicit Texture(GLuint existingID, const Info& info = Info{})
+		explicit Texture(GLuint existingID)
+			: Texture(existingID, Info{}) {}
+
+		explicit Texture(GLuint existingID, const Info& info)
 			: handle(existingID), info_(info) {}
 
 		// 生成新纹理ID（不分配存储，不绑定）

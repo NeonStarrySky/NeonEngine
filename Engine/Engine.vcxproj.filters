@@ -83,9 +83,6 @@
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="test1.cpp" />
-    <ClCompile Include="tool\conhost.cpp">
-      <Filter>tool</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\ecs\components\physics_component.h">
@@ -164,15 +161,18 @@
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="test1.h" />
-    <ClInclude Include="tool\conhost.h">
-      <Filter>tool</Filter>
-    </ClInclude>
     <ClInclude Include="timer.h" />
     <ClInclude Include="gameplay\world.h">
       <Filter>gameplay</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="tool\conhost.cpp">
+      <Filter>tool</Filter>
+    </None>
+    <None Include="tool\conhost.h">
+      <Filter>tool</Filter>
+    </None>
     <None Include="..\.gitignore" />
     <None Include="..\vcpkg.json" />
     <None Include="assets\shaders\fragment_shader.glsl">

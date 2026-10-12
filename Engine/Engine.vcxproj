@@ -181,7 +181,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="core\setting.cpp" />
     <ClCompile Include="test1.cpp" />
-    <ClCompile Include="tool\conhost.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\ecs\components\physics_component.h" />
@@ -214,10 +213,11 @@
     <ClInclude Include="core\setting.h" />
     <ClInclude Include="test1.h" />
     <ClInclude Include="timer.h" />
-    <ClInclude Include="tool\conhost.h" />
     <ClInclude Include="gameplay\world.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="tool\conhost.cpp" />
+    <None Include="tool\conhost.h" />
     <None Include="..\.gitignore" />
     <None Include="..\vcpkg.json" />
     <None Include="assets\shaders\fragment_shader.glsl" />
