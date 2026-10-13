@@ -63,6 +63,9 @@
     <ClCompile Include="graphics\gl\mesh.cpp">
       <Filter>graphics\gl</Filter>
     </ClCompile>
+    <ClCompile Include="graphics\gl\context.cpp">
+      <Filter>graphics\gl</Filter>
+    </ClCompile>
     <ClCompile Include="graphics\gl\renderer.cpp">
       <Filter>graphics\gl</Filter>
     </ClCompile>
@@ -134,6 +137,9 @@
       <Filter>graphics\gl</Filter>
     </ClInclude>
     <ClInclude Include="graphics\gl\mesh.h">
+      <Filter>graphics\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\gl\context.h">
       <Filter>graphics\gl</Filter>
     </ClInclude>
     <ClInclude Include="graphics\gl\renderer.h">

@@ -25,15 +25,15 @@ namespace neon::graphics::gl
 		Shader loadAndCompileShader(const std::string& filePath, GLenum shaderType);
 		bool loadShaders(const std::vector<std::pair<std::string, GLenum>>& shaderInfos);
 
-		static void cleanup();
+		void cleanup();
 
-		static const Shader& getShader(const std::string& name, const std::source_location& loc = std::source_location::current());
+		const Shader& getShader(const std::string& name, const std::source_location& loc = std::source_location::current()) const;
 		void linkProgram(const std::string& shaderName);
 		bool linkPrograms(const std::vector<std::string>& names);
 		gl::Program buildShader();
 	private:
 		neon::core::Logger& logger;
 		std::vector<GLuint> shadersToLink;
-		static std::unordered_map<std::string, Shader> shaderPrograms;
+		std::unordered_map<std::string, Shader> shaderPrograms;
 	};
 }

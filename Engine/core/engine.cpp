@@ -32,21 +32,8 @@ namespace neon::core
 {
 	Engine::~Engine()
 	{
-		if (!windows.empty()) {
-			getCurrentWindow().makeContextCurrent();
-		}
-		// Release GPU resources while their OpenGL context is still alive.
-		shareUBO.reset();
-		entityTextures.clear();
-		mesh.reset();
-		program = graphics::gl::Program{};
-		if (glfwInitialized) {
-			shaderManager.cleanup();
-		}
-		windows.clear();
-		if (glfwInitialized) {
-			glfwTerminate();
-		}
+		// GPU members use this context during their subsequent RAII destruction.
+		context.makeCurrent();
 	}
 
 	bool Engine::init(const char* executablePath)
@@ -70,14 +57,14 @@ namespace neon::core
 		if (!initialized) {
 			throw std::logic_error("Engine must be initialized before run");
 		}
+		context.makeCurrent();
 		runMainLoop();
 		reportSummary();
 	}
 
 	int Engine::creatWindow(WindowInfo info)
 	{
-		windows.emplace_back(info, logger);
-		return static_cast<int>(windows.size() - 1);
+		return context.createWindow(info);
 	}
 
 	/* ---------- 流程 1：启动（日志与设置） ---------- */
@@ -90,14 +77,6 @@ namespace neon::core
 	/* ---------- 流程 2：创建窗口与 OpenGL 上下文 ---------- */
 	void Engine::initWindow()
 	{
-		if (!glfwInit()) {
-			throw std::runtime_error("Failed to initialize GLFW");
-		}
-		glfwInitialized = true;
-		{
-			auto temp_window = graphics::gl::initGlad(graphics::gl::Window::GLInfo(), logger);
-		}
-
 		creatWindow(
 			graphics::WindowInfo{
 				setting.windowInfo.width,
@@ -108,7 +87,6 @@ namespace neon::core
 
 		auto& window = getCurrentWindow();
 		window.makeContextCurrent();
-		glVersion = GLVersion;
 		glfwSetWindowUserPointer(window.getGLFWwindow(), this);
 		logger.info("Engine: OpenGL window and context are ready.");
 		glfwSetFramebufferSizeCallback(

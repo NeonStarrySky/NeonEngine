@@ -4,6 +4,7 @@
 #include "core/ecs/system/physics_system.h"
 #include "core/ecs/system/sprite_system.h"
 #include "graphics/frameRateController.h"
+#include "graphics/gl/context.h"
 #include "graphics/gl/renderer.h"
 #include "graphics/gl/shader_manager.h"
 #include "graphics/gl/window.h"
@@ -48,14 +49,14 @@ namespace neon::core
 		// Dependencies are declared before the systems and resources that use them.
 		Logger logger{};
 		Setting setting;
+		// Keep the context alive until every GPU resource member has been destroyed.
+		graphics::gl::Context context{ logger };
 		ecs::EntityManager entityManager{ logger };
 		ecs::ComponentManager componentManager;
 		ecs::PhysicsSystem physicsSystem{ logger, setting, componentManager };
 		ecs::SpriteSystem spriteSystem{ logger, setting, componentManager };
 
 		graphics::gl::ShaderManager shaderManager{ logger };
-		std::vector<Window> windows;
-		std::size_t currentWindowIndex = 0;
 		InputSystem input_system;
 		graphics::FrameRateController frameRateController;
 		graphics::Renderer renderer;
@@ -78,8 +79,6 @@ namespace neon::core
 		float averageFrameRate = 0.0f;
 		float frameRateStdDev = 0.0f;
 		float frameRateStability = 0.0f;
-		gladGLversionStruct glVersion{};
-		bool glfwInitialized = false;
 		bool initialized = false;
 
 		void startup(const char* executablePath);
@@ -112,27 +111,20 @@ namespace neon::core
 
 		GLFWwindow* getGLFWWindowPtr(int i) const
 		{
-			if (i < 0 || static_cast<std::size_t>(i) >= windows.size()) {
-				return nullptr;
-			}
-			return windows[i].getGLFWwindow();
+			return context.getWindowPtr(i);
 		}
 
 		GLFWwindow* getCurrentGLFWWindowPtr() const
 		{
-			return currentWindowIndex < windows.size()
-				? windows[currentWindowIndex].getGLFWwindow() : nullptr;
+			return context.getCurrentWindowPtr();
 		}
 
 		Window& getWindow(int i)
 		{
-			if (i < 0 || static_cast<std::size_t>(i) >= windows.size()) {
-				throw std::out_of_range("Window index out of range");
-			}
-			return windows[i];
+			return context.getWindow(i);
 		}
 
-		Window& getCurrentWindow() { return windows.at(currentWindowIndex); }
-		gladGLversionStruct getGLVersion() const { return glVersion; }
+		Window& getCurrentWindow() { return context.getCurrentWindow(); }
+		gladGLversionStruct getGLVersion() const { return context.getGLVersion(); }
 	};
 }

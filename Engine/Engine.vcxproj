@@ -173,6 +173,7 @@
     <ClCompile Include="core\type_system\type_id.cpp" />
     <ClCompile Include="graphics\frameRateController.cpp" />
     <ClCompile Include="graphics\gl\mesh.cpp" />
+    <ClCompile Include="graphics\gl\context.cpp" />
     <ClCompile Include="graphics\gl\renderer.cpp" />
     <ClCompile Include="graphics\gl\shader_manager.cpp" />
     <ClCompile Include="graphics\gl\window.cpp" />
@@ -203,6 +204,7 @@
     <ClInclude Include="graphics\gl\GLResource.hpp" />
     <ClInclude Include="graphics\gl\GLResource_base.hpp" />
     <ClInclude Include="graphics\gl\mesh.h" />
+    <ClInclude Include="graphics\gl\context.h" />
     <ClInclude Include="graphics\gl\renderer.h" />
     <ClInclude Include="graphics\gl\shader_manager.h" />
     <ClInclude Include="graphics\gl\texture.h" />

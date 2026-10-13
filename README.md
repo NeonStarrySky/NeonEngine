@@ -71,7 +71,7 @@ Engine/
   core/                 Engine lifecycle, settings, logging, input, entity/component code
   gameplay/             Gameplay-related declarations
   graphics/             Image, texture, frame-rate, and rendering code
-    gl/                 GLFW/OpenGL window, mesh, shader, and renderer code
+    gl/                 GLFW/OpenGL context, window, mesh, shader, and renderer code
   assets/shaders/       GLSL shaders used by the demo
   main.cpp              Entry point that initializes and runs Engine
 scripts/
@@ -79,6 +79,12 @@ scripts/
 NeonEngine.slnx         Visual Studio solution
 vcpkg.json              vcpkg manifest
 ```
+
+`graphics/gl/Context` owns the windows and shares the process-wide GLFW runtime.
+Engine declares its context before GPU resource members, so their RAII destructors
+run before window destruction and the final GLFW shutdown. Engine restores its
+current context before member destruction; shader caches belong to individual
+ShaderManager instances. Create, use, and destroy contexts on the application thread.
 
 ## License
 
