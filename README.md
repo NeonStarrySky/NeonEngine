@@ -68,12 +68,12 @@ For a Debug build, replace `Release` with `Debug` in the executable path. The wo
 
 ```text
 Engine/
-  core/                 Engine settings, logging, input, entity/component code
+  core/                 Engine lifecycle, settings, logging, input, entity/component code
   gameplay/             Gameplay-related declarations
   graphics/             Image, texture, frame-rate, and rendering code
     gl/                 GLFW/OpenGL window, mesh, shader, and renderer code
   assets/shaders/       GLSL shaders used by the demo
-  main.cpp              Demo entry point and render loop
+  main.cpp              Entry point that initializes and runs Engine
 scripts/
   build.ps1             Windows dependency setup and build helper
 NeonEngine.slnx         Visual Studio solution
