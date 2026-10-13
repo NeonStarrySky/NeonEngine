@@ -1,25 +1,22 @@
-﻿#pragma once
+#pragma once
 
-//resources
-#include "graphics/gl/GLResource.hpp"
-#include "graphics/gl/mesh.h"
-#include "graphics/gl/window.h"
-#include "graphics/window_info.h"
-#include "setting.h"
-
-//submodules
+#include "core/ecs/entity_manager.h"
+#include "core/ecs/system/physics_system.h"
+#include "core/ecs/system/sprite_system.h"
+#include "graphics/frameRateController.h"
 #include "graphics/gl/renderer.h"
 #include "graphics/gl/shader_manager.h"
-#include "input_system.h"//glfw
+#include "graphics/gl/window.h"
+#include "input_system.h"
 #include "logger.h"
-#include "timer.h"
+#include "setting.h"
 
-//glad and glfw
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
-//standard library
-#include <memory>
+#include <array>
+#include <chrono>
+#include <cstddef>
+#include <deque>
+#include <optional>
+#include <random>
 #include <stdexcept>
 #include <vector>
 
@@ -27,111 +24,115 @@ namespace neon::core
 {
 	class Engine
 	{
-		// 类型别名，简化代码书写
-		using Window = neon::graphics::gl::Window;
-		using ShaderManager = neon::graphics::gl::ShaderManager;
-		using Shader = neon::graphics::gl::Shader;
-		using Mesh = neon::graphics::gl::Mesh;
-		using WindowInfo = neon::graphics::WindowInfo;
-		using Renderer = neon::graphics::Renderer;
-		using InputSystem = neon::core::InputSystem;
-		using Logger = neon::core::Logger;
+		using Window = graphics::gl::Window;
+		using WindowInfo = graphics::WindowInfo;
+		using DiagnosticClock = std::chrono::steady_clock;
 
-		//resources
-		std::vector<Window> windows;
-		//submodules
-		InputSystem input_system;
-		ShaderManager shader_manager;
-		Renderer renderer;
-		Logger logger;
+		enum class SpriteRenderMode
+		{
+			Individual,
+			Array,
+			TextureGrouped
+		};
 
-		Window::GLInfo _GLInfo;
+		static constexpr int sampleCount = 60;
+		static constexpr int diagnosticIntervalFrames = 180;
+		static constexpr std::size_t entityCount = 10000 * 10;
+		static constexpr std::array<int, 3> renderModeKeys{ GLFW_KEY_1, GLFW_KEY_2, GLFW_KEY_3 };
+		static constexpr std::array<const char*, 3> renderModeNames{
+			"Individual Sprite Renderer",
+			"Sprite Array Renderer",
+			"Texture Grouped Sprite Renderer"
+		};
 
-		struct Context {
-			size_t current_window = 0;
-		}context;
-
+		// Dependencies are declared before the systems and resources that use them.
+		Logger logger{};
 		Setting setting;
+		ecs::EntityManager entityManager{ logger };
+		ecs::ComponentManager componentManager;
+		ecs::PhysicsSystem physicsSystem{ logger, setting, componentManager };
+		ecs::SpriteSystem spriteSystem{ logger, setting, componentManager };
 
-		gladGLversionStruct glVersion;
+		graphics::gl::ShaderManager shaderManager{ logger };
+		std::vector<Window> windows;
+		std::size_t currentWindowIndex = 0;
+		InputSystem input_system;
+		graphics::FrameRateController frameRateController;
+		graphics::Renderer renderer;
+		graphics::gl::Program program;
 
+		std::optional<graphics::gl::Mesh> mesh;
+		std::deque<graphics::gl::Texture> entityTextures;
+		std::mt19937 randomEngine{ std::random_device{}() };
 
+		graphics::gl::UniformBuffer shareUBO;
+		glm::mat4 view{ 1.0f };
+		glm::mat4 projection{ 1.0f };
+		SpriteRenderMode renderMode{ SpriteRenderMode::Array };
+		std::array<bool, renderModeKeys.size()> renderModeKeyWasPressed{};
+		DiagnosticClock::time_point modeIntervalStartedAt{};
+		std::size_t modeIntervalFrameCount = 0;
+		int frameCount = 0;
+
+		std::deque<float> frameRates;
+		float averageFrameRate = 0.0f;
+		float frameRateStdDev = 0.0f;
+		float frameRateStability = 0.0f;
+		gladGLversionStruct glVersion{};
+		bool glfwInitialized = false;
+		bool initialized = false;
+
+		void startup(const char* executablePath);
+		void initWindow();
+		bool initGraphics();
+		void initScene();
+		void initRenderState();
+		void updateFrameInput(bool diagnosticFrame);
+		void updateFrameSimulation(bool diagnosticFrame);
+		void renderFrame(bool diagnosticFrame);
+		void updateFrameRateStatistics(float currentFrameRate);
+		void presentFrame(bool diagnosticFrame, DiagnosticClock::time_point frameStart);
+		void runMainLoop();
+		void reportSummary();
 
 	public:
-		Engine();
+		Engine() = default;
 		~Engine();
-
 		Engine(const Engine&) = delete;
 		Engine& operator=(const Engine&) = delete;
 
-		/// <summary>
-		/// 初始化引擎核心模块（如GLFW、OpenGL上下文等）。
-		/// </summary>
-		void init();
-
-		/// <summary>
-		/// 启动引擎主循环，处理事件、输入和渲染。
-		/// </summary>
+		// Initializes the window, shaders, sprite scene and render state.
+		// Returns false when shader initialization fails.
+		bool init(const char* executablePath = "");
 		void run();
 
-		/// <summary>
-		/// 创建一个新的应用程序窗口。
-		/// </summary>
-		/// <param name="info">窗口的配置信息，如尺寸、标题等。默认为WindowInfo的默认值。</param>
-		/// <returns>成功时返回新创建窗口的索引（在windows向量中的位置），失败时返回-1。</returns>
+		// Returns the zero-based index of the newly created window.
 		int creatWindow(WindowInfo info = WindowInfo());
-
-		/// <summary>
-		/// 获取引擎的输入系统引用，用于查询键盘、鼠标等输入状态。
-		/// </summary>
-		/// <returns>对InputSystem对象的引用。</returns>
 		InputSystem& getInputSystem() { return input_system; }
 
-		/// <summary>
-		/// 根据索引获取底层GLFW窗口的原始指针。
-		/// </summary>
-		/// <param name="i">窗口索引。</param>
-		/// <returns>指向GLFWwindow对象的指针。如果索引无效，则返回nullptr。</returns>
 		GLFWwindow* getGLFWWindowPtr(int i) const
 		{
-			if (i < 0 || i >= static_cast<int>(windows.size())) {
+			if (i < 0 || static_cast<std::size_t>(i) >= windows.size()) {
 				return nullptr;
 			}
 			return windows[i].getGLFWwindow();
 		}
-		/// <summary>
-		/// 获取当前活动窗口的底层GLFW窗口原始指针。
-		/// </summary>
-		/// <returns>指向当前GLFWwindow对象的指针。</returns>
+
 		GLFWwindow* getCurrentGLFWWindowPtr() const
 		{
-			return windows[context.current_window].getGLFWwindow();
+			return currentWindowIndex < windows.size()
+				? windows[currentWindowIndex].getGLFWwindow() : nullptr;
 		}
-		/// <summary>
-		/// 根据索引获取对应的Window对象（引用）。
-		/// </summary>
-		/// <param name="i">窗口索引。</param>
-		/// <returns>对应Window对象的引用。</returns>
-		/// <exception cref="std::out_of_range">当索引超出有效范围时抛出。</exception>
+
 		Window& getWindow(int i)
 		{
-			if (i < 0 || i >= static_cast<int>(windows.size())) {
+			if (i < 0 || static_cast<std::size_t>(i) >= windows.size()) {
 				throw std::out_of_range("Window index out of range");
 			}
 			return windows[i];
 		}
-		/// <summary>
-		/// 获取当前活动窗口的Window对象（引用）。
-		/// </summary>
-		/// <returns>当前Window对象的引用。</returns>
-		Window& getCurrentWindow()
-		{
-			return windows[context.current_window];
-		}
-		/// <summary>
-		/// 获取当前OpenGL上下文版本的详细信息。
-		/// </summary>
-		/// <returns>包含OpenGL主版本号、次版本号等信息的gladGLversionStruct结构体。</returns>
-		const gladGLversionStruct getGLVersion() { return glVersion; }
+
+		Window& getCurrentWindow() { return windows.at(currentWindowIndex); }
+		gladGLversionStruct getGLVersion() const { return glVersion; }
 	};
 }
