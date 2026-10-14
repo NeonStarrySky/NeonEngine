@@ -137,8 +137,6 @@ namespace neon::graphics::gl
 	private:
 		static GLInfo _GLInfo;
 
-		inline static bool GladInitialized = false; // GLAD 初始化状态
-
 	public:
 
 
@@ -208,5 +206,4 @@ namespace neon::graphics::gl
 
 	inline Window::GLInfo Window::_GLInfo{};
 
-	std::optional<Window> initGlad(Window::GLInfo _GLInfo, core::Logger& logger);
 }

@@ -203,6 +203,8 @@
     <ClInclude Include="graphics\gl\GLResource.hpp" />
     <ClInclude Include="graphics\gl\GLResource_base.hpp" />
     <ClInclude Include="graphics\gl\mesh.h" />
+    <ClInclude Include="graphics\gl\context.h" />
+    <ClInclude Include="graphics\gl\glfw_runtime.h" />
     <ClInclude Include="graphics\gl\renderer.h" />
     <ClInclude Include="graphics\gl\shader_manager.h" />
     <ClInclude Include="graphics\gl\texture.h" />

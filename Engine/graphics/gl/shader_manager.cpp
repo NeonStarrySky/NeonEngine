@@ -15,8 +15,6 @@
 
 namespace neon::graphics::gl
 {
-	std::unordered_map<std::string, Shader> ShaderManager::shaderPrograms;
-
 	void ShaderManager::init()
 	{
 		// Èñ╝ËÈÏÎ┼╔½ã¸│╠ð‗
@@ -94,7 +92,7 @@ namespace neon::graphics::gl
 		shaderPrograms.clear();
 	}
 
-	const Shader& ShaderManager::getShader(const std::string& name, const std::source_location& loc)
+	const Shader& ShaderManager::getShader(const std::string& name, const std::source_location& loc) const
 	{
 		auto it = shaderPrograms.find(name);
 		if (it == shaderPrograms.end())
