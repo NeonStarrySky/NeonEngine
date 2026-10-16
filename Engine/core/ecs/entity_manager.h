@@ -12,8 +12,9 @@ namespace neon::core::ecs
 	{
 		Logger& logger;
 
-		Entity usedEntityId = 0;
+		std::vector<unsigned char> entityAlive;
 		std::vector<Entity> freeEntityId;
+		std::size_t entityCount = 0;
 	public:
 
 		EntityManager(Logger& logger) : logger(logger) {
@@ -24,7 +25,9 @@ namespace neon::core::ecs
 		Entity createEntity();
 		void destroyEntity(Entity entity);
 		bool isValid(Entity entity) const;
-	private:
-		std::vector<Entity> m_entities;
+		std::size_t getEntityCount() const
+		{
+			return entityCount;
+		}
 	};
 }

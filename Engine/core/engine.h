@@ -1,8 +1,6 @@
 #pragma once
 
-#include "core/ecs/entity_manager.h"
-#include "core/ecs/system/physics_system.h"
-#include "core/ecs/system/sprite_system.h"
+#include "gameplay/world.h"
 #include "graphics/frameRateController.h"
 #include "graphics/gl/context.h"
 #include "graphics/gl/glfw_runtime.h"
@@ -55,11 +53,6 @@ namespace neon::core
 		std::vector<Window> windows;
 		std::size_t currentWindowIndex = 0;
 		std::optional<graphics::gl::Context> context;
-		ecs::EntityManager entityManager{ logger };
-		ecs::ComponentManager componentManager;
-		ecs::PhysicsSystem physicsSystem{ logger, setting, componentManager };
-		ecs::SpriteSystem spriteSystem{ logger, setting, componentManager };
-
 		graphics::gl::ShaderManager shaderManager{ logger };
 		InputSystem input_system;
 		graphics::FrameRateController frameRateController;
@@ -68,6 +61,8 @@ namespace neon::core
 
 		std::optional<graphics::gl::Mesh> mesh;
 		std::deque<graphics::gl::Texture> entityTextures;
+		// World components borrow the mesh and textures and are destroyed first.
+		gameplay::World world{ logger, setting };
 		std::mt19937 randomEngine{ std::random_device{}() };
 
 		graphics::gl::UniformBuffer shareUBO;
