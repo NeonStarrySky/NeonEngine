@@ -136,6 +136,12 @@
     <ClInclude Include="graphics\gl\mesh.h">
       <Filter>graphics\gl</Filter>
     </ClInclude>
+    <ClInclude Include="graphics\gl\context.h">
+      <Filter>graphics\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\gl\glfw_runtime.h">
+      <Filter>graphics\gl</Filter>
+    </ClInclude>
     <ClInclude Include="graphics\gl\renderer.h">
       <Filter>graphics\gl</Filter>
     </ClInclude>
