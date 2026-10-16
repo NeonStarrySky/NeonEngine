@@ -141,11 +141,11 @@ namespace neon::core
 	/* ---------- 流程 4：构建场景（网格、纹理与实体） ---------- */
 	void Engine::initScene()
 	{
-		auto& physicsStorage = componentManager.get<core::ecs::PhysicsComponent>();
-		auto& spriteStorage = componentManager.get<core::ecs::SpriteComponent>();
+		auto& physicsStorage = world.getComponentManager().get<core::ecs::PhysicsComponent>();
+		auto& spriteStorage = world.getComponentManager().get<core::ecs::SpriteComponent>();
 
 		//ecs：第一个实体只挂物理组件，不参与渲染
-		auto&& entity = entityManager.createEntity();
+		auto&& entity = world.createEntity();
 
 		physicsStorage.addTo(
 			entity,
@@ -192,7 +192,7 @@ namespace neon::core
 
 		for (std::size_t i = 0; i < entityCount; ++i)
 		{
-			auto&& entity = entityManager.createEntity();
+			auto&& entity = world.createEntity();
 			const glm::vec3 initialPosition = randomSpawnPosition(randomEngine);
 			const glm::vec3 initialVelocity = randomUnitVector(randomEngine);
 
@@ -300,7 +300,7 @@ namespace neon::core
 			stageStart = DiagnosticClock::now();
 		}
 
-		physicsSystem.update();
+		world.update();
 
 		if (diagnosticFrame) {
 			const double stageMs = std::chrono::duration<double, std::milli>(DiagnosticClock::now() - stageStart).count();
@@ -322,10 +322,10 @@ namespace neon::core
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		auto& spriteComponents =
-			componentManager.get<core::ecs::SpriteComponent>();
+			world.getComponentManager().get<core::ecs::SpriteComponent>();
 
 		auto& physicsComponents =
-			componentManager.get<core::ecs::PhysicsComponent>();
+			world.getComponentManager().get<core::ecs::PhysicsComponent>();
 
 		const auto& spriteEntities = spriteComponents.getEntities();
 

@@ -69,7 +69,7 @@ For a Debug build, replace `Release` with `Debug` in the executable path. The wo
 ```text
 Engine/
   core/                 Engine lifecycle, settings, logging, input, entity/component code
-  gameplay/             Gameplay-related declarations
+  gameplay/             World ownership of entities, components, and systems
   graphics/             Image, texture, frame-rate, and rendering code
     gl/                 GLFW runtime, OpenGL binding, window, mesh, shader, and renderer code
   assets/shaders/       GLSL shaders used by the demo
@@ -89,6 +89,13 @@ Engine declares its members so GPU resources are destroyed before Context,
 then its windows, then the GLFW runtime. Shader caches belong to ShaderManager
 instances and follow the same RAII order. Window and runtime operations must run
 on the application thread; a borrowed window must outlive Context and its bindings.
+
+Engine owns a `World`, which owns EntityManager, ComponentManager, PhysicsSystem,
+and SpriteSystem. World delegates entity IDs, liveness, and counts to EntityManager;
+destroying an entity removes all its components before its ID can be reused.
+Scene setup and rendering access component storage through World, and simulation
+calls `World::update()`. Physics keeps its existing fixed step from `Setting::FrameRate`.
+World is destroyed before the mesh and textures borrowed by its sprite components.
 
 ## License
 

@@ -29,6 +29,15 @@ namespace neon::core::ecs
 		ComponentManager(const ComponentManager&) = delete;
 		ComponentManager& operator=(const ComponentManager&) = delete;
 
+		// 销毁实体时遍历全部已注册存储，后续新增组件类型也能自动清理。
+		// 每次删除的存储访问次数与已注册组件类型数量成正比。
+		void removeAllComponents(Entity entity)
+		{
+			for (auto& storage : data) {
+				storage->remove(entity);
+			}
+		}
+
 		//注册组件（而非组件存储器！！
 		template<typename T>
 		ComponentStorage<T>& registerComponent()

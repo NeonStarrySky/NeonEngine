@@ -8,7 +8,7 @@
 #include <cstdint>
 
 #include <functional>
-#include<GLFW/glfw3.h>
+#include <memory>
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>
 #include <stdexcept>
@@ -26,6 +26,8 @@ namespace neon::core::ecs
 		inline void setTypeId(size_t id) { typeId = id; }
 		inline size_t getTypeId() const { return typeId; }
 		virtual ~ComponentStorageBase() = default;
+		// 通过基类统一执行删除，管理器无需知道存储的具体组件类型。
+		virtual void remove(Entity entity) = 0;
 	};
 
 	/// @brief 组件存储及其访问规则：单个组件通过引用访问；集合查询返回引用或非拥有视图，组件对象不会因查询而复制。
@@ -136,7 +138,7 @@ namespace neon::core::ecs
 		}
 
 		// O(1) 复杂度的删除操作
-		void remove(Entity entity)
+		void remove(Entity entity) override
 		{
 			auto it = entityToIndex.find(entity);
 			if (it == entityToIndex.end()) return;
@@ -149,8 +151,16 @@ namespace neon::core::ecs
 				// 将要删除的元素与最后一个元素交换
 				Entity lastEntity = entities[lastIndex];
 
+				if constexpr (std::is_move_assignable_v<T>) {
+					components[indexToRemove] = std::move(components[lastIndex]);
+				} else {
+					// Components with reference members cannot be assigned; reconstruct
+					// them so the moved component keeps its own resource references.
+					static_assert(std::is_nothrow_move_constructible_v<T>);
+					std::destroy_at(&components[indexToRemove]);
+					std::construct_at(&components[indexToRemove], std::move(components[lastIndex]));
+				}
 				entities[indexToRemove] = lastEntity;
-				components[indexToRemove] = std::move(components[lastIndex]);
 
 				// 更新被移动的那个实体的索引映射
 				entityToIndex[lastEntity] = indexToRemove;
