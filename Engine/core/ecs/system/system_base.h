@@ -1,7 +1,7 @@
 #pragma once
 
-#include "core/ecs/component_manager.h"
-#include "core/ecs/component_storage.h"
+#include "core/ecs/dynamic_component_manager.h"
+#include "core/ecs/dynamic_component_storage.h"
 #include "core/logger.h"
 #include"core/setting.h"
 
@@ -17,14 +17,14 @@ namespace neon::core::ecs
 	{
 		Logger& logger;
 		Setting& setting;
-		ComponentManager& componentManager;
-		ComponentStorage<Component>& Components;
+		DynamicComponentManager& dynamicComponentManager;
+		DynamicComponentStorage<Component>& Components;
 	public:
-		System(Logger& logger, Setting& setting, ComponentManager& componentManager) :
+		System(Logger& logger, Setting& setting, DynamicComponentManager& dynamicComponentManager) :
 			logger(logger),
 			setting(setting),
-			componentManager(componentManager),
-			Components(componentManager.registerComponent<Component>())
+			dynamicComponentManager(dynamicComponentManager),
+			Components(dynamicComponentManager.registerComponent<Component>())
 		{
 
 		}

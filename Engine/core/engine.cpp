@@ -141,8 +141,8 @@ namespace neon::core
 	/* ---------- 流程 4：构建场景（网格、纹理与实体） ---------- */
 	void Engine::initScene()
 	{
-		auto& physicsStorage = world.getComponentManager().get<core::ecs::PhysicsComponent>();
-		auto& spriteStorage = world.getComponentManager().get<core::ecs::SpriteComponent>();
+		auto& physicsStorage = world.getDynamicComponentManager().get<core::ecs::PhysicsComponent>();
+		auto& spriteStorage = world.getDynamicComponentManager().get<core::ecs::SpriteComponent>();
 
 		//ecs：第一个实体只挂物理组件，不参与渲染
 		auto&& entity = world.createEntity();
@@ -322,10 +322,10 @@ namespace neon::core
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		auto& spriteComponents =
-			world.getComponentManager().get<core::ecs::SpriteComponent>();
+			world.getDynamicComponentManager().get<core::ecs::SpriteComponent>();
 
 		auto& physicsComponents =
-			world.getComponentManager().get<core::ecs::PhysicsComponent>();
+			world.getDynamicComponentManager().get<core::ecs::PhysicsComponent>();
 
 		const auto& spriteEntities = spriteComponents.getEntities();
 

@@ -8,26 +8,27 @@
 #include <utility>
 #include <vector>
 
-#include "component_storage.h"
+#include "dynamic_component_storage.h"
 #include "core/type_system/type_id.h"
 #include "entity.h"
 
 namespace neon::core::ecs
 {
-	// 组件管理器，用于注册和管理不同类型的组件存储
-	class ComponentManager
+	// 动态组件管理器：运行时注册组件类型，按类型 ID 查找，并通过基类管理存储。
+	// Dynamic 指组件类型集合的管理方式；实体和组件实例仍按需增删。
+	class DynamicComponentManager
 	{
-		std::vector<std::unique_ptr<ComponentStorageBase>> data;
+		std::vector<std::unique_ptr<DynamicComponentStorageBase>> data;
 		std::unordered_map<std::size_t, std::size_t> indexMap;
 	public:
-		ComponentManager() = default;
-		~ComponentManager() = default;
+		DynamicComponentManager() = default;
+		~DynamicComponentManager() = default;
 
-		ComponentManager(ComponentManager&&) = default;
-		ComponentManager& operator=(ComponentManager&&) = default;
+		DynamicComponentManager(DynamicComponentManager&&) = default;
+		DynamicComponentManager& operator=(DynamicComponentManager&&) = default;
 
-		ComponentManager(const ComponentManager&) = delete;
-		ComponentManager& operator=(const ComponentManager&) = delete;
+		DynamicComponentManager(const DynamicComponentManager&) = delete;
+		DynamicComponentManager& operator=(const DynamicComponentManager&) = delete;
 
 		// 销毁实体时遍历全部已注册存储，后续新增组件类型也能自动清理。
 		// 每次删除的存储访问次数与已注册组件类型数量成正比。
@@ -40,24 +41,24 @@ namespace neon::core::ecs
 
 		//注册组件（而非组件存储器！！
 		template<typename T>
-		ComponentStorage<T>& registerComponent()
+		DynamicComponentStorage<T>& registerComponent()
 		{
 
 			static_assert(std::is_class_v<T>, "Template parameter T must be a struct or class!");
 
 			auto typeId = core::type_system::getTypeId<T>();
 
-			if (indexMap.contains(typeId)) return *static_cast<ComponentStorage<T>*>(data[indexMap[typeId]].get());// 如果已经注册过该组件类型，则直接返回对应的存储器
+			if (indexMap.contains(typeId)) return *static_cast<DynamicComponentStorage<T>*>(data[indexMap[typeId]].get());// 如果已经注册过该组件类型，则直接返回对应的存储器
 
-			ComponentStorage<T> temp;
+			DynamicComponentStorage<T> temp;
 			temp.setTypeId(typeId);// 设置类型 ID
 
-			data.push_back(std::make_unique<ComponentStorage<T>>(std::move(temp)));// 将临时对象移动到 vector 中
+			data.push_back(std::make_unique<DynamicComponentStorage<T>>(std::move(temp)));// 将临时对象移动到 vector 中
 
 
 			indexMap[typeId] = data.size() - 1;// 记录组件类型对应的索引
 
-			return *static_cast<ComponentStorage<T>*>(data.back().get());
+			return *static_cast<DynamicComponentStorage<T>*>(data.back().get());
 		}
 
 		template<typename T>
@@ -83,8 +84,8 @@ namespace neon::core::ecs
 			// 2. 如果要删除的不是最后一个元素，则进行 Swap-and-Pop
 			if (targetIndex != lastIndex) {
 				// 获取原本处于末尾的组件的类型 ID（我们需要更新它的索引映射）
-				// 注意：这里需要通过底层的 ComponentStorageBase 获取其真实的 TypeId。
-				// 假设你的 ComponentStorageBase 类中有一个虚函数 getTypeId()
+				// 注意：这里需要通过底层的 DynamicComponentStorageBase 获取其真实的 TypeId。
+				// 假设你的 DynamicComponentStorageBase 类中有一个虚函数 getTypeId()
 				std::size_t lastComponentTypeId = data[lastIndex]->getTypeId();
 
 				// 将末尾的元素移动到要删除的位置（覆盖它，释放 targetIndex 处的内存）
@@ -102,7 +103,7 @@ namespace neon::core::ecs
 		}
 
 		template<typename T>
-		ComponentStorage<T>& get()
+		DynamicComponentStorage<T>& get()
 		{
 
 			static_assert(std::is_class_v<T>, "Template parameter T must be a struct or class!");
@@ -116,13 +117,13 @@ namespace neon::core::ecs
 				&&
 				(std::string("Type not registered: ") + std::string(typeid(T).name())).c_str()
 			);// 确保组件类型已注册
-			return static_cast<ComponentStorage<T>&>(*data[it->second]);
+			return static_cast<DynamicComponentStorage<T>&>(*data[it->second]);
 		}
 
 		template<typename T>
 		void add(Entity entity, const T& component)
 		{
-			get<ComponentStorage<T>>().add(entity, component);
+			get<DynamicComponentStorage<T>>().add(entity, component);
 		}
 	};
 }

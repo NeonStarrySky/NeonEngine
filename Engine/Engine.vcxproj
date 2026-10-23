@@ -184,7 +184,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\ecs\components\physics_component.h" />
-    <ClInclude Include="core\ecs\component_storage.h" />
+    <ClInclude Include="core\ecs\dynamic_component_storage.h" />
     <ClInclude Include="core\ecs\entity.h" />
     <ClInclude Include="core\ecs\entity_manager.h" />
     <ClInclude Include="core\ecs\system\physics_system.h">
@@ -225,7 +225,7 @@
     <None Include="assets\shaders\fragment_shader.glsl" />
     <None Include="assets\shaders\vertex_shader.glsl" />
     <None Include="assets\shaders\aivs.glsl" />
-    <None Include="core\ecs\component_manager.h" />
+    <None Include="core\ecs\dynamic_component_manager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

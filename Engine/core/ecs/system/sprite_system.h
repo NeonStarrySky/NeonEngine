@@ -1,7 +1,7 @@
 #pragma once
 
-#include "core/ecs/component_manager.h"
-#include "core/ecs/component_storage.h"
+#include "core/ecs/dynamic_component_manager.h"
+#include "core/ecs/dynamic_component_storage.h"
 #include "core/ecs/components/sprite_component.h"
 #include "core/logger.h"
 #include "core/setting.h"
@@ -16,14 +16,14 @@ namespace neon::core::ecs
 
 		Logger& logger;
 		Setting& setting;
-		ComponentManager& componentManager;
-		ComponentStorage<SpriteComponent>& spriteComponents;
+		DynamicComponentManager& dynamicComponentManager;
+		DynamicComponentStorage<SpriteComponent>& spriteComponents;
 	public:
-		SpriteSystem(Logger& logger, Setting& setting, ComponentManager& componentManager) :
+		SpriteSystem(Logger& logger, Setting& setting, DynamicComponentManager& dynamicComponentManager) :
 			logger(logger),
 			setting(setting),
-			componentManager(componentManager),
-			spriteComponents(componentManager.registerComponent<SpriteComponent>())
+			dynamicComponentManager(dynamicComponentManager),
+			spriteComponents(dynamicComponentManager.registerComponent<SpriteComponent>())
 		{}
 		void update() {
 

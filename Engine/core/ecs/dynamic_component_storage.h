@@ -18,22 +18,22 @@
 
 namespace neon::core::ecs
 {
-	// 1. 基类必须拥有虚析构函数
-	class ComponentStorageBase
+	// 动态组件存储的类型擦除接口，通过虚析构和虚删除统一管理不同组件类型。
+	class DynamicComponentStorageBase
 	{
 		size_t typeId;
 	public:
 		inline void setTypeId(size_t id) { typeId = id; }
 		inline size_t getTypeId() const { return typeId; }
-		virtual ~ComponentStorageBase() = default;
+		virtual ~DynamicComponentStorageBase() = default;
 		// 通过基类统一执行删除，管理器无需知道存储的具体组件类型。
 		virtual void remove(Entity entity) = 0;
 	};
 
-	/// @brief 组件存储及其访问规则：单个组件通过引用访问；集合查询返回引用或非拥有视图，组件对象不会因查询而复制。
+	/// @brief 动态组件存储及其访问规则：单个组件通过引用访问；集合查询返回引用或非拥有视图，组件对象不会因查询而复制。
 	/// 引用和视图都依赖当前存储；添加、删除或移动存储后不要继续使用先前取得的引用或视图。
 	template<typename T>
-	class ComponentStorage : public ComponentStorageBase
+	class DynamicComponentStorage : public DynamicComponentStorageBase
 	{
 		//static_assert(std::is_trivially_copyable_v<T>, "Component type must be trivially copyable");
 
@@ -86,16 +86,16 @@ namespace neon::core::ecs
 		};
 
 	public:
-		ComponentStorage() = default;
-		~ComponentStorage() override = default;
+		DynamicComponentStorage() = default;
+		~DynamicComponentStorage() override = default;
 
 		// 拷贝
-		ComponentStorage(const ComponentStorage&) = default;
-		ComponentStorage& operator=(const ComponentStorage&) = default;
+		DynamicComponentStorage(const DynamicComponentStorage&) = default;
+		DynamicComponentStorage& operator=(const DynamicComponentStorage&) = default;
 
 		// 移动
-		ComponentStorage(ComponentStorage&&) noexcept = default;
-		ComponentStorage& operator=(ComponentStorage&&) noexcept = default;
+		DynamicComponentStorage(DynamicComponentStorage&&) noexcept = default;
+		DynamicComponentStorage& operator=(DynamicComponentStorage&&) noexcept = default;
 
 		// 迭代器支持
 		auto begin() { return Iterator(entities.begin(), components.begin()); }
@@ -235,5 +235,5 @@ namespace neon::core::ecs
 	};
 	using PositionComponent = glm::vec3;
 	using VelocityComponent = glm::vec3;
-	using PositionComponentStorage = ComponentStorage<PositionComponent>;
+	using DynamicPositionComponentStorage = DynamicComponentStorage<PositionComponent>;
 }
