@@ -88,7 +88,7 @@
     <ClInclude Include="core\ecs\components\physics_component.h">
       <Filter>core\ecs\components</Filter>
     </ClInclude>
-    <ClInclude Include="core\ecs\component_storage.h">
+    <ClInclude Include="core\ecs\dynamic_component_storage.h">
       <Filter>core\ecs</Filter>
     </ClInclude>
     <ClInclude Include="core\ecs\entity.h">
@@ -190,7 +190,7 @@
     <None Include="assets\shaders\aivs.glsl">
       <Filter>assets\shaders</Filter>
     </None>
-    <None Include="core\ecs\component_manager.h">
+    <None Include="core\ecs\dynamic_component_manager.h">
       <Filter>core\ecs</Filter>
     </None>
   </ItemGroup>

@@ -90,12 +90,21 @@ then its windows, then the GLFW runtime. Shader caches belong to ShaderManager
 instances and follow the same RAII order. Window and runtime operations must run
 on the application thread; a borrowed window must outlive Context and its bindings.
 
-Engine owns a `World`, which owns EntityManager, ComponentManager, PhysicsSystem,
+Engine owns a `World`, which owns EntityManager, DynamicComponentManager, PhysicsSystem,
 and SpriteSystem. World delegates entity IDs, liveness, and counts to EntityManager;
 destroying an entity removes all its components before its ID can be reused.
 Scene setup and rendering access component storage through World, and simulation
 calls `World::update()`. Physics keeps its existing fixed step from `Setting::FrameRate`.
 World is destroyed before the mesh and textures borrowed by its sprite components.
+
+`DynamicComponentManager` registers component types at runtime and finds their
+`DynamicComponentStorage<T>` by type ID. `DynamicComponentStorageBase` supplies
+the type-erased ownership and removal interface. Here, "dynamic" describes the
+component type registry, rather than whether entities or component instances can
+be added or removed. World exposes this manager through `getDynamicComponentManager()`.
+The headers are `core/ecs/dynamic_component_manager.h` and
+`core/ecs/dynamic_component_storage.h`; callers should use the explicit dynamic
+names when including or referring to this implementation.
 
 ## License
 

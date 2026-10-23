@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/ecs/component_manager.h"
+#include "core/ecs/dynamic_component_manager.h"
 #include "core/ecs/entity_manager.h"
 #include "core/ecs/system/physics_system.h"
 #include "core/ecs/system/sprite_system.h"
@@ -14,7 +14,7 @@ namespace neon::gameplay
 		using Entity = core::ecs::Entity;
 
 		core::ecs::EntityManager entityManager;
-		core::ecs::ComponentManager componentManager;
+		core::ecs::DynamicComponentManager dynamicComponentManager;
 		// Systems borrow the component manager and must be destroyed before it.
 		core::ecs::PhysicsSystem physicsSystem;
 		core::ecs::SpriteSystem spriteSystem;
@@ -22,8 +22,8 @@ namespace neon::gameplay
 	public:
 		World(core::Logger& logger, core::Setting& setting) :
 			entityManager(logger),
-			physicsSystem(logger, setting, componentManager),
-			spriteSystem(logger, setting, componentManager)
+			physicsSystem(logger, setting, dynamicComponentManager),
+			spriteSystem(logger, setting, dynamicComponentManager)
 		{}
 
 		World(const World&) = delete;
@@ -47,7 +47,7 @@ namespace neon::gameplay
 			if (!entityManager.isValid(entity)) {
 				return;
 			}
-			componentManager.removeAllComponents(entity);
+			dynamicComponentManager.removeAllComponents(entity);
 			entityManager.destroyEntity(entity);
 		}
 
@@ -61,9 +61,9 @@ namespace neon::gameplay
 			return entityManager.getEntityCount();
 		}
 
-		core::ecs::ComponentManager& getComponentManager()
+		core::ecs::DynamicComponentManager& getDynamicComponentManager()
 		{
-			return componentManager;
+			return dynamicComponentManager;
 		}
 	};
 }
