@@ -8,7 +8,6 @@
 #include <cstdint>
 
 #include <functional>
-#include<GLFW/glfw3.h>
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>
 #include <stdexcept>
