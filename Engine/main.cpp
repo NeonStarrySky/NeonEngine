@@ -6,8 +6,17 @@
 
 int main(int argc, char* argv[])
 {
+
+	regist<>
+
+
+
+
+
+
+
 #ifdef _WIN32
-	std::system("chcp 65001 > nul");
+		std::system("chcp 65001 > nul");
 #endif
 
 	try {
